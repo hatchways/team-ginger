@@ -6,9 +6,8 @@ from api.home_handler import home_handler
 
 
 app = Flask(__name__)
-# username & password: postgres
 # db name: mentionscrawler
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/mentionscrawler'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mentionscrawler'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
