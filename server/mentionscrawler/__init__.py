@@ -1,18 +1,19 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 
-def create_app(test_config=None):
-    from mentionscrawler.db import db
-    from mentionscrawler.user.blueprint import user_bp
+def create_app():
+    from .db import db
+    from .blueprints import blueprints
     
     app = Flask(__name__, instance_relative_config=True)
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2:///hatchwaydb'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    print(__name__)
+    print("cheeseburger")
     db.init_app(app)
-    app.register_blueprint(user_bp)
+    #creates any tables that aren't in the database, won't update existing tables if the model changes
+    with app.app_context():
+        db.create_all()
 
-    
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
     return app
