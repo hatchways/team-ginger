@@ -6,5 +6,5 @@ export const takenEmailErrMsg = "That email is already taken";
 
 const serverUrl = "http://localhost:5000/";
 const clientUrl = "http://localhost:3000/";
-export const serverSignUpUrl = serverUrl + "users";
+export const serverSignUpUrl = serverUrl + "user";
 export const clientDashboardUrl = clientUrl + "dashboard";

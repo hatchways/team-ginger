@@ -20,15 +20,6 @@ const useStyles = makeStyles(theme => ({
         color: theme.primary
     },
 
-    signup_form__inputs: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-
-        padding: theme.spacing(2),
-        width: 300,
-        display: "block"
-    },
-
     signup_form__btn: {
         display: "block",
         backgroundColor: theme.primary,
@@ -51,7 +42,7 @@ function AccountForm(props) {
 
     return (
         <Box className={classes.signup_form_container} borderRadius={8} boxShadow={1}>
-            <form className={classes.signup_form} onSubmit={props.handleSubmit}>
+            <form className={classes.signup_form} onSubmit={props.submit}>
                 <Typography variant="h5" align="center">
                     <Box fontWeight="fontWeightBold">{props.mainMsg}</Box>
                 </Typography>

@@ -67,7 +67,7 @@ class SignupForm extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <AccountForm mainMsg="Let's get Started!" subMsg="Create an account" btnMsg="Create">
+            <AccountForm mainMsg="Let's get Started!" subMsg="Create an account" btnMsg="Create" submit={this.handleSubmit}>
                 <TextField
                     className={classes.signup_form__inputs}
                     variant="outlined"
