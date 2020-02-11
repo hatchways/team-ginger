@@ -5,7 +5,7 @@ def create_app():
     from .blueprints import blueprints
     
     app = Flask(__name__, instance_relative_config=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2:///hatchwaydb'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2:///mentionscrawler'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     print(__name__)
     print("cheeseburger")
@@ -14,6 +14,8 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    #will register all blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+        
     return app
