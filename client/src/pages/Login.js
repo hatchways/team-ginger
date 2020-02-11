@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountNavBar from "../components/AccountNavBar";
-import SignupForm from "../components/SignupForm";
+import LoginForm from "../components/LoginForm";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -10,15 +10,15 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function SignUp() {
+function Login() {
     const classes = useStyles();
 
     return (
         <div>
-            <AccountNavBar accountMsg="Already have an account?" btnMsg="Login" link="login" />
-            <SignupForm />
+            <AccountNavBar accountMsg="Don't have an account?" btnMsg="Sign Up" link="signup" />
+            <LoginForm />
         </div>
     );
 }
 
-export default SignUp;
+export default Login;
