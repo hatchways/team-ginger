@@ -1,6 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+evantstestingstuff/
 
-# dependencies
 node_modules/
 
 # production
@@ -17,18 +16,22 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-#python stuff
-__pycache__/
 instance/
 .webassets-cache
 
+*.pyc
+__pycache__/
 
-# PyCharm
+instance/
 .idea/
 
 # VSCode
 .vscode
 
+.pytest_cache/
+.coverage
+htmlcov/
 
-#TODO add .env to your gitignore
-
+dist/
+build/
+*.egg-info/

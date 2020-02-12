@@ -8,6 +8,7 @@ references:
       command: |
         cd server
         pipenv install
+        export FLASK_APP=mentionscrawler
 jobs:
   build:
     docker:
