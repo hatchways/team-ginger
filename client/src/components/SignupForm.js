@@ -42,13 +42,19 @@ class SignupForm extends Component {
                 .then(res => res.json())
                 .then(data => {
                     // Token received => success
-                    console.log(data);
                     if (data["token"]) {
                         localStorage.setItem("token", data["token"]);
                         window.location = clientDashboardUrl;
                     }
                     // Assume failure means the email is taken
-                    this.setState({ emailErr: true, emailErrMsg: takenEmailErrMsg, passwordErr: false, passwordErrMsg: "" });
+                    else {
+                        this.setState({
+                            emailErr: true,
+                            emailErrMsg: takenEmailErrMsg,
+                            passwordErr: false,
+                            passwordErrMsg: ""
+                        });
+                    }
                 })
                 .catch(err => console.error("Error: ", err));
         }
