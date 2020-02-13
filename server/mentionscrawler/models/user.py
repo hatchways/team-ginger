@@ -4,18 +4,25 @@ from ..db import db
 class MentionUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    company_name = db.Column(db.String(50), nullable=False)
+    company_names = db.relationship("Company", backref="mention_user", lazy=True)
     password = db.Column(db.String(256), nullable=False)
 
-    def __init__(self, email, company_name, password):
+    def __init__(self, email: str, password: str):
         self.email = email
-        self.company_name = company_name
         self.password = password
 
     def __repr__(self):
-        return "id: {}, name: {} email: {}".format(self.id, self.company_name, self.email)
+        return "id: {}, email: {}".format(self.id, self.email)
 
 
-def commit_user(new_user: object):
-    db.session.add(new_user)
-    db.session.commit()
+class Company(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False)
+
+    def __init__(self, name: str, mention_user_id: int):
+        self.name = name
+        self.mention_user_id = mention_user_id
+
+    def __repr__(self):
+        return "id: {}, name: {}, mention_user_id: {}".format(self.id, self.name, self.mention_user_id)
