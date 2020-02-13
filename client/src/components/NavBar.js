@@ -21,7 +21,7 @@ function NavBar(props) {
 
     // Dynamic styling on logo container so it can structured in different ways
     return (
-        <AppBar position="static">
+        <AppBar position="static" elevation={0}>
             <Toolbar className={classes.toolbar}>
                 <Box style={{ flexGrow: "flexGrow" in props ? props.flexGrow : 1 }}>
                     <img src={Logo} alt="Logo" />

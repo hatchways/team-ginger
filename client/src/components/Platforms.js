@@ -9,7 +9,8 @@ import PlatformCard from "./PlatformCard";
 
 const useStyles = makeStyles(theme => ({
     platform_container: {
-        backgroundColor: "white"
+        backgroundColor: "white",
+        borderRight: "1px solid #ddd"
     }
 }));
 

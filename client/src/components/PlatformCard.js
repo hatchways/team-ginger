@@ -18,8 +18,7 @@ const useStyles = makeStyles(theme => ({
         height: 100,
         alignItems: "center",
         justifyItems: "center",
-        borderBottom: "1px solid #ddd",
-        borderRight: "1px solid #ddd"
+        borderBottom: "1px solid #ddd"
     },
     platform_logo: {
         width: "70%"

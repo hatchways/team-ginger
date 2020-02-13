@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Navbar from "../components/NavBar";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import SettingsIcon from "@material-ui/icons/Settings";
 import Link from "@material-ui/core/Link";
 import SearchBar from "../components/SearchBar";
 import Platforms from "../components/Platforms";
@@ -19,7 +20,8 @@ const useStyles = makeStyles(theme => ({
     },
     mentions_layout: {
         display: "grid",
-        gridTemplateColumns: "minmax(300px, 2fr) 7fr"
+        gridTemplateColumns: "minmax(300px, 2fr) 7fr",
+        height: "100%"
     }
 }));
 
@@ -33,9 +35,7 @@ function Dashboard(props) {
                 </Box>
 
                 <Link href="settings" color="inherit">
-                    <Button variant="outlined" color="inherit">
-                        Settings
-                    </Button>
+                    <SettingsIcon />
                 </Link>
             </Navbar>
             <div className={classes.mentions_layout}>
