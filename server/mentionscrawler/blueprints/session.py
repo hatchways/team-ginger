@@ -23,12 +23,13 @@ def login():
         return bad_request_response(EXPECTED_JSON)
 
 
+# For testing authentication, need to be authenticated to get a cheeseburger
 @session_bp.route("/cheeseburger", methods=["GET", "POST"])
 def cheeseburger():
     if request.is_json:
         if authenticate(request.get_json()):
-            return ok_response("CHEESEBURGER!")
+            return ok_response("CHEESEBURGER FOR YOU!!!!")
         else:
-            return bad_request_response("NOTCHEESEBURGER!")
+            return bad_request_response("NO CHEESEBURGER FOR YOU!!!!")
     else:
         return bad_request_response(EXPECTED_JSON)
