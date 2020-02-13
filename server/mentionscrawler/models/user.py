@@ -1,4 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
 from ..db import db
 
 
@@ -16,7 +15,7 @@ class MentionUser(db.Model):
     def __repr__(self):
         return "id: {}, name: {} email: {}".format(self.id, self.company_name, self.email)
 
-    @staticmethod
-    def commit_user(new_user: object):
-        db.session.add(new_user)
-        db.session.commit()
+
+def commit_user(new_user: object):
+    db.session.add(new_user)
+    db.session.commit()

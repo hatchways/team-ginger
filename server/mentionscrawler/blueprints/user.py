@@ -1,8 +1,9 @@
-from flask import (Blueprint, current_app, jsonify, request, session, url_for)
+from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
-from ..models.user import MentionUser
+from ..models.user import MentionUser, commit_user
 from sqlalchemy.exc import IntegrityError, DataError
-from psycopg2.errorcodes import UNIQUE_VIOLATION, INTEGRITY_CONSTRAINT_VIOLATION, STRING_DATA_RIGHT_TRUNCATION, NUMERIC_VALUE_OUT_OF_RANGE
+from psycopg2.errorcodes import (UNIQUE_VIOLATION, INTEGRITY_CONSTRAINT_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
+                                 NUMERIC_VALUE_OUT_OF_RANGE)
 from ..responses import *
 
 __all__ = ["user_bp"]
@@ -22,7 +23,7 @@ def register():
                 return bad_request_response("Password too short! Must be greater than 6 characters!")
             new_user = MentionUser(body["email"], body["name"], generate_password_hash(body["password"]))
             try:
-                MentionUser.commit_user(new_user)
+                commit_user(new_user)
             except DataError as e:
                 print(e)
                 if e.orig.pgcode == STRING_DATA_RIGHT_TRUNCATION:
@@ -42,7 +43,7 @@ def register():
             return bad_request_response("Invalid request! Missing fields!")
     else:
         return bad_request_response("Expected to receive json, did not get json!")
-    return created_response("Account successfully created!")
+    return created_response("Account successfully created!", new_user.email)
 
 
 @user_bp.route("/user", methods=["PUT"])
