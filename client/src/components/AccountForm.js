@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
     signup_form_container: {
         margin: "auto",
         width: "fit-content",
-        backgroundColor: theme.secondary,
+        backgroundColor: "white",
         marginTop: theme.spacing(4)
     },
 
