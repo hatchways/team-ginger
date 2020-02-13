@@ -9,10 +9,10 @@ from ..responses import *
 
 __all__ = ["user_bp"]
 
-user_bp = Blueprint("user", __name__, url_prefix="/")
+user_bp = Blueprint("users", __name__, url_prefix="/")
 
 
-@user_bp.route("/user", methods=["POST"])
+@user_bp.route("/users", methods=["POST"])
 def register():
     if request.is_json:
         body = request.get_json()
