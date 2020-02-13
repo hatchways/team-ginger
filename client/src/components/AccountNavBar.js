@@ -27,7 +27,7 @@ function AccountNavBar(props) {
                 {props.accountMsg}
             </Typography>
 
-            <Link href={props.link} color="inherit">
+            <Link href={props.link} color="inherit" underline="none">
                 <Button variant="outlined" color="inherit" className={classes.account_btn}>
                     {props.btnMsg}
                 </Button>
