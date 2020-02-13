@@ -5,6 +5,8 @@ from ..authentication.token import generate_token
 _RESPONSE_TAG = 'response'
 _TOKEN_TAG = "token"
 
+EXPECTED_JSON = "Expected to receive json, did not get json!"
+
 
 def bad_request_response(message: str):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 400)

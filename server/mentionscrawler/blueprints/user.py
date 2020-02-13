@@ -8,7 +8,7 @@ from ..responses import *
 
 __all__ = ["user_bp"]
 
-user_bp = Blueprint(__name__, __name__, url_prefix="/")
+user_bp = Blueprint("user", __name__, url_prefix="/")
 
 # TO-DO Validation, check for minimum password length
 # To-DO Check for database errors due to constraints
@@ -18,7 +18,7 @@ user_bp = Blueprint(__name__, __name__, url_prefix="/")
 def register():
     if request.is_json:
         body = request.get_json()
-        if body["email"] and body["name"] and body["password"]:
+        if "email" in body and "name" in body and "password" in body:
             if len(body["password"]) < 7:
                 return bad_request_response("Password too short! Must be greater than 6 characters!")
             new_user = MentionUser(body["email"], body["name"], generate_password_hash(body["password"]))
@@ -42,7 +42,7 @@ def register():
         else:
             return bad_request_response("Invalid request! Missing fields!")
     else:
-        return bad_request_response("Expected to receive json, did not get json!")
+        return bad_request_response(EXPECTED_JSON)
     return created_response("Account successfully created!", new_user.email)
 
 
