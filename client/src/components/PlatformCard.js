@@ -1,4 +1,4 @@
-/* Component for the sidebar of the dashboard
+/* Component for the sidebar items of the dashboard
    Users can toggle if they want to track mentions on a particular platform
    using this component
    Just using Reddit for now
@@ -15,9 +15,11 @@ const useStyles = makeStyles(theme => ({
         display: "grid",
         gridTemplateColumns: "1fr 2fr 1fr",
         width: "100%",
-        height: "100%",
+        height: 100,
         alignItems: "center",
-        justifyItems: "center"
+        justifyItems: "center",
+        borderBottom: "1px solid #ddd",
+        borderRight: "1px solid #ddd"
     },
     platform_logo: {
         width: "70%"

@@ -1,3 +1,7 @@
+/* Component for rendering a singlle mention on dashboard and possibly
+   weekly report 
+*/
+
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
