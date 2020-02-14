@@ -46,12 +46,12 @@ function CompanyNames(props) {
     return (
         <Paper className={props.classIC}>
             <InputBase
-                placeholder="Company email"
+                placeholder="Company name"
                 className={props.classI}
                 value={name}
                 onChange={filled ? undefined : e => setName(e.target.value)}
                 autoComplete="new-password"
-                inputProps={{ "aria-label": "Company email" }}
+                inputProps={{ "aria-label": "Company name" }}
             />
             {filled ? (
                 <Button className={`${classes.input_btn} ${classes.btn_remove}`} onClick={handleRemove}>
