@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: theme.spacing(1)
     },
     save_btn: {
-        width: "80%"
+        maxWidth: 125
     }
 }));
 

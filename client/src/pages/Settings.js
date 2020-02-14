@@ -8,8 +8,14 @@ import SettingsSideBar from "../components/SettingsSideBar";
 const useStyles = makeStyles(theme => ({
     settings_layout: {
         display: "grid",
-        gridTemplateColumns: "minmax(300px, 2fr) 7fr",
-        height: "100%"
+        gridTemplateColumns: "minmax(20%, 300px) 1fr",
+        height: "100%",
+        [theme.breakpoints.down("sm")]: {
+            gridTemplateColumns: "minmax(225px, 1fr) 3fr"
+        },
+        [theme.breakpoints.down("xs")]: {
+            gridTemplateColumns: "minmax(190px, 1fr) 3fr"
+        }
     }
 }));
 

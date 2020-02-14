@@ -13,7 +13,13 @@ const useStyles = makeStyles(theme => ({
     tab_container: {
         backgroundColor: "white",
         borderRight: "1px solid #ddd",
-        padding: theme.spacing(6)
+        padding: theme.spacing(6),
+        [theme.breakpoints.down("sm")]: {
+            padding: theme.spacing(4)
+        },
+        [theme.breakpoints.down("xs")]: {
+            padding: theme.spacing(1)
+        }
     },
     title_container: {
         position: "relative",
