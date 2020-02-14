@@ -4,8 +4,6 @@ from ..models.user import MentionUser
 from ..responses import token_response, bad_request_response, ok_response, EXPECTED_JSON
 from ..authentication.authenticate import authenticate
 
-__all__ = ["session_bp"]
-
 session_bp = Blueprint("session", __name__, url_prefix="/")
 
 
@@ -28,3 +26,7 @@ def login():
 @authenticate()
 def cheeseburger2(user):
     return "Double cheese burger"
+
+@session_bp.route("/gimmeatoken")
+def gimmetoken():
+    return token_response("Boop", "gaurdianaq@protonmail.com")

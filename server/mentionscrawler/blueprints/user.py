@@ -7,8 +7,6 @@ from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING
                                  NUMERIC_VALUE_OUT_OF_RANGE)
 from ..responses import *
 
-__all__ = ["user_bp"]
-
 user_bp = Blueprint("users", __name__, url_prefix="/")
 
 
