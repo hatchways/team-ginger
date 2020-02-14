@@ -5,7 +5,7 @@ export const theme = createMuiTheme({
         fontFamily: '"Roboto"'
     },
     primary: "#6583F2",
-    secondary: "#ffffff",
+    secondary: "#EAEEFD",
     error: "#d8000c",
     bgcolor: "#fafbff"
 });
