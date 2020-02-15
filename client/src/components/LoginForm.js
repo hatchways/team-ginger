@@ -39,8 +39,8 @@ class LoginForm extends Component {
             .then(res => res.json())
             .then(data => {
                 // Token received => success
-                if (data["token"]) {
-                    localStorage.setItem("token", data["token"]);
+                if (data["authentication"]) {
+                    localStorage.setItem("authentication", data["authentication"]);
                     window.location = clientDashboardUrl;
                 } else {
                     this.setState({

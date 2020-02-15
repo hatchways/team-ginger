@@ -14,9 +14,9 @@ def bad_request_response(message: str):
     return response
 
 
-def created_response(message: str, email: str):
+def created_response(message: str, email: str, user_id: int):
     response = make_response(jsonify({_RESPONSE_TAG: message}, {_AUTH_TAG: _AUTH_TAG}), 201)
-    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email), httponly=True)
+    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
 
 
@@ -35,7 +35,7 @@ def unauthorized_response(message: str):
     return response
 
 
-def token_response(message: str, email: str):
+def token_response(message: str, email: str, user_id: int):
     response = make_response(jsonify({_RESPONSE_TAG: message}, {_AUTH_TAG: _AUTH_TAG}), 200)
-    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email), httponly=True)
+    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response

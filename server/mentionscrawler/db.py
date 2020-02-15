@@ -6,3 +6,8 @@ db = SQLAlchemy()
 def insert_row(row: object):
     db.session.add(row)
     db.session.commit()
+
+
+def delete_row(row: object):
+    db.session.delete(row)
+    db.session.commit()

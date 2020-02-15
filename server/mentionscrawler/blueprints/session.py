@@ -16,7 +16,7 @@ def login():
             if user is not None:
                 if check_password_hash(user.password, body.get("password")):
                     print("VALIDATED!")
-                    return token_response("Successfully validated "+body["email"], body["email"])
+                    return token_response("Successfully validated "+body.get("email"), user.email, user.id)
             return bad_request_response("Either email or password was incorrect!")
     else:
         return bad_request_response(EXPECTED_JSON)
@@ -26,6 +26,7 @@ def login():
 @authenticate()
 def cheeseburger2(user):
     return "Double cheese burger"
+
 
 @session_bp.route("/gimmeatoken")
 def gimmetoken():

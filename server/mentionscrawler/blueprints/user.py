@@ -50,14 +50,14 @@ def register():
         print(e)
         if e.orig.pgcode == FOREIGN_KEY_VIOLATION:
             return bad_request_response("Foreign key violation!")
-    return created_response("Account successfully created!", new_user.email)
+    return created_response("Account successfully created!", new_user.email, new_user.id)
 
 
-@user_bp.route("/user", methods=["PUT"])
+@user_bp.route("/users", methods=["PUT"])
 def update():
     return "itworked!"
 
 
-@user_bp.route("/user", methods=["DELETE"])
+@user_bp.route("/users", methods=["DELETE"])
 def delete():
     return "DELETED!"
