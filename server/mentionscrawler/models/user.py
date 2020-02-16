@@ -4,7 +4,6 @@ from ..db import db
 class MentionUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    company_names = db.relationship("Company", backref="mention_user", lazy=True)
     password = db.Column(db.String(256), nullable=False)
 
     def __init__(self, email: str, password: str):

@@ -11,7 +11,7 @@ user_bp = Blueprint("users", __name__, url_prefix="/")
 
 
 @user_bp.route("/users", methods=["POST"])
-def register():
+def add():
     if request.is_json:
         body = request.get_json()
         if "email" in body and "name" in body and "password" in body:
