@@ -1,7 +1,8 @@
 import praw
 from flask import Blueprint
 from ..authentication.authenticate import authenticate, enforce_json
-from ..models.user import MentionUser
+from ..models.user import Company
+from ..models.mention import Mention
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -15,13 +16,11 @@ reddit_bp = Blueprint("reddit", __name__, url_prefix="/")
 
 
 @reddit_bp.route("/reddit")
-@enforce_json()
 @authenticate()
 def search(user):
-    actual_user = MentionUser.query.filter_by(email=user.get("email")).first()
-
-    '''
-    for submission in reddit.subreddit("all").hot():
-        print(submission.title)
-    '''
+    companies = Company.query.filter_by(mention_user_id=user.get("user_id")).all()
+    mentions = []
+    for submission in reddit.subreddit("all").search("Microsoft", sort="new", time_filter="month"):
+        if submission.is_self:
+            mentions.append(Mention(user.get("user_id"), ))
     return "reddit"

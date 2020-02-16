@@ -1,9 +1,8 @@
 from ..db import db
 
-site_association_table = db.Table('association', db.metadata,
-                                  db.Column("mention_user_id", db.Integer, db.ForeignKey("mention_user.id")),
-                                  db.Column("site_name", db.String(50), db.ForeignKey("site.name"))
-                                  )
+REDDIT = "Reddit"
+FACEBOOK = "Facebook"
+TWITTER = "Twitter"
 
 
 class SiteAssociation(db.Model):
@@ -18,3 +17,11 @@ class SiteAssociation(db.Model):
 
 class Site(db.Model):
     name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+
+
+def create_sites():
+    sites = Site.query.all()
+    if len(sites) == 0:
+        db.session.add(Site(REDDIT))
+        db.session.add(Site(FACEBOOK))
+        db.session.add(Site(TWITTER))
