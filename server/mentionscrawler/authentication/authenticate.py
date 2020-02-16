@@ -2,7 +2,18 @@ from flask import request, current_app
 from .token import decode_token
 from jwt.exceptions import InvalidTokenError
 from functools import wraps
-from ..responses import unauthorized_response, error_response, TOKEN_TAG
+from ..responses import unauthorized_response, error_response, bad_request_response, EXPECTED_JSON, TOKEN_TAG
+
+
+def enforce_json():
+    def wrap(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if not request.is_json:
+                return bad_request_response(EXPECTED_JSON)
+            return fn(*args, **kwargs)
+        return wrapper
+    return wrap
 
 
 def authenticate():

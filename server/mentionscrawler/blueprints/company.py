@@ -1,24 +1,26 @@
 from flask import Blueprint, request
 from ..models.user import Company
 from ..db import insert_row, delete_row
-from ..authentication.authenticate import authenticate
+from ..responses import bad_request_response, EXPECTED_JSON
+from ..authentication.authenticate import authenticate, enforce_json
 
 company_bp = Blueprint("companies", __name__, url_prefix="/")
 
 
 @company_bp.route("/companies", methods=["POST"])
+@enforce_json()
 @authenticate()
 def add(user):
-    pass
+    return "SUCCESS!"
 
 
 @company_bp.route("/companies", methods=["PUT"])
 @authenticate()
 def update(user):
-    pass
+    return "cheeseburger"
 
 
 @company_bp.route("/companies", methods=["DELETE"])
 @authenticate()
-def update(user):
-    pass
+def delete(user):
+    return "cheeseburger"

@@ -1,5 +1,5 @@
 from flask import Blueprint
-from ..authentication.authenticate import authenticate
+from ..authentication.authenticate import authenticate, enforce_json
 from ..models.site import SiteAssociation
 from ..db import insert_row, delete_row
 
@@ -7,6 +7,7 @@ site_bp = Blueprint("sites", __name__, url_prefix="/settings/")
 
 
 @site_bp.route("/site/<string:site_name>")
+@enforce_json()
 @authenticate()
 def site(site_name, user):
     print(user)

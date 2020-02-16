@@ -1,6 +1,6 @@
 import praw
-from flask import Blueprint, jsonify
-from ..authentication.authenticate import authenticate
+from flask import Blueprint
+from ..authentication.authenticate import authenticate, enforce_json
 from ..models.user import MentionUser
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
@@ -15,6 +15,7 @@ reddit_bp = Blueprint("reddit", __name__, url_prefix="/")
 
 
 @reddit_bp.route("/reddit")
+@enforce_json()
 @authenticate()
 def search(user):
     actual_user = MentionUser.query.filter_by(email=user.get("email")).first()
