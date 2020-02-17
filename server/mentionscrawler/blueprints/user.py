@@ -55,9 +55,12 @@ def add():
 @authenticate()
 def update(user):
     body = request.get_json()
-    _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
-    _user.email = body.get("email")
-    commit()
+    if body.get("email"):
+        _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
+        _user.email = body.get("email")
+        commit()
+    else:
+        return bad_request_response("Invalid request! Missing fields!")
     return ok_response("Email changed!")
 
 
