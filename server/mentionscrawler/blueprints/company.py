@@ -15,7 +15,7 @@ def update_companies(user):
     names = request.get_json()
     if len(names) == 0:
         return bad_request_response("Must have at least one company name")
-    Company.query.filter_by(mention_user_id = user.get("user_id")).delete()
+    Company.query.filter_by(mention_user_id=user.get("user_id")).delete()
     companies = []
     for name in names:
         companies.append(Company(user.get("user_id"), name))

@@ -9,6 +9,7 @@ import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE } from "../Routes";
+import {RESPONSE_TAG, SITES_TAG} from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -34,7 +35,19 @@ function PlatformCard(props) {
     const classes = useStyles();
 
     const theme = useTheme();
-    const [check, setCheck] = useState(true);
+    let sites = JSON.parse(localStorage.getItem("sites"));
+    let checkState = false;
+    const [check, setCheck] = useState(result => {
+        if (sites[props.site_name])
+        {
+            checkState = sites[props.site_name];
+            return checkState;
+        }
+        else
+        {
+            return false;
+        }
+    });
     const CustomSwitch = withStyles({
         switchBase: {
             color: theme.primary,
@@ -52,15 +65,23 @@ function PlatformCard(props) {
             <img src={props.site_img} className={classes.platform_logo}  alt={"an icon image"}/>
             <Typography className={classes.platform_name}>{props.site_name}</Typography>
             <CustomSwitch
-                checked={!check}
+                checked={check}
                 onClick={() => {
-                    setCheck(!check)
                     fetch(SITES_ROUTE + props.site_name, {
                         method: "POST"
                     }).then(res => {
                         if (res.status === 200)
                         {
-
+                            checkState = !checkState;
+                            setCheck(checkState);
+                            sites[props.site_name] = checkState;
+                            localStorage.setItem(SITES_TAG, JSON.stringify(sites));
+                        }
+                        else
+                        {
+                            res.json().then(data => {
+                                console.log(res.status, data[RESPONSE_TAG]);
+                             });
                         }
                     })
                 }}

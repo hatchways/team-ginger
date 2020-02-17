@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
 from ..models.user import MentionUser
 from ..models.company import Company
+from ..models.site import SiteAssociation, Site
 from ..responses import token_response, bad_request_response, logout_response, TOKEN_TAG
 from ..authentication.authenticate import enforce_json
 
@@ -16,8 +17,24 @@ def login():
         user = MentionUser.query.filter_by(email=body.get("email")).first()
         if user is not None:
             if check_password_hash(user.password, body.get("password")):
-                companies = list(Company.query.filter_by(mention_user_id=user.id).values("name"))
-                return token_response("Successfully validated "+body.get("email"), user.email, companies, user.id)
+
+                companies = Company.query.filter_by(mention_user_id=user.id).all()
+                company_names = []
+                for company in companies:
+                    company_names.append(company.name)
+                sites = Site.query.all()
+                sites_output = {}
+
+                # Build dictionary of all sites we support
+                for site in sites:
+                    sites_output[site.name] = False
+                site_associations = SiteAssociation.query.filter_by(mention_user_id=user.id).all()
+
+                # Set the sites associated with the user to true
+                for site_association in site_associations:
+                    sites_output[site_association.site_name] = True
+                return token_response("Successfully validated "+body.get("email"),
+                                      user.email, company_names, user.id, sites_output)
         return bad_request_response("Either email or password was incorrect!")
 
 

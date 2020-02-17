@@ -22,7 +22,7 @@ function Platforms() {
     return (
         <div className={classes.platform_container}>
             <PlatformCard site_img={RedditImg} site_name={"Reddit"}/>
-            <PlatformCard site_img={TwitterImg} site_name={"Cheeseburger"}/>
+            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"}/>
         </div>
     );
 }

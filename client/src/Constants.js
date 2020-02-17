@@ -4,3 +4,9 @@ export const DASHBOARD_URL = HOME_URL + "dashboard";
 export const SETTINGS_URL = HOME_URL + "settings";
 export const LOGIN_URL = HOME_URL + "login";
 export const SIGNUP_URL = HOME_URL + "signup";
+
+//Server Response Constants
+export const EMAIL_TAG = "email";
+export const RESPONSE_TAG = "response";
+export const COMPANY_NAMES_TAG = "names";
+export const SITES_TAG = "sites";
