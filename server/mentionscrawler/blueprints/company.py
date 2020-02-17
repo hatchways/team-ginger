@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ..models.user import Company
+from ..models.company import Company
 from ..db import insert_row, delete_row
 from ..responses import bad_request_response, EXPECTED_JSON
 from ..authentication.authenticate import authenticate, enforce_json

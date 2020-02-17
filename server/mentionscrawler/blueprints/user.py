@@ -1,7 +1,8 @@
 from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
 from ..authentication.authenticate import enforce_json
-from ..models.user import MentionUser, Company
+from ..models.user import MentionUser
+from ..models.company import Company
 from ..db import insert_row
 from sqlalchemy.exc import IntegrityError, DataError
 from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
