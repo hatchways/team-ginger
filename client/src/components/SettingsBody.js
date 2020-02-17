@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import { USERS_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
+import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
 
 const MAX_NAME_LIMIT = 5;
@@ -43,9 +43,9 @@ const useStyles = makeStyles(theme => ({
 function SettingsBody(props) {
     const classes = useStyles();
 
-    let [names, setNames] = useState(localStorage.getItem("names"));
+    let [names, setNames] = useState(localStorage.getItem("names").split(","));
     // Array of 1 converts into string in localstorage
-    names = typeof names === "string" ? [names] : names;
+
     const [email, setEmail] = useState(localStorage.getItem("email"));
     // When a user adds a name
     const addName = name => {
@@ -54,8 +54,18 @@ function SettingsBody(props) {
             setNames(names.concat(name));
         }
     };
+
+    // When a user removes a name
+    const removeName = name => {
+        if (names.length > 1) {
+            let index = names.findIndex(n => n === name);
+            setNames(names.slice(0, index).concat(names.slice(index + 1, names.length)));
+        } else {
+            // Popup alert here
+        }
+    };
+
     //  When the user hits save
-    // Would perform a POST here
     const handleSave = () => {
         fetch(USERS_ROUTE, {
             method: "PUT",
@@ -64,28 +74,42 @@ function SettingsBody(props) {
             },
             body: JSON.stringify({ email })
         }).then(res => {
-            console.log("Changed email, this method is not complete")
-        })
-        console.log("Changed company names to", names, " and email to ", email);
-
-        fetch(UPDATE_COMPANIES_ROUTE, {
+            if (res.status === 200) {
+                localStorage.setItem("email", email);
+                console.log("Changed email");
+            } else {
+                res.json().then(data => {
+                    console.log(res.status, data["response"]);
+                });
+            }
+        });
+        fetch(COMPANIES_ROUTE, {
             method: "PUT",
-            header: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(names)
         })
             .then(res => {
                 if (res.status === 200) {
+                    localStorage.setItem("names", names);
                     console.log("Names have been changed");
+                } else {
+                    res.json().then(data => {
+                        console.log(res.status, data["response"]);
+                    });
                 }
             })
             .catch(err => console.error("Error: ", err));
-
-
     };
 
     const filledNames = names.map(name => (
         <React.Fragment key={name}>
-            <CompanyNames filled={true} val={name} classIC={classes.input_container} classI={classes.input} />
+            <CompanyNames
+                filled={true}
+                val={name}
+                remove={removeName}
+                classIC={classes.input_container}
+                classI={classes.input}
+            />
             <div></div>
         </React.Fragment>
     ));
@@ -114,6 +138,7 @@ function SettingsBody(props) {
             <Typography variant="h6">Weekly Report</Typography>
             <Paper className={classes.input_container}>
                 <InputBase
+                    type="email"
                     placeholder="Company email"
                     className={classes.input}
                     value={email}
