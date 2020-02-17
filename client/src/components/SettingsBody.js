@@ -10,6 +10,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
+import "../utilities/array";
 
 const MAX_NAME_LIMIT = 5;
 
@@ -67,27 +68,37 @@ function SettingsBody(props) {
 
     //  When the user hits save
     const handleSave = () => {
-        fetch(USERS_ROUTE, {
+        if (localStorage.getItem("email") !== email)
+        {
+            fetch(USERS_ROUTE, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ email })
-        }).then(res => {
-            if (res.status === 200) {
-                localStorage.setItem("email", email);
-                console.log("Changed email");
-            } else {
-                res.json().then(data => {
-                    console.log(res.status, data["response"]);
-                });
-            }
-        });
-        fetch(COMPANIES_ROUTE, {
+            }).then(res => {
+                if (res.status === 200) {
+                    localStorage.setItem("email", email);
+                    console.log("Changed email");
+                } else {
+                    res.json().then(data => {
+                        console.log(res.status, data["response"]);
+                    });
+                }
+            });
+        }
+        else
+        {
+            console.log("Email has not changed!");
+        }
+
+        if (!localStorage.getItem("names").split(",").equals(names))
+        {
+            fetch(COMPANIES_ROUTE, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(names)
-        })
+            })
             .then(res => {
                 if (res.status === 200) {
                     localStorage.setItem("names", names);
@@ -99,6 +110,11 @@ function SettingsBody(props) {
                 }
             })
             .catch(err => console.error("Error: ", err));
+        }
+        else
+        {
+            console.log("Names have not changed!");
+        }
     };
 
     const filledNames = names.map(name => (

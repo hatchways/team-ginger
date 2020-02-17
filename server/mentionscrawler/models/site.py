@@ -5,6 +5,14 @@ FACEBOOK = "Facebook"
 TWITTER = "Twitter"
 
 
+# represents the sites we can crawl
+class Site(db.Model):
+    name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+
+    def __init__(self, name: str):
+        self.name = name
+
+
 # Used to associate users with the sites they have toggled
 class SiteAssociation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,14 +22,6 @@ class SiteAssociation(db.Model):
     def __init__(self, mention_user_id: int, site_name: str):
         self.mention_user_id = mention_user_id
         self.site_name = site_name
-
-
-# represents the sites we can crawl
-class Site(db.Model):
-    name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
-    
-    def __init__(self, name: str):
-        self.name = name
 
 
 # if the sites table is empty it gets populated
