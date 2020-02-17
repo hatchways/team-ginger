@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
-from ..authentication.authenticate import enforce_json
+from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company
-from ..db import insert_row
+from ..db import insert_row, commit
 from sqlalchemy.exc import IntegrityError, DataError
 from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
                                  NUMERIC_VALUE_OUT_OF_RANGE)
@@ -32,9 +32,6 @@ def add():
             print(e)
             if e.orig.pgcode == UNIQUE_VIOLATION:
                 return bad_request_response(new_user.email + " already taken")
-        except Exception as e:
-            print(e)  # Will eventually replace this with a logger that prints to a file
-            return error_response("Something went wrong and we don't know what!")
     else:
         return bad_request_response("Invalid request! Missing fields!")
     new_company = Company(new_user.id, body.get("name"))
@@ -55,11 +52,20 @@ def add():
 
 @user_bp.route("/users", methods=["PUT"])
 @enforce_json()
-def update():
-    return "itworked!"
+@authenticate()
+def update(user):
+    body = request.get_json()
+    if body.get("email"):
+        _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
+        _user.email = body.get("email")
+        commit()
+    else:
+        return bad_request_response("Invalid request! Missing fields!")
+    return ok_response("Email changed!")
 
 
 @user_bp.route("/users", methods=["DELETE"])
 @enforce_json()
-def delete():
+@authenticate()
+def delete(user):
     return "DELETED!"

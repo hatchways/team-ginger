@@ -6,6 +6,7 @@ from ..db import insert_row, delete_row
 site_bp = Blueprint("sites", __name__, url_prefix="/settings/")
 
 
+# Used to toggle whether a service is being crawled
 @site_bp.route("/site/<string:site_name>")
 @authenticate()
 def site(site_name, user):

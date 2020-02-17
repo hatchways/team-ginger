@@ -15,8 +15,9 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
 
 
 def search(user):
+    #  get all company names associated with a user
     companies = Company.query.filter_by(mention_user_id=user.get("user_id")).all()
-    mentions = []
+    mentions = []  # initialize mentions as a list
     for company in companies:
         for submission in _reddit.subreddit("all").search(company.name, sort="new", time_filter="month"):
             if submission.is_self:

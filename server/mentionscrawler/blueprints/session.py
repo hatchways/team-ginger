@@ -16,7 +16,6 @@ def login():
         user = MentionUser.query.filter_by(email=body.get("email")).first()
         if user is not None:
             if check_password_hash(user.password, body.get("password")):
-                print("VALIDATED!")
                 companies = list(Company.query.filter_by(mention_user_id=user.id).values("name"))
                 return token_response("Successfully validated "+body.get("email"), user.email, companies, user.id)
         return bad_request_response("Either email or password was incorrect!")

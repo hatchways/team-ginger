@@ -8,8 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import { USERS_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
-import { SIGN_UP_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
 
 const MAX_NAME_LIMIT = 5;
 
@@ -57,6 +57,17 @@ function SettingsBody(props) {
     //  When the user hits save
     // Would perform a POST here
     const handleSave = () => {
+        fetch(USERS_ROUTE, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        }).then(res => {
+            console.log("Changed email, this method is not complete")
+        })
+        console.log("Changed company names to", names, " and email to ", email);
+
         fetch(UPDATE_COMPANIES_ROUTE, {
             method: "PUT",
             header: { "Content-Type": "application/json" },
@@ -69,13 +80,7 @@ function SettingsBody(props) {
             })
             .catch(err => console.error("Error: ", err));
 
-        fetch(SIGN_UP_ROUTE, { method: "PUT", header: { "Content-Type": "application/json" }, body: JSON.stringify(email) })
-            .then(res => {
-                if (res.status === 200) {
-                    console.log("Email has changed");
-                }
-            })
-            .catch(err => console.error("Error: ", err));
+
     };
 
     const filledNames = names.map(name => (

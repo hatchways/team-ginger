@@ -5,6 +5,7 @@ FACEBOOK = "Facebook"
 TWITTER = "Twitter"
 
 
+# Used to associate users with the sites they have toggled
 class SiteAssociation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False)
@@ -15,6 +16,7 @@ class SiteAssociation(db.Model):
         self.site_name = site_name
 
 
+# represents the sites we can crawl
 class Site(db.Model):
     name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     
@@ -22,6 +24,7 @@ class Site(db.Model):
         self.name = name
 
 
+# if the sites table is empty it gets populated
 def create_sites():
     sites = Site.query.all()
     if len(sites) == 0:
