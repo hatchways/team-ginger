@@ -11,7 +11,7 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @company_bp.route("/companies", methods=["PUT"])
 @enforce_json()
 @authenticate()
-def company(user):
+def companies(user):
     body = request.get_json()
     if body.get("names"):
         names = body.get("names")
