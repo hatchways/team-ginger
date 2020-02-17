@@ -41,10 +41,11 @@ const useStyles = makeStyles(theme => ({
 
 function SettingsBody(props) {
     const classes = useStyles();
-    // Would perform a GET on all the company names and email here
-    const [names, setNames] = useState(["Company ABC"]);
-    // Would perform a GET on company email here
-    const [email, setEmail] = useState(["companyabc@gmail.com"]);
+
+    let [names, setNames] = useState(localStorage.getItem("names"));
+    // Array of 1 converts into string in localstorage
+    names = typeof names === "string" ? [names] : names;
+    const [email, setEmail] = useState(localStorage.getItem("email"));
     // When a user adds a name
     const addName = name => {
         // Prevent duplicate names
