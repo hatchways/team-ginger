@@ -19,7 +19,8 @@ def register():
         if "email" in body and "name" in body and "password" in body:
             if len(body["password"]) < 7:
                 return bad_request_response("Password too short! Must be greater than 6 characters!")
-            new_user = MentionUser(body["email"], generate_password_hash(body["password"]))
+            new_user = MentionUser(
+                body["email"], generate_password_hash(body["password"]))
             try:
                 insert_row(new_user)
             except DataError as e:
@@ -33,13 +34,14 @@ def register():
                 if e.orig.pgcode == UNIQUE_VIOLATION:
                     return bad_request_response(new_user.email + " already taken")
             except Exception as e:
-                print(e)  # Will eventually replace this with a logger that prints to a file
+                # Will eventually replace this with a logger that prints to a file
+                print(e)
                 return error_response("Something went wrong and we don't know what!")
         else:
             return bad_request_response("Invalid request! Missing fields!")
     else:
         return bad_request_response(EXPECTED_JSON)
-    new_company = Company(body["name"], new_user.id)
+    new_company = Company(new_user.id, body["name"])
     try:
         insert_row(new_company)
     except DataError as e:
