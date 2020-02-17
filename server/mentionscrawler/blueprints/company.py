@@ -10,5 +10,5 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @company_bp.route("/companies", methods=["POST"])
 @enforce_json()
 @authenticate()
-def add(user):
+def company(user):
     return "SUCCESS!"
