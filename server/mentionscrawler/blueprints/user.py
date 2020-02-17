@@ -47,7 +47,7 @@ def add():
         print(e)
         if e.orig.pgcode == FOREIGN_KEY_VIOLATION:
             return bad_request_response("Foreign key violation!")
-    return created_response("Account successfully created!", new_user.email, new_user.id)
+    return created_response("Account successfully created!", new_user.email, [new_company.name], new_user.id)
 
 
 @user_bp.route("/users", methods=["PUT"])

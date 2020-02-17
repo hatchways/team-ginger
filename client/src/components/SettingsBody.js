@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import { USERS_ROUTE } from "../Routes";
+import { USERS_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
 
 const MAX_NAME_LIMIT = 5;
@@ -42,10 +42,11 @@ const useStyles = makeStyles(theme => ({
 
 function SettingsBody(props) {
     const classes = useStyles();
-    // Would perform a GET on all the company names and email here
-    const [names, setNames] = useState(["Company ABC"]);
-    // Would perform a GET on company email here
-    const [email, setEmail] = useState(["companyabc@gmail.com"]);
+
+    let [names, setNames] = useState(localStorage.getItem("names"));
+    // Array of 1 converts into string in localstorage
+    names = typeof names === "string" ? [names] : names;
+    const [email, setEmail] = useState(localStorage.getItem("email"));
     // When a user adds a name
     const addName = name => {
         // Prevent duplicate names
@@ -65,8 +66,23 @@ function SettingsBody(props) {
         }).then(res => {
             console.log("Changed email, this method is not complete")
         })
-        console.log("Changed company names to", names, " and email to ", email, " ...Not!");
+        console.log("Changed company names to", names, " and email to ", email);
+
+        fetch(UPDATE_COMPANIES_ROUTE, {
+            method: "PUT",
+            header: { "Content-Type": "application/json" },
+            body: JSON.stringify(names)
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    console.log("Names have been changed");
+                }
+            })
+            .catch(err => console.error("Error: ", err));
+
+
     };
+
     const filledNames = names.map(name => (
         <React.Fragment key={name}>
             <CompanyNames filled={true} val={name} classIC={classes.input_container} classI={classes.input} />

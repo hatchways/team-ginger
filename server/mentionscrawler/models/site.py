@@ -19,6 +19,9 @@ class SiteAssociation(db.Model):
 # represents the sites we can crawl
 class Site(db.Model):
     name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    
+    def __init__(self, name: str):
+        self.name = name
 
 
 # if the sites table is empty it gets populated
