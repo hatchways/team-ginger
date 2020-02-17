@@ -3,6 +3,7 @@ import praw
 from ..models.company import Company
 from ..models.mention import Mention
 from ..models.site import REDDIT
+from ..db import insert_rows
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -25,3 +26,5 @@ def search(user):
                 # Blank text used until I get the ability to crawl the link and pull some text there
                 mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, "",
                                         submission.score, submission.title))
+
+    insert_rows(mentions)

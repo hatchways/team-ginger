@@ -1,5 +1,8 @@
 from . import reddit
+from ..models.site import REDDIT, FACEBOOK, TWITTER
+
+search_dict = {REDDIT: reddit.search}
 
 
-def reddit_search(user):
-    reddit.search(user)
+def search(user, site: str):
+    search_dict[site](user)

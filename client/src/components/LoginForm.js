@@ -15,8 +15,8 @@ const styles = theme => ({
 });
 
 class LoginForm extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.email = React.createRef();
         this.password = React.createRef();
         // Using state to keep track of errors and respond appropriately
@@ -36,11 +36,10 @@ class LoginForm extends Component {
             },
             body: JSON.stringify({ email, password })
         })
-            .then(res => res.json())
-            .then(data => {
+            .then(res => {
                 // Token received => success
-                if (data["authentication"]) {
-                    localStorage.setItem("authentication", data["authentication"]);
+                if (res.status === 200) {
+                    localStorage.setItem("authentication", "authenticated");
                     window.location = clientDashboardUrl;
                 } else {
                     this.setState({

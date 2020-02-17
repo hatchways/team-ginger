@@ -39,3 +39,10 @@ def token_response(message: str, email: str, user_id: int):
     response = make_response(jsonify({_RESPONSE_TAG: message}, {_AUTH_TAG: _AUTH_TAG}), 200)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
+
+
+def logout_response(message: str):
+    response = make_response(jsonify(message), 200)
+    response.delete_cookie(TOKEN_TAG)
+    return response
+

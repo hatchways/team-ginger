@@ -1,7 +1,7 @@
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request
 from werkzeug.security import check_password_hash
 from ..models.user import MentionUser
-from ..responses import token_response, bad_request_response, ok_response
+from ..responses import token_response, bad_request_response, logout_response, TOKEN_TAG
 from ..authentication.authenticate import enforce_json
 
 session_bp = Blueprint("session", __name__, url_prefix="/")
@@ -19,3 +19,9 @@ def login():
                 return token_response("Successfully validated "+body.get("email"), user.email, user.id)
         return bad_request_response("Either email or password was incorrect!")
 
+
+@session_bp.route("/logout", methods=["POST"])
+def logout():
+    if request.cookies.get(TOKEN_TAG) is None:
+        return bad_request_response("No one is logged in!")
+    return logout_response("Successfully logged out!")

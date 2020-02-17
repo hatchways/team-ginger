@@ -12,15 +12,3 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @authenticate()
 def add(user):
     return "SUCCESS!"
-
-
-@company_bp.route("/companies", methods=["PUT"])
-@authenticate()
-def update(user):
-    return "cheeseburger"
-
-
-@company_bp.route("/companies", methods=["DELETE"])
-@authenticate()
-def delete(user):
-    return "cheeseburger"
