@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
-import { USERS_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
+import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
 
 const MAX_NAME_LIMIT = 5;
@@ -64,18 +64,32 @@ function SettingsBody(props) {
             },
             body: JSON.stringify({ email })
         }).then(res => {
-            console.log("Changed email, this method is not complete")
+            if (res.status === 200)
+            {
+                console.log("Changed email")
+            }
+            else {
+                res.json().then(data => {
+                    console.log(res.status, data["response"]);
+                })
+            }
+
         })
         console.log("Changed company names to", names, " and email to ", email);
-
-        fetch(UPDATE_COMPANIES_ROUTE, {
+        console.log(JSON.stringify(names));
+        fetch(COMPANIES_ROUTE, {
             method: "PUT",
-            header: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(names)
         })
             .then(res => {
                 if (res.status === 200) {
                     console.log("Names have been changed");
+                }
+                else {
+                    res.json().then(data => {
+                        console.log(res.status, data["response"]);
+                    });
                 }
             })
             .catch(err => console.error("Error: ", err));

@@ -5,7 +5,6 @@ from ..authentication.token import generate_token
 _RESPONSE_TAG = "response"
 _ERROR_TAG = "error"
 _EMAIL_TAG = "email"
-_COMPANY_NAMES_TAG = "names"
 
 TOKEN_TAG = "mentions_crawler_token"
 EXPECTED_JSON = "Expected to receive json, did not get json!"
@@ -17,7 +16,7 @@ def bad_request_response(message: str):
 
 
 def created_response(message: str, email: str, companies: list, user_id: int):
-    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies}), 201)
+    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email}), 201)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
 
@@ -38,7 +37,7 @@ def unauthorized_response(message: str):
 
 
 def token_response(message: str, email: str, companies: list, user_id: int):
-    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies}), 200)
+    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email}), 200)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
 
