@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import AccountForm from "./AccountForm";
-import { serverLoginUrl, IncorrectErrMsg, clientDashboardUrl } from "../Constants";
+import { LOGIN_ROUTE } from "../Routes";
+import { DASHBOARD_URL } from "../Constants";
+
+const INCORRECT_ERR_MSG = "Incorrect email or password";
 
 const styles = theme => ({
     signup_form__inputs: {
@@ -23,13 +26,18 @@ class LoginForm extends Component {
         this.state = { emailErr: false, passwordErr: false, emailErrMsg: "", passwordErrMsg: "" };
     }
 
+    // Remove Error messages on change
+    handleChange = () => {
+        this.setState({ emailErr: false, passwordErr: false, emailErrMsg: "", passwordErrMsg: "" });
+    };
+
     handleSubmit = e => {
         e.preventDefault();
 
         let email = this.email.current.value;
         let password = this.password.current.value;
 
-        fetch(serverLoginUrl, {
+        fetch(LOGIN_ROUTE, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -40,13 +48,13 @@ class LoginForm extends Component {
                 // Token received => success
                 if (res.status === 200) {
                     localStorage.setItem("authentication", "authenticated");
-                    window.location = clientDashboardUrl;
+                    window.location = DASHBOARD_URL;
                 } else {
                     this.setState({
                         emailErr: true,
-                        emailErrMsg: IncorrectErrMsg,
+                        emailErrMsg: INCORRECT_ERR_MSG,
                         passwordErr: true,
-                        passwordErrMsg: IncorrectErrMsg
+                        passwordErrMsg: INCORRECT_ERR_MSG
                     });
                 }
             })
@@ -68,6 +76,7 @@ class LoginForm extends Component {
                     inputRef={this.email}
                     error={this.state.emailErr}
                     helperText={this.state.emailErrMsg}
+                    onChange={this.handleChange}
                 />
 
                 <TextField
@@ -81,6 +90,7 @@ class LoginForm extends Component {
                     inputRef={this.password}
                     error={this.state.passwordErr}
                     helperText={this.state.passwordErrMsg}
+                    onChange={this.handleChange}
                 />
             </AccountForm>
         );

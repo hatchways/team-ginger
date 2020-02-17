@@ -4,6 +4,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
 import Platforms from "../components/Platforms";
 import UserMentions from "../components/UserMentions";
+import { SETTINGS_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     mentions_layout: {
@@ -17,7 +18,7 @@ function Dashboard(props) {
     const classes = useStyles();
     return (
         <React.Fragment>
-            <ServiceNavBar link="settings">
+            <ServiceNavBar link={SETTINGS_URL}>
                 <SettingsIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.mentions_layout}>

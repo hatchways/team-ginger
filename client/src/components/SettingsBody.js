@@ -10,17 +10,20 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import CompanyNames from "./CompanyNames";
 
+const MAX_NAME_LIMIT = 5;
+
 const useStyles = makeStyles(theme => ({
     container: {
         width: "80%",
-        margin: `${theme.spacing(6)}px auto`,
+        margin: `${theme.spacing(6)}px auto ${theme.spacing(20)}px auto`,
         display: "grid",
         alignItems: "center",
         gridGap: theme.spacing(1),
         gridTemplateColumns: "1fr 3fr",
-        // Give spacing for that invisible element
-        gridAutoRows: "1fr",
-        height: "fit-content"
+        gridAutoRows: "65px",
+        paddingRight: theme.spacing(10),
+        overflow: "auto",
+        height: "80vh"
     },
     input_container: {
         display: "flex",
@@ -67,7 +70,17 @@ function SettingsBody(props) {
             <Typography variant="h6">Your Company</Typography>
             {filledNames}
 
-            <CompanyNames filled={false} val={""} add={addName} classIC={classes.input_container} classI={classes.input} />
+            {names.length >= MAX_NAME_LIMIT ? (
+                <div></div>
+            ) : (
+                <CompanyNames
+                    filled={false}
+                    val={""}
+                    add={addName}
+                    classIC={classes.input_container}
+                    classI={classes.input}
+                />
+            )}
 
             <div></div>
             <div></div>
