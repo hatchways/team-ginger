@@ -4,7 +4,7 @@
    Just using Reddit for now
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
@@ -34,6 +34,7 @@ function PlatformCard() {
     const classes = useStyles();
 
     const theme = useTheme();
+    const [check, setCheck] = useState(true);
     const CustomSwitch = withStyles({
         switchBase: {
             color: theme.primary,
@@ -50,7 +51,11 @@ function PlatformCard() {
         <div className={classes.card}>
             <img src={Reddit} className={classes.platform_logo} />
             <Typography className={classes.platform_name}>Reddit</Typography>
-            <CustomSwitch checked={true} inputProps={{ "aria-label": "reddit checkbox" }} />
+            <CustomSwitch
+                checked={check}
+                onClick={() => setCheck(!check)}
+                inputProps={{ "aria-label": "reddit checkbox" }}
+            />
         </div>
     );
 }

@@ -37,11 +37,15 @@ const useStyles = makeStyles(theme => ({
     },
     grid: {
         width: "100%",
+        boxSizing: "border-box",
         maxWidth: 800,
         margin: "auto",
+        paddingRight: theme.spacing(10),
         display: "grid",
         justifyItems: "center",
-        gridGap: theme.spacing(2)
+        gridGap: theme.spacing(2),
+        height: "70vh",
+        overflow: "auto"
     }
 }));
 
@@ -69,6 +73,9 @@ export default function UserMentions() {
                 </div>
             </div>
             <div className={classes.grid}>
+                <Mention />
+                <Mention />
+                <Mention />
                 <Mention />
                 <Mention />
             </div>
