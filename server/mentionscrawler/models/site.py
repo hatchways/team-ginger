@@ -27,7 +27,9 @@ class Site(db.Model):
 # if the sites table is empty it gets populated
 def create_sites():
     sites = Site.query.all()
+    print(sites)
     if len(sites) == 0:
         db.session.add(Site(REDDIT))
-        db.session.add(Site(FACEBOOK))
-        db.session.add(Site(TWITTER))
+        # db.session.add(Site(FACEBOOK))
+        # db.session.add(Site(TWITTER))
+        db.session.commit()

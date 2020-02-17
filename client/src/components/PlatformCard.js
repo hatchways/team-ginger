@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
-import Reddit from "../assets/reddit.png";
+import { SITES_ROUTE } from "../Routes";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function PlatformCard() {
+function PlatformCard(props) {
     const classes = useStyles();
 
     const theme = useTheme();
@@ -49,12 +49,22 @@ function PlatformCard() {
 
     return (
         <div className={classes.card}>
-            <img src={Reddit} className={classes.platform_logo} />
-            <Typography className={classes.platform_name}>Reddit</Typography>
+            <img src={props.site_img} className={classes.platform_logo}  alt={"an icon image"}/>
+            <Typography className={classes.platform_name}>{props.site_name}</Typography>
             <CustomSwitch
-                checked={check}
-                onClick={() => setCheck(!check)}
-                inputProps={{ "aria-label": "reddit checkbox" }}
+                checked={!check}
+                onClick={() => {
+                    setCheck(!check)
+                    fetch(SITES_ROUTE + props.site_name, {
+                        method: "POST"
+                    }).then(res => {
+                        if (res.status === 200)
+                        {
+
+                        }
+                    })
+                }}
+                inputProps={{ "aria-label": props.site_name+"checkbox" }}
             />
         </div>
     );
