@@ -43,9 +43,9 @@ const useStyles = makeStyles(theme => ({
 function SettingsBody(props) {
     const classes = useStyles();
 
-    let [names, setNames] = useState(localStorage.getItem("names"));
+    let [names, setNames] = useState(localStorage.getItem("names").split(","));
     // Array of 1 converts into string in localstorage
-    names = typeof names === "string" ? [names] : names;
+
     const [email, setEmail] = useState(localStorage.getItem("email"));
     // When a user adds a name
     const addName = name => {
@@ -64,17 +64,14 @@ function SettingsBody(props) {
             },
             body: JSON.stringify({ email })
         }).then(res => {
-            if (res.status === 200)
-            {
-                console.log("Changed email")
-            }
-            else {
+            if (res.status === 200) {
+                console.log("Changed email");
+            } else {
                 res.json().then(data => {
                     console.log(res.status, data["response"]);
-                })
+                });
             }
-
-        })
+        });
         console.log("Changed company names to", names, " and email to ", email);
         console.log(JSON.stringify(names));
         fetch(COMPANIES_ROUTE, {
@@ -85,16 +82,13 @@ function SettingsBody(props) {
             .then(res => {
                 if (res.status === 200) {
                     console.log("Names have been changed");
-                }
-                else {
+                } else {
                     res.json().then(data => {
                         console.log(res.status, data["response"]);
                     });
                 }
             })
             .catch(err => console.error("Error: ", err));
-
-
     };
 
     const filledNames = names.map(name => (
