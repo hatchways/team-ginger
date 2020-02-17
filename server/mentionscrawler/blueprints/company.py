@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..models.company import Company
-from ..db import insert_row
-from ..responses import ok_response
+from ..db import insert_rows
+from ..responses import ok_response, bad_request_response
 from ..authentication.authenticate import authenticate, enforce_json
 
 company_bp = Blueprint("companies", __name__, url_prefix="/")
@@ -13,8 +13,12 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @authenticate()
 def update_companies(user):
     names = request.get_json()
-    Company.query.delete()
+    if len(names) == 0:
+        return bad_request_response("Must have at least one company name")
+    Company.query.filter_by(mention_user_id = user.get("user_id")).delete()
+    companies = []
     for name in names:
-        insert_row(Company(user.get("user_id"), name))
+        companies.append(Company(user.get("user_id"), name))
+    insert_rows(companies)
     return ok_response("Company names updated!")
 

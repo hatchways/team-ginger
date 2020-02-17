@@ -54,8 +54,18 @@ function SettingsBody(props) {
             setNames(names.concat(name));
         }
     };
+
+    // When a user removes a name
+    const removeName = name => {
+        if (names.length > 1) {
+            let index = names.findIndex(n => n === name);
+            setNames(names.slice(0, index).concat(names.slice(index + 1, names.length)));
+        } else {
+            // Popup alert here
+        }
+    };
+
     //  When the user hits save
-    // Would perform a POST here
     const handleSave = () => {
         fetch(USERS_ROUTE, {
             method: "PUT",
@@ -65,6 +75,7 @@ function SettingsBody(props) {
             body: JSON.stringify({ email })
         }).then(res => {
             if (res.status === 200) {
+                localStorage.setItem("email", email);
                 console.log("Changed email");
             } else {
                 res.json().then(data => {
@@ -72,8 +83,6 @@ function SettingsBody(props) {
                 });
             }
         });
-        console.log("Changed company names to", names, " and email to ", email);
-        console.log(JSON.stringify(names));
         fetch(COMPANIES_ROUTE, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -81,6 +90,7 @@ function SettingsBody(props) {
         })
             .then(res => {
                 if (res.status === 200) {
+                    localStorage.setItem("names", names);
                     console.log("Names have been changed");
                 } else {
                     res.json().then(data => {
@@ -93,7 +103,13 @@ function SettingsBody(props) {
 
     const filledNames = names.map(name => (
         <React.Fragment key={name}>
-            <CompanyNames filled={true} val={name} classIC={classes.input_container} classI={classes.input} />
+            <CompanyNames
+                filled={true}
+                val={name}
+                remove={removeName}
+                classIC={classes.input_container}
+                classI={classes.input}
+            />
             <div></div>
         </React.Fragment>
     ));
@@ -122,6 +138,7 @@ function SettingsBody(props) {
             <Typography variant="h6">Weekly Report</Typography>
             <Paper className={classes.input_container}>
                 <InputBase
+                    type="email"
                     placeholder="Company email"
                     className={classes.input}
                     value={email}

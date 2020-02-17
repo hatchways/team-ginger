@@ -25,15 +25,12 @@ function CompanyNames(props) {
     const classes = useStyles();
     // filled determines whether the company name is on file or the user wants it on file
     // filled = true => name is on file
-    const { filled, val, add } = props;
+    const { filled, val, add, remove } = props;
 
     const [name, setName] = useState(filled ? val : "");
-    // Handle the removing of a name (not implemented yet)
-    // I think this will just queue up a remove rather than send a request
-    // Since the user might decide to change their mind and not hit save
-    // The save button will handle the request and response
+
     const handleRemove = () => {
-        console.log("Removed", name, "... Not!");
+        remove(name);
     };
 
     const handleAdd = () => {
