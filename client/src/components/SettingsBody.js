@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import { USERS_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
 
 const MAX_NAME_LIMIT = 5;
@@ -55,6 +56,15 @@ function SettingsBody(props) {
     //  When the user hits save
     // Would perform a POST here
     const handleSave = () => {
+        fetch(USERS_ROUTE, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email })
+        }).then(res => {
+            console.log("Changed email, this method is not complete")
+        })
         console.log("Changed company names to", names, " and email to ", email, " ...Not!");
     };
     const filledNames = names.map(name => (

@@ -13,8 +13,3 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @authenticate()
 def company(user):
     return "SUCCESS!"
-
-
-@company_bp.route("/error")
-def ohno():
-    omg = 3 / 0

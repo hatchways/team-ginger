@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import { SIGN_UP_ROUTE } from "../Routes";
+import { USERS_ROUTE } from "../Routes";
 import { DASHBOARD_URL } from "../Constants";
 import AccountForm from "../components/AccountForm";
 
@@ -20,8 +20,8 @@ const styles = theme => ({
 });
 
 class SignupForm extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.email = React.createRef();
         this.name = React.createRef();
         this.password = React.createRef();
@@ -46,7 +46,7 @@ class SignupForm extends Component {
         let password = this.password.current.value;
 
         if (this.validate(email, password)) {
-            fetch(SIGN_UP_ROUTE, {
+            fetch(USERS_ROUTE, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
