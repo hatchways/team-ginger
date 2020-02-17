@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import { minPasswordLength, minPasswordErrMsg, serverSignUpUrl, clientDashboardUrl, takenEmailErrMsg } from "../Constants";
+import { SIGN_UP_ROUTE } from "../Routes";
+import { DASHBOARD_URL } from "../Constants";
 import AccountForm from "../components/AccountForm";
+
+const MIN_PASSWORD_LENGTH = 7;
+const MIN_PASSWORD_ERR_MSG = `Your password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
+const TAKEN_EMAIL_ERR_MSG = "That email is already taken";
 
 const styles = theme => ({
     signup_form__inputs: {
@@ -24,6 +29,15 @@ class SignupForm extends Component {
         this.state = { emailErr: false, passwordErr: false, emailErrMsg: "", passwordErrMsg: "" };
     }
 
+    // Remove Error messages on change
+    handleChange = isPassword => {
+        if (isPassword) {
+            this.setState({ passwordErr: false, passwordErrMsg: "" });
+        } else {
+            this.setState({ emailErr: false, emailErrMsg: "" });
+        }
+    };
+
     handleSubmit = e => {
         e.preventDefault();
 
@@ -32,7 +46,7 @@ class SignupForm extends Component {
         let password = this.password.current.value;
 
         if (this.validate(email, password)) {
-            fetch(serverSignUpUrl, {
+            fetch(SIGN_UP_ROUTE, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -44,13 +58,13 @@ class SignupForm extends Component {
                     // Token received => success
                     if (data["token"]) {
                         localStorage.setItem("token", data["token"]);
-                        window.location = clientDashboardUrl;
+                        window.location = DASHBOARD_URL;
                     }
                     // Assume failure means the email is taken
                     else {
                         this.setState({
                             emailErr: true,
-                            emailErrMsg: takenEmailErrMsg,
+                            emailErrMsg: TAKEN_EMAIL_ERR_MSG,
                             passwordErr: false,
                             passwordErrMsg: ""
                         });
@@ -63,8 +77,8 @@ class SignupForm extends Component {
     // Helper function to check for incorrect inputs (short password, invalid character, etc)
     validate = (email, password) => {
         let valid = true;
-        if (password.length < minPasswordLength) {
-            this.setState({ passwordErr: true, passwordErrMsg: minPasswordErrMsg });
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            this.setState({ passwordErr: true, passwordErrMsg: MIN_PASSWORD_ERR_MSG });
             valid = false;
         }
         return valid;
@@ -85,6 +99,7 @@ class SignupForm extends Component {
                     inputRef={this.email}
                     error={this.state.emailErr}
                     helperText={this.state.emailErrMsg}
+                    onChange={() => this.handleChange(false)}
                 />
 
                 <TextField
@@ -108,6 +123,7 @@ class SignupForm extends Component {
                     inputRef={this.password}
                     error={this.state.passwordErr}
                     helperText={this.state.passwordErrMsg}
+                    onChange={() => this.handleChange(true)}
                 />
             </AccountForm>
         );

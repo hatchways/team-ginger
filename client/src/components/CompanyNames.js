@@ -46,7 +46,7 @@ function CompanyNames(props) {
     return (
         <Paper className={props.classIC}>
             <InputBase
-                placeholder="Company name"
+                placeholder="Company name (Max 5)"
                 className={props.classI}
                 value={name}
                 onChange={filled ? undefined : e => setName(e.target.value)}

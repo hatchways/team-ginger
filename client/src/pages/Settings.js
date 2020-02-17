@@ -4,6 +4,7 @@ import ViewListIcon from "@material-ui/icons/ViewList";
 import ServiceNavBar from "../components/ServiceNavBar";
 import SettingsBody from "../components/SettingsBody";
 import SettingsSideBar from "../components/SettingsSideBar";
+import { DASHBOARD_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     settings_layout: {
@@ -23,7 +24,7 @@ function Settings(props) {
     const classes = useStyles();
     return (
         <React.Fragment>
-            <ServiceNavBar link="dashboard">
+            <ServiceNavBar link={DASHBOARD_URL}>
                 <ViewListIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.settings_layout}>

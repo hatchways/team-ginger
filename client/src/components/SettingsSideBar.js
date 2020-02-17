@@ -42,8 +42,19 @@ function SettingsSideBar() {
     const classes = useStyles();
     const [index, setIndex] = useState(0);
     const tabNames = ["Company", "Security", "Log out"];
+
+    const handleLogOut = () => {
+        setIndex(2);
+        //Insert request here
+        /*
+        fetch(url, {
+            
+        });*/
+    };
+
+    const tabFunctions = [() => setIndex(0), () => setIndex(1), handleLogOut];
     const tabs = tabNames.map((name, tabIndex) => (
-        <SettingsTab key={name} active={index === tabIndex} click={() => setIndex(tabIndex)}>
+        <SettingsTab key={name} active={index === tabIndex} click={tabFunctions[tabIndex]}>
             {name}
         </SettingsTab>
     ));
