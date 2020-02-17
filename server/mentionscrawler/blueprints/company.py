@@ -18,9 +18,3 @@ def update_companies(user):
         insert_row(Company(user.get("user_id"), name))
     return ok_response("Company names updated!")
 
-
-@company_bp.route("/companies", methods=["GET"])
-@authenticate()
-def get_companies(user):
-    companies = Company.query.filter_by(mention_user_id=user.get("user_id")).all()
-    return jsonify(companies), 200
