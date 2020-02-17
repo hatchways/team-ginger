@@ -9,6 +9,7 @@ import InputBase from "@material-ui/core/InputBase";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import CompanyNames from "./CompanyNames";
+import { SIGN_UP_ROUTE, UPDATE_COMPANIES_ROUTE } from "../Routes";
 
 const MAX_NAME_LIMIT = 5;
 
@@ -41,10 +42,11 @@ const useStyles = makeStyles(theme => ({
 
 function SettingsBody(props) {
     const classes = useStyles();
-    // Would perform a GET on all the company names and email here
-    const [names, setNames] = useState(["Company ABC"]);
-    // Would perform a GET on company email here
-    const [email, setEmail] = useState(["companyabc@gmail.com"]);
+
+    let [names, setNames] = useState(localStorage.getItem("names"));
+    // Array of 1 converts into string in localstorage
+    names = typeof names === "string" ? [names] : names;
+    const [email, setEmail] = useState(localStorage.getItem("email"));
     // When a user adds a name
     const addName = name => {
         // Prevent duplicate names
@@ -55,8 +57,27 @@ function SettingsBody(props) {
     //  When the user hits save
     // Would perform a POST here
     const handleSave = () => {
-        console.log("Changed company names to", names, " and email to ", email, " ...Not!");
+        fetch(UPDATE_COMPANIES_ROUTE, {
+            method: "PUT",
+            header: { "Content-Type": "application/json" },
+            body: JSON.stringify(names)
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    console.log("Names have been changed");
+                }
+            })
+            .catch(err => console.error("Error: ", err));
+
+        fetch(SIGN_UP_ROUTE, { method: "PUT", header: { "Content-Type": "application/json" }, body: JSON.stringify(email) })
+            .then(res => {
+                if (res.status === 200) {
+                    console.log("Email has changed");
+                }
+            })
+            .catch(err => console.error("Error: ", err));
     };
+
     const filledNames = names.map(name => (
         <React.Fragment key={name}>
             <CompanyNames filled={true} val={name} classIC={classes.input_container} classI={classes.input} />

@@ -4,7 +4,7 @@ import ViewListIcon from "@material-ui/icons/ViewList";
 import ServiceNavBar from "../components/ServiceNavBar";
 import SettingsBody from "../components/SettingsBody";
 import SettingsSideBar from "../components/SettingsSideBar";
-import { DASHBOARD_URL } from "../Constants";
+import { DASHBOARD_URL, LOGIN_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     settings_layout: {
@@ -21,6 +21,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Settings(props) {
+    if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
+        window.location = LOGIN_URL;
+    }
     const classes = useStyles();
     return (
         <React.Fragment>

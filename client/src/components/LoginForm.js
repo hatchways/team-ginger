@@ -47,8 +47,11 @@ class LoginForm extends Component {
             .then(res => {
                 // Token received => success
                 if (res.status === 200) {
-                    localStorage.setItem("authentication", "authenticated");
-                    window.location = DASHBOARD_URL;
+                    res.json().then(data => {
+                        localStorage.setItem("email", data.email);
+                        localStorage.setItem("names", data.names);
+                        window.location = DASHBOARD_URL;
+                    });
                 } else {
                     this.setState({
                         emailErr: true,

@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from werkzeug.security import check_password_hash
 from ..models.user import MentionUser
+from ..models.company import Company
 from ..responses import token_response, bad_request_response, logout_response, TOKEN_TAG
 from ..authentication.authenticate import enforce_json
 
@@ -16,7 +17,8 @@ def login():
         if user is not None:
             if check_password_hash(user.password, body.get("password")):
                 print("VALIDATED!")
-                return token_response("Successfully validated "+body.get("email"), user.email, user.id)
+                companies = list(Company.query.filter_by(mention_user_id=user.id).values("name"))
+                return token_response("Successfully validated "+body.get("email"), user.email, companies, user.id)
         return bad_request_response("Either email or password was incorrect!")
 
 

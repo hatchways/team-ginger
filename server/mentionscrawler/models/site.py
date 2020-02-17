@@ -17,6 +17,9 @@ class SiteAssociation(db.Model):
 
 class Site(db.Model):
     name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    
+    def __init__(self, name: str):
+        self.name = name
 
 
 def create_sites():
