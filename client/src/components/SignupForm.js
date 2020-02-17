@@ -53,11 +53,10 @@ class SignupForm extends Component {
                 },
                 body: JSON.stringify({ email, name, password })
             })
-                .then(res => res.json())
-                .then(data => {
+                .then(res => {
                     // Token received => success
-                    if (data["token"]) {
-                        localStorage.setItem("token", data["token"]);
+                    if (res.status === 201) {
+                        localStorage.setItem("authentication", "authenticated");
                         window.location = DASHBOARD_URL;
                     }
                     // Assume failure means the email is taken

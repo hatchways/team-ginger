@@ -13,6 +13,7 @@ flask-sqlalchemy = "*"
 flask-cors = "*"
 pyjwt = "*"
 psycopg2 = "*"
+praw = "*"
 
 [requires]
 python_version = "3.7"

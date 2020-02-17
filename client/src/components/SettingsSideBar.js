@@ -8,6 +8,8 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import SettingsIcon from "@material-ui/icons/Settings";
 import SettingsTab from "./SettingsTab";
+import { LOGOUT_ROUTE } from "../Routes";
+import { LOGIN_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     tab_container: {
@@ -45,11 +47,12 @@ function SettingsSideBar() {
 
     const handleLogOut = () => {
         setIndex(2);
-        //Insert request here
-        /*
-        fetch(url, {
-            
-        });*/
+        fetch(LOGOUT_ROUTE, {
+            method: "POST"
+        }).then(res => {
+            localStorage.removeItem("authentication");
+            window.location = LOGIN_URL;
+        });
     };
 
     const tabFunctions = [() => setIndex(0), () => setIndex(1), handleLogOut];
