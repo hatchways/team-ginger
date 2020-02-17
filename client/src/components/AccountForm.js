@@ -22,18 +22,11 @@ const useStyles = makeStyles(theme => ({
 
     signup_form__btn: {
         display: "block",
-        backgroundColor: theme.primary,
-        color: theme.secondary,
         borderRadius: 500,
         width: 150,
         margin: "auto",
         marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        // Change the default hover styles
-        "&:hover": {
-            backgroundColor: theme.secondary,
-            color: theme.primary
-        }
+        padding: theme.spacing(2)
     }
 }));
 
@@ -53,7 +46,7 @@ function AccountForm(props) {
 
                 {props.children}
 
-                <Button variant="contained" type="submit" className={classes.signup_form__btn}>
+                <Button type="submit" className={classes.signup_form__btn}>
                     {props.btnMsg}
                 </Button>
             </form>

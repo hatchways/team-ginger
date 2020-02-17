@@ -37,7 +37,7 @@ def add():
             return error_response("Something went wrong and we don't know what!")
     else:
         return bad_request_response("Invalid request! Missing fields!")
-    new_company = Company(body["name"], new_user.id)
+    new_company = Company(new_user.id, body.get("name"))
     try:
         insert_row(new_company)
     except DataError as e:

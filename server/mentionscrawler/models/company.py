@@ -2,13 +2,12 @@ from ..db import db
 
 
 class Company(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False)
+    mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), primary_key=True)
+    name = db.Column(db.String(50), primary_key=True)
 
-    def __init__(self, name: str, mention_user_id: int):
-        self.name = name
+    def __init__(self, mention_user_id: int, name: str):
         self.mention_user_id = mention_user_id
+        self.name = name
 
     def __repr__(self):
-        return "id: {}, name: {}, mention_user_id: {}".format(self.id, self.name, self.mention_user_id)
+        return "mention_user_id: {}, name: {}".format(self.mention_user_id, self.name)
