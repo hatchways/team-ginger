@@ -2,8 +2,9 @@
 from flask import make_response, jsonify, current_app
 from ..authentication.token import generate_token
 
-_RESPONSE_TAG = 'response'
+_RESPONSE_TAG = "response"
 _AUTH_TAG = "authenticated"
+_ERROR_TAG = "error"
 
 TOKEN_TAG = "mentions_crawler_token"
 EXPECTED_JSON = "Expected to receive json, did not get json!"
@@ -25,8 +26,8 @@ def ok_response(message: str):
     return response
 
 
-def error_response(message: str):
-    response = make_response(jsonify({_RESPONSE_TAG: message}), 500)
+def error_response(message: str, error):
+    response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
     return response
 
 

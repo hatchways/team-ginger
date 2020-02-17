@@ -2,6 +2,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# All functions here must be called somewhere with app context
+
+
+# just commits whatever is in the session
+def commit():
+    db.session.commit()
+
 
 def insert_row(row: object):
     db.session.add(row)

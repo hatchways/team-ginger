@@ -7,8 +7,14 @@ from ..authentication.authenticate import authenticate, enforce_json
 company_bp = Blueprint("companies", __name__, url_prefix="/")
 
 
+# Route for updating company names
 @company_bp.route("/companies", methods=["POST"])
 @enforce_json()
 @authenticate()
 def company(user):
     return "SUCCESS!"
+
+
+@company_bp.route("/error")
+def ohno():
+    omg = 3 / 0
