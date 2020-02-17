@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
+import { MENTIONS_ROUTE } from "../Routes";
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -51,7 +52,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function UserMentions() {
     const classes = useStyles();
-
     const [tabValue, setTab] = useState(0);
     return (
         <div className={classes.container}>

@@ -31,3 +31,5 @@ def create_sites():
         db.session.add(Site(REDDIT))
         db.session.add(Site(FACEBOOK))
         db.session.add(Site(TWITTER))
+        db.session.commit()
+
