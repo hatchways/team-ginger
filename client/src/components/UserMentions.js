@@ -6,6 +6,12 @@ import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
 
+// Map the name of a site to their logo image reference
+const SITE_TO_IMG = { Reddit: Reddit };
+
+// Max character limit of mention snippet
+const MAX_CHARACTERS = 1000;
+
 const styles = theme => ({
     container: {
         width: "90%",
@@ -65,11 +71,22 @@ class UserMentions extends Component {
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
-            mentions.forEach((mention, index) =>
+            mentions.forEach((mention, index) => {
+                // trim long snippets
+                let snippet =
+                    mention.snippet.length > MAX_CHARACTERS
+                        ? mention.snippet.substring(0, MAX_CHARACTERS) + "..."
+                        : mention.snippet;
                 renderMentions.push(
-                    <Mention key={index} img={Reddit} title={mention.title} snippet={mention.snippet} site={mention.site} />
-                )
-            );
+                    <Mention
+                        key={index}
+                        img={SITE_TO_IMG[mention.site]}
+                        title={mention.title}
+                        snippet={snippet}
+                        site={mention.site}
+                    />
+                );
+            });
         }
 
         return (
@@ -104,11 +121,12 @@ class UserMentions extends Component {
         // make request to populate mentions table
         fetch(MENTIONS_ROUTE, { method: "POST", header: { "Content-Type": "application/json" } })
             .then(res => res.json())
-            .then(data => console.log(data));
-
-        fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
-            .then(res => res.json())
-            .then(data => this.setState({ mentions: data }));
+            .then(data => console.log(data))
+            .then(() =>
+                fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
+                    .then(res => res.json())
+                    .then(data => this.setState({ mentions: data }))
+            );
     }
 }
 
