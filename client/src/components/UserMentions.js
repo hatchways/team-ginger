@@ -1,10 +1,18 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { Component } from "react";
+import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
+import { MENTIONS_ROUTE } from "../Routes";
+import Reddit from "../assets/reddit.png";
 
-const useStyles = makeStyles(theme => ({
+// Map the name of a site to their logo image reference
+const SITE_TO_IMG = { Reddit };
+
+// Max character limit of mention snippet
+const MAX_CHARACTERS = 1000;
+
+const styles = theme => ({
     container: {
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
@@ -47,38 +55,79 @@ const useStyles = makeStyles(theme => ({
         height: "70vh",
         overflow: "auto"
     }
-}));
+});
 
-export default function UserMentions() {
-    const classes = useStyles();
+class UserMentions extends Component {
+    constructor() {
+        super();
+        this.state = {
+            tabValue: 1,
+            mentions: {}
+        };
+    }
+    render() {
+        const { classes } = this.props;
+        const { tabValue, mentions } = this.state;
 
-    const [tabValue, setTab] = useState(0);
-    return (
-        <div className={classes.container}>
-            <div className={classes.top_section}>
-                <Typography variant="h4" className={classes.mention_header}>
-                    My Mentions
-                </Typography>
-                <div className={classes.mention_tabs}>
-                    <Tab
-                        label="Most Recent"
-                        className={`${classes.mention_tab} ${tabValue === 0 ? classes.tab_active : classes.tab_inactive}`}
-                        onClick={() => setTab(0)}
+        const renderMentions = [];
+        if (Object.entries(mentions).length !== 0) {
+            mentions.forEach((mention, index) => {
+                // trim long snippets
+                let snippet =
+                    mention.snippet.length > MAX_CHARACTERS
+                        ? mention.snippet.substring(0, MAX_CHARACTERS) + "..."
+                        : mention.snippet;
+                renderMentions.push(
+                    <Mention
+                        key={index}
+                        img={SITE_TO_IMG[mention.site]}
+                        title={mention.title}
+                        snippet={snippet}
+                        site={mention.site}
                     />
-                    <Tab
-                        label="Most Popular"
-                        className={`${classes.mention_tab} ${tabValue === 1 ? classes.tab_active : classes.tab_inactive}`}
-                        onClick={() => setTab(1)}
-                    />
+                );
+            });
+        }
+
+        return (
+            <div className={classes.container}>
+                <div className={classes.top_section}>
+                    <Typography variant="h4" className={classes.mention_header}>
+                        My Mentions
+                    </Typography>
+                    <div className={classes.mention_tabs}>
+                        <Tab
+                            label="Most Recent"
+                            className={`${classes.mention_tab} ${
+                                tabValue === 0 ? classes.tab_active : classes.tab_inactive
+                            }`}
+                            onClick={() => this.setState({ tabValue: 0 })}
+                        />
+                        <Tab
+                            label="Most Popular"
+                            className={`${classes.mention_tab} ${
+                                tabValue === 1 ? classes.tab_active : classes.tab_inactive
+                            }`}
+                            onClick={() => this.setState({ tabValue: 1 })}
+                        />
+                    </div>
                 </div>
+                <div className={classes.grid}>{renderMentions}</div>
             </div>
-            <div className={classes.grid}>
-                <Mention />
-                <Mention />
-                <Mention />
-                <Mention />
-                <Mention />
-            </div>
-        </div>
-    );
+        );
+    }
+
+    componentDidMount() {
+        // make request to populate mentions table
+        fetch(MENTIONS_ROUTE, { method: "POST", header: { "Content-Type": "application/json" } })
+            .then(res => res.json())
+            .then(data => console.log(data))
+            .then(() =>
+                fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
+                    .then(res => res.json())
+                    .then(data => this.setState({ mentions: data }))
+            );
+    }
 }
+
+export default withStyles(styles)(UserMentions);
