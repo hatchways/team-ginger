@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash
 from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company
+from ..models.site import get_sites
 from ..db import insert_row, commit
 from sqlalchemy.exc import IntegrityError, DataError
 from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
@@ -47,7 +48,7 @@ def add():
         print(e)
         if e.orig.pgcode == FOREIGN_KEY_VIOLATION:
             return bad_request_response("Foreign key violation!")
-    return created_response("Account successfully created!", new_user.email, [new_company.name], new_user.id)
+    return created_response("Account successfully created!", new_user.email, [new_company.name], new_user.id, get_sites())
 
 
 @user_bp.route("/users", methods=["PUT"])
