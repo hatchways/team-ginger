@@ -21,7 +21,11 @@ def search(user):
     for company in companies:
         for submission in _reddit.subreddit("all").search(company.name, sort="new", time_filter="month"):
             if submission.is_self:
-                mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, submission.selftext,
-                                        submission.score, submission.title))
+                mention_count = Mention.query.filter_by(mention_user_id=user.get("user_id"), url=submission.url,
+                                                        date=submission.created_utc).count()
+                print(mention_count)
+                if mention_count == 0:
+                    mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, submission.selftext,
+                                            submission.score, submission.created_utc, submission.title))
 
     insert_rows(mentions)
