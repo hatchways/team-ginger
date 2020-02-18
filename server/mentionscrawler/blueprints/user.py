@@ -3,11 +3,11 @@ from werkzeug.security import generate_password_hash
 from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company
-<<<<<<< HEAD
+
 from ..models.site import SiteAssociation
-=======
+
 from ..models.site import get_sites
->>>>>>> 41fdf0e66ede4bda9436d6e150a91f6f3c7b7e5a
+
 from ..db import insert_row, commit
 from sqlalchemy.exc import IntegrityError, DataError
 from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
