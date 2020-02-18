@@ -50,7 +50,7 @@ function SettingsSideBar() {
         fetch(LOGOUT_ROUTE, {
             method: "POST"
         }).then(res => {
-            localStorage.removeItem("authentication");
+            localStorage.clear()
             window.location = LOGIN_URL;
         });
     };

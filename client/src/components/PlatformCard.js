@@ -8,7 +8,8 @@ import React, { useState } from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
-import Reddit from "../assets/reddit.png";
+import { SITES_ROUTE } from "../Routes";
+import { RESPONSE_TAG, SITES_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -30,11 +31,30 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function PlatformCard() {
+function PlatformCard(props) {
     const classes = useStyles();
 
     const theme = useTheme();
-    const [check, setCheck] = useState(true);
+    let sites = JSON.parse(localStorage.getItem(SITES_TAG));
+    const [check, setCheck] = useState(sites[props.site_name] ? sites[props.site_name] : false);
+
+    // When the user clicks the toggle
+    const handleClick = () => {
+        fetch(SITES_ROUTE + props.site_name, {
+            method: "POST"
+        }).then(res => {
+            if (res.status === 200) {
+                sites[props.site_name] = !check;
+                localStorage.setItem(SITES_TAG, JSON.stringify(sites));
+                setCheck(!check);
+            } else {
+                res.json().then(data => {
+                    console.log(res.status, data[RESPONSE_TAG]);
+                });
+            }
+        });
+    };
+
     const CustomSwitch = withStyles({
         switchBase: {
             color: theme.primary,
@@ -49,12 +69,12 @@ function PlatformCard() {
 
     return (
         <div className={classes.card}>
-            <img src={Reddit} className={classes.platform_logo} />
-            <Typography className={classes.platform_name}>Reddit</Typography>
+            <img src={props.site_img} className={classes.platform_logo} alt={"an icon image"} />
+            <Typography className={classes.platform_name}>{props.site_name}</Typography>
             <CustomSwitch
                 checked={check}
-                onClick={() => setCheck(!check)}
-                inputProps={{ "aria-label": "reddit checkbox" }}
+                onClick={handleClick}
+                inputProps={{ "aria-label": props.site_name + "checkbox" }}
             />
         </div>
     );
