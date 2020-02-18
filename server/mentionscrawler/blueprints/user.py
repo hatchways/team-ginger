@@ -48,6 +48,15 @@ def add():
         print(e)
         if e.orig.pgcode == FOREIGN_KEY_VIOLATION:
             return bad_request_response("Foreign key violation!")
+
+    # Temporary code for creating site associations
+    crawled_sites = SiteAssociation(new_user.id, "Reddit")
+    try:
+        insert_row(crawled_sites)
+    except IntegrityError as e:
+        print(e)
+        if e.orig.pgcode == FOREIGN_KEY_VIOLATION:
+            return bad_request_response("Foreign key violation!")
     return created_response("Account successfully created!", new_user.email, [new_company.name], new_user.id)
 
 
