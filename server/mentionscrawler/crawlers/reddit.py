@@ -3,7 +3,6 @@ import praw
 from ..models.company import Company
 from ..models.mention import Mention
 from ..models.site import REDDIT
-from ..db import insert_rows
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -23,9 +22,8 @@ def search(user):
             if submission.is_self:
                 mention_count = Mention.query.filter_by(mention_user_id=user.get("user_id"), url=submission.url,
                                                         date=submission.created_utc).count()
-                print(mention_count)
                 if mention_count == 0:
                     mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, submission.selftext,
                                             submission.score, submission.created_utc, submission.title))
 
-    insert_rows(mentions)
+    return mentions

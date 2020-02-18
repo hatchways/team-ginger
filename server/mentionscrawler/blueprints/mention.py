@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response
+from ..responses import ok_response, bad_request_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
+from ..db import insert_rows
+from sqlalchemy.exc import IntegrityError, DataError
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
@@ -19,8 +21,15 @@ HITS_TAG = "hits"
 @authenticate()
 def set_mentions(user):
     sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
+    mentions = []
     for site in sites:
-        search(user, site.site_name)
+        mentions = mentions + search(user, site.site_name)
+    try:
+        insert_rows(mentions)
+    except IntegrityError as e:
+        return bad_request_response("Integrity Error!")
+    except DataError as e:
+        return bad_request_response("Data Error!")
 
     return ok_response("Crawl was successful!")
 
