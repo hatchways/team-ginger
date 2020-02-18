@@ -7,7 +7,7 @@ import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
 
 // Map the name of a site to their logo image reference
-const SITE_TO_IMG = { Reddit: Reddit };
+const SITE_TO_IMG = { Reddit };
 
 // Max character limit of mention snippet
 const MAX_CHARACTERS = 1000;
