@@ -23,9 +23,5 @@ def search(user):
             if submission.is_self:
                 mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, submission.selftext,
                                         submission.score, submission.title))
-            else:
-                # Blank text used until I get the ability to crawl the link and pull some text there
-                mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, "",
-                                        submission.score, submission.title))
 
     insert_rows(mentions)

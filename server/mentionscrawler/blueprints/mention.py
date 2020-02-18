@@ -16,7 +16,6 @@ HITS_TAG = "hits"
 
 # gets all sites that are toggled for the user, then calls the appropriate search function for the appropriate api
 @mention_bp.route("/mentions", methods=["POST"])
-@enforce_json()
 @authenticate()
 def set_mentions(user):
     sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))

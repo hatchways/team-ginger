@@ -1,5 +1,7 @@
 from ..db import db
 
+# TODO Add date field
+
 
 class Mention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
