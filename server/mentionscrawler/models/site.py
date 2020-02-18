@@ -41,3 +41,5 @@ def get_sites():
     # Build dictionary of all sites we support
     for site in sites:
         sites_output[site.name] = False
+
+    return sites_output

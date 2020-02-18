@@ -9,7 +9,7 @@ import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE } from "../Routes";
-import {RESPONSE_TAG, SITES_TAG} from "../Constants";
+import { RESPONSE_TAG, SITES_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -36,18 +36,25 @@ function PlatformCard(props) {
 
     const theme = useTheme();
     let sites = JSON.parse(localStorage.getItem(SITES_TAG));
-    let checkState = false;
-    const [check, setCheck] = useState(result => {
-        if (sites[props.site_name])
-        {
-            checkState = sites[props.site_name];
-            return checkState;
-        }
-        else
-        {
-            return false;
-        }
-    });
+    const [check, setCheck] = useState(sites[props.site_name] ? sites[props.site_name] : false);
+
+    // When the user clicks the toggle
+    const handleClick = () => {
+        fetch(SITES_ROUTE + props.site_name, {
+            method: "POST"
+        }).then(res => {
+            if (res.status === 200) {
+                sites[props.site_name] = !check;
+                localStorage.setItem(SITES_TAG, JSON.stringify(sites));
+                setCheck(!check);
+            } else {
+                res.json().then(data => {
+                    console.log(res.status, data[RESPONSE_TAG]);
+                });
+            }
+        });
+    };
+
     const CustomSwitch = withStyles({
         switchBase: {
             color: theme.primary,
@@ -62,30 +69,12 @@ function PlatformCard(props) {
 
     return (
         <div className={classes.card}>
-            <img src={props.site_img} className={classes.platform_logo}  alt={"an icon image"}/>
+            <img src={props.site_img} className={classes.platform_logo} alt={"an icon image"} />
             <Typography className={classes.platform_name}>{props.site_name}</Typography>
             <CustomSwitch
                 checked={check}
-                onClick={() => {
-                    fetch(SITES_ROUTE + props.site_name, {
-                        method: "POST"
-                    }).then(res => {
-                        if (res.status === 200)
-                        {
-                            checkState = !checkState;
-                            setCheck(checkState);
-                            sites[props.site_name] = checkState;
-                            localStorage.setItem(SITES_TAG, JSON.stringify(sites));
-                        }
-                        else
-                        {
-                            res.json().then(data => {
-                                console.log(res.status, data[RESPONSE_TAG]);
-                             });
-                        }
-                    })
-                }}
-                inputProps={{ "aria-label": props.site_name+"checkbox" }}
+                onClick={handleClick}
+                inputProps={{ "aria-label": props.site_name + "checkbox" }}
             />
         </div>
     );
