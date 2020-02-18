@@ -33,3 +33,12 @@ def create_sites():
         # db.session.add(Site(FACEBOOK))
         # db.session.add(Site(TWITTER))
         db.session.commit()
+
+
+def get_sites():
+    sites = Site.query.all()
+    sites_output = {}
+
+    # Build dictionary of all sites we support
+    for site in sites:
+        sites_output[site.name] = False

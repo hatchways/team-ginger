@@ -35,7 +35,7 @@ function PlatformCard(props) {
     const classes = useStyles();
 
     const theme = useTheme();
-    let sites = JSON.parse(localStorage.getItem("sites"));
+    let sites = JSON.parse(localStorage.getItem(SITES_TAG));
     let checkState = false;
     const [check, setCheck] = useState(result => {
         if (sites[props.site_name])

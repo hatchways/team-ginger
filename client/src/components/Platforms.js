@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png"
-
+import { REDDIT } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     platform_container: {
@@ -21,7 +21,7 @@ function Platforms() {
     const classes = useStyles();
     return (
         <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={"Reddit"}/>
+            <PlatformCard site_img={RedditImg} site_name={REDDIT}/>
             <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"}/>
         </div>
     );
