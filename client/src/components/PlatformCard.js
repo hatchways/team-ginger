@@ -47,6 +47,8 @@ function PlatformCard(props) {
                 sites[props.site_name] = !check;
                 localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                 setCheck(!check);
+                // Force refresh to populate db for now
+                window.location = window.location.href;
             } else {
                 res.json().then(data => {
                     console.log(res.status, data[RESPONSE_TAG]);
