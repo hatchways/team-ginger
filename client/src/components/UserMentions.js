@@ -58,8 +58,8 @@ const styles = theme => ({
 });
 
 class UserMentions extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tabValue: 1,
             mentions: {}
@@ -98,6 +98,7 @@ class UserMentions extends Component {
                     <div className={classes.mention_tabs}>
                         <Tab
                             label="Most Recent"
+                            label="Most Recent"
                             className={`${classes.mention_tab} ${
                                 tabValue === 0 ? classes.tab_active : classes.tab_inactive
                             }`}
@@ -124,8 +125,14 @@ class UserMentions extends Component {
             .then(data => console.log(data))
             .then(() =>
                 fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
-                    .then(res => res.json())
-                    .then(data => this.setState({ mentions: data }))
+                    .then(res => {
+                        if (res.status === 200) {
+                            res.json().then(data => {
+                                this.setState({mentions: data});
+                            })
+                        }
+                    }
+                )
             );
     }
 }
