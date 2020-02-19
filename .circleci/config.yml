@@ -12,6 +12,7 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.7.3
+      - image: circleci/postgres
     steps:
       - checkout
       - *install_backend_dependencies
