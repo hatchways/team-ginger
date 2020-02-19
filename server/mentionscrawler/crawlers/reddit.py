@@ -23,7 +23,6 @@ def search(user):
                 mention_count = Mention.query.filter_by(mention_user_id=user.get("user_id"), url=submission.url,
                                                         date=submission.created_utc).count()
                 if mention_count == 0:
-                    mentions.append(Mention(user.get("user_id"), REDDIT, submission.url, submission.selftext,
+                    mentions.append(Mention(user.get("user_id"), company.id, REDDIT, submission.url, submission.selftext,
                                             submission.score, submission.created_utc, submission.title))
-
     return mentions

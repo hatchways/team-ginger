@@ -5,6 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
+import {RESPONSE_TAG} from "../Constants";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -126,11 +127,15 @@ class UserMentions extends Component {
             .then(() =>
                 fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
                     .then(res => {
-                        if (res.status === 200) {
-                            res.json().then(data => {
+                        res.json().then(data => {
+                            if (res.status === 200) {
                                 this.setState({mentions: data});
-                            })
-                        }
+                            }
+                            else
+                            {
+                                console.log(res.status, data[RESPONSE_TAG]);
+                            }
+                        })
                     }
                 )
             );

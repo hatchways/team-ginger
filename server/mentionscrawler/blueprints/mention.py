@@ -23,13 +23,12 @@ def set_mentions(user):
     sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
     mentions = []
     for site in sites:
-        mentions = mentions + search(user, site.site_name)
-    try:
-        insert_rows(mentions)
-    except IntegrityError as e:
-        return bad_request_response("Integrity Error!")
-    except DataError as e:
-        return bad_request_response("Data Error!")
+        temp_mentions = search(user, site.site_name)
+        if temp_mentions is not None:
+            mentions = mentions + temp_mentions
+    result = insert_rows(mentions)
+    if result is not True:
+        return result
 
     return ok_response("Crawl was successful!")
 

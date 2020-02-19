@@ -5,4 +5,4 @@ search_dict = {REDDIT: reddit.search}
 
 
 def search(user, site: str):
-    search_dict[site](user)
+    return search_dict[site](user)

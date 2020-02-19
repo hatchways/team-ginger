@@ -2,8 +2,9 @@ from ..db import db
 
 
 class Company(db.Model):
-    mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), primary_key=True)
-    name = db.Column(db.String(50), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
 
     def __init__(self, mention_user_id: int, name: str):
         self.mention_user_id = mention_user_id
