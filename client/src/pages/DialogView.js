@@ -13,6 +13,7 @@ function DialogView(props) {
             <ServiceNavBar link={DASHBOARD_URL} noSearch={true}>
                 <ViewListIcon fontSize="large" />
             </ServiceNavBar>
+            <br></br>
             <Dialog id={Number(props.match.params.id)} />
         </React.Fragment>
     );

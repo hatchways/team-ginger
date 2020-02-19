@@ -24,7 +24,7 @@ const styles = theme => ({
         padding: theme.spacing(4),
         width: "fit-content",
         maxWidth: 1000,
-        margin: `${theme.spacing(3)}px auto ${theme.spacing(3)}px auto`
+        margin: "auto"
     },
     image: {
         width: 100,
@@ -35,7 +35,8 @@ const styles = theme => ({
         maxWidth: 900
     },
     snippet: {
-        gridColumn: "span 2"
+        gridColumn: "span 2",
+        wordBreak: "break-word"
     }
 });
 
@@ -55,8 +56,11 @@ class Dialog extends Component {
                 <React.Fragment>
                     <Paper className={classes.container}>
                         <img src={SITE_TO_IMG[mention.site]} className={classes.image} />
+
                         <Box className={classes.info}>
-                            <Typography variant="h4">{mention.title}</Typography>
+                            <Typography variant="h4" noWrap>
+                                {mention.title}
+                            </Typography>
                             <Typography variant="h5" color="textSecondary">
                                 {mention.site}
                             </Typography>
@@ -69,6 +73,7 @@ class Dialog extends Component {
                             <br></br>
                             <br></br>
                         </Box>
+
                         <Box className={classes.snippet}>
                             <Typography variant="body1" color={snippetColor}>
                                 {snippet}
