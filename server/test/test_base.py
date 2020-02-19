@@ -1,6 +1,8 @@
 
 import unittest
-from app import app
+from ..mentionscrawler import create_app
+
+app = create_app()
 
 
 class TestBase(unittest.TestCase):
