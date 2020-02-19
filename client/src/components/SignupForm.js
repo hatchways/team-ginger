@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { USERS_ROUTE } from "../Routes";
-import {DASHBOARD_URL, EMAIL_TAG, COMPANY_NAMES_TAG} from "../Constants";
+import {DASHBOARD_URL, EMAIL_TAG, COMPANY_NAMES_TAG, SITES_TAG} from "../Constants";
 import AccountForm from "../components/AccountForm";
 
 const MIN_PASSWORD_LENGTH = 7;
@@ -59,6 +59,7 @@ class SignupForm extends Component {
                         res.json().then(data => {
                             localStorage.setItem(EMAIL_TAG, data.email);
                             localStorage.setItem(COMPANY_NAMES_TAG, data.names);
+                            localStorage.setItem(SITES_TAG, JSON.stringify(data[SITES_TAG]));
                             window.location = DASHBOARD_URL;
                         });
                     }

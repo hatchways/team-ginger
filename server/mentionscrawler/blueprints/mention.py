@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response
+from ..responses import ok_response, bad_request_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
+from ..db import insert_rows
+from sqlalchemy.exc import IntegrityError, DataError
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
@@ -16,12 +18,17 @@ HITS_TAG = "hits"
 
 # gets all sites that are toggled for the user, then calls the appropriate search function for the appropriate api
 @mention_bp.route("/mentions", methods=["POST"])
-# Remove enforce_json since there was no request body
 @authenticate()
 def set_mentions(user):
     sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
+    mentions = []
     for site in sites:
-        search(user, site.site_name)
+        temp_mentions = search(user, site.site_name)
+        if temp_mentions is not None:
+            mentions = mentions + temp_mentions
+    result = insert_rows(mentions)
+    if result is not True:
+        return result
 
     return ok_response("Crawl was successful!")
 
