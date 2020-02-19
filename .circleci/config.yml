@@ -17,6 +17,6 @@ jobs:
       - checkout
       - *install_backend_dependencies
       - run: sudo apt-get update && sudo apt-get -y install postgresql-client
-      - run: psql -d  -c 'DROP TABLE mention, mention_user, company, site, site_association;'
+      - run: psql -d circle_test -c 'DROP TABLE mention, mention_user, company, site, site_association;'
       - run: cd server && pipenv run python -m unittest discover -s test -p '*_test.py'
 
