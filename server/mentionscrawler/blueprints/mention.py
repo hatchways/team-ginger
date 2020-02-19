@@ -7,6 +7,7 @@ from ..models.mention import Mention
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
+ID_TAG = "id"
 URL_TAG = "url"
 SITE_TAG = "site"
 TITLE_TAG = "title"
@@ -33,6 +34,7 @@ def mention_response(user):
     output_mentions = []
     for mention in mentions:
         output_mention = {
+                            ID_TAG: mention.id,
                             URL_TAG: mention.url,
                             SITE_TAG: mention.site_id,
                             TITLE_TAG: mention.title,

@@ -79,7 +79,8 @@ class UserMentions extends Component {
                         : mention.snippet;
                 renderMentions.push(
                     <Mention
-                        key={index}
+                        key={mention.id}
+                        id={mention.id}
                         img={SITE_TO_IMG[mention.site]}
                         title={mention.title}
                         snippet={snippet}
