@@ -5,6 +5,7 @@ from ..db import db
 
 class Mention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(50), db.ForeignKey("company.name"), nullable=False)
     mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False, index=True)
     site_id = db.Column(db.String(50), db.ForeignKey("site.name"), nullable=False)
     url = db.Column(db.Text, nullable=False)
@@ -15,8 +16,9 @@ class Mention(db.Model):
     # using integer for now because the reddit api returns things in unix time
     date = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, mention_user_id: int, site_id: str, url: str, snippet: str, hits: int, date: date, title=None):
+    def __init__(self, mention_user_id: int, company_name: str, site_id: str, url: str, snippet: str, hits: int, date: date, title=None):
         self.mention_user_id = mention_user_id
+        self.company_name = company_name
         self.site_id = site_id
         self.url = url
         self.snippet = snippet
