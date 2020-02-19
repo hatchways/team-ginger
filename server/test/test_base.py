@@ -3,6 +3,7 @@ import unittest
 from ..mentionscrawler import create_app
 
 app = create_app()
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2:///circle_test"
 
 
 class TestBase(unittest.TestCase):
