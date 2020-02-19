@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response
+from ..responses import ok_response, bad_request_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
@@ -43,3 +43,24 @@ def mention_response(user):
                          }
         output_mentions.append(output_mention)
     return jsonify(output_mentions), 200
+
+# Get details of a single mention
+@mention_bp.route("/mention", methods=["POST"])
+@enforce_json()
+@authenticate()
+def get_mention(user):
+    body = request.get_json()
+    if "id" not in body:
+        return bad_request_response("Invalid request! Missing fields!")
+
+    mention = Mention.query.filter_by(id=body.get("id")).first()
+    output_mention = {
+        URL_TAG: mention.url,
+        SITE_TAG: mention.site_id,
+        TITLE_TAG: mention.title,
+        SNIPPET_TAG: mention.snippet,
+        HITS_TAG: mention.hits
+    }
+    if mention is None:
+        return bad_request_response("There is no mention with that ID")
+    return jsonify(output_mention), 200

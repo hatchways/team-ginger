@@ -8,7 +8,7 @@ import SignUpPage from "./pages/SignUp";
 import LoginPage from "./pages/Login";
 import DashboardPage from "./pages/Dashboard";
 import SettingsPage from "./pages/Settings";
-import Dialog from "./components/Dialog";
+import DialogView from "./pages/DialogView";
 
 function App() {
     return (
@@ -18,7 +18,7 @@ function App() {
                 <Route path="/signup" component={SignUpPage} />
                 <Route path="/login" component={LoginPage} />
                 <Route exact path="/dashboard" component={DashboardPage} />
-                <Route path="/dashboard/mention/:id" children={<Dialog />} />
+                <Route path="/dashboard/mention/:id" component={DialogView} />
                 <Route path="/settings" component={SettingsPage} />
             </BrowserRouter>
         </MuiThemeProvider>
