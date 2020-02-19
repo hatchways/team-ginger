@@ -31,7 +31,7 @@ def update_companies(user):
     for name in names:
         if name in old_companies_map:  # Spare existing names from deletion
             del old_companies[old_companies_map[name]]
-        company_count = Company.query.filter_by(name=name).count()
+        company_count = Company.query.filter_by(mention_user_id=user.get("user_id"), name=name).count()
         if company_count == 0:  # ensure existing names don't try to get inserted
             companies.append(Company(user.get("user_id"), name))
 

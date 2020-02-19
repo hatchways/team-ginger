@@ -41,11 +41,14 @@ def add():
 def update(user):
     body = request.get_json()
     if body.get("email"):
-        _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
-        _user.email = body.get("email")
-        result = commit()
-        if result is not True:
-            return result
+        if MentionUser.query.filter_by(email=body.get("email")).count() == 0:
+            _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
+            _user.email = body.get("email")
+            result = commit()
+            if result is not True:
+                return result
+        else:
+            return bad_request_response("Email is in use!")
     else:
         return bad_request_response("Invalid request! Missing fields!")
     return ok_response("Email changed!")
