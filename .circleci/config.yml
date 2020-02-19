@@ -12,11 +12,11 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.7.3
-      - image: circleci/postgres
     steps:
       - checkout
       - *install_backend_dependencies
-      - run: sudo apt-get update && sudo apt-get -y install postgresql-client
-      - run: psql -d circle_test -c 'DROP TABLE mention, mention_user, company, site, site_association;'
+      - run: sudo apt-get update && sudo apt-get -y install postgresql
+      - run: sudo su - postgres
+      - run: psql -c 'CREATE DATABASE mentionscrawler;'
       - run: cd server && pipenv run python -m unittest discover -s test -p '*_test.py'
 
