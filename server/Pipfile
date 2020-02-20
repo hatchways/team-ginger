@@ -16,6 +16,7 @@ psycopg2 = "*"
 praw = "*"
 python-dotenv = "*"
 pytest = "*"
+rq = "*"
 
 [requires]
 python_version = "3.7"

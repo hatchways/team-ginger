@@ -26,6 +26,7 @@ def login(client, username, password):
         password=password
     ), follow_redirects=True)
 
+
 def test_cheese(client):
     rv = client.get("/signup")
     print(rv.data)

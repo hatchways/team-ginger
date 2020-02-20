@@ -1,8 +1,5 @@
 import praw
-
-from ..models.company import Company
-from ..models.mention import Mention
-from ..models.site import REDDIT
+from . import REDDIT, SITE_ID, USER_ID, COMPANY_ID, TITLE, DATE, HITS, SNIPPET, URL
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -12,17 +9,23 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       client_secret=_CLIENT_SECRET,
                       user_agent=_USER_AGENT)
 
+# TODO Remove all database references
+# TODO search needs to start no later than the latest mention
+# TODO pass list of company names and list of most recent mention of said company
 
-def search(user):
+
+def search(user_id, companies: list, first_run: bool):
     #  get all company names associated with a user
-    companies = Company.query.filter_by(mention_user_id=user.get("user_id")).all()
     mentions = []  # initialize mentions as a list
     for company in companies:
-        for submission in _reddit.subreddit("all").search(company.name, sort="new", time_filter="month"):
+        if first_run:
+            submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="month")
+        else:
+            submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="hour")
+        for submission in submissions:
             if submission.is_self:
-                mention_count = Mention.query.filter_by(mention_user_id=user.get("user_id"), url=submission.url,
-                                                        date=submission.created_utc).count()
-                if mention_count == 0:
-                    mentions.append(Mention(user.get("user_id"), company.id, REDDIT, submission.url, submission.selftext,
-                                            submission.score, submission.created_utc, submission.title))
+                mention = {USER_ID: user_id, COMPANY_ID: company.id, SITE_ID: REDDIT, URL: submission.url,
+                           SNIPPET: submission.selftext, HITS: submission.score, DATE: submission.created_utc,
+                           TITLE: submission.title}
+                mentions.append(mention)
     return mentions
