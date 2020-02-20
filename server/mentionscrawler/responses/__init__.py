@@ -32,16 +32,21 @@ def ok_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 200)
     return response
 
-
-def error_response(message, error):
-    response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
+def no_content_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 204)
     return response
-
 
 def unauthorized_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 401)
     return response
 
+def not_found_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 404)
+    return response
+
+def error_response(message, error):
+    response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
+    return response
 
 def token_response(message, email: str, companies: list, user_id: int, sites: dict):
     response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
