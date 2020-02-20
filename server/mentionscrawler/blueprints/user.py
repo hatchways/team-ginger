@@ -60,3 +60,8 @@ def update(user):
 def delete(user):
     return "DELETED!"
 
+
+@user_bp.route("/test")
+def test():
+    return jsonify({'cheese': 'GOUDA!'})
+

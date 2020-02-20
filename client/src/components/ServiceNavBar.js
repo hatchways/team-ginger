@@ -21,10 +21,12 @@ const useStyles = makeStyles(theme => ({
 function ServiceNavBar(props) {
     const classes = useStyles();
 
+    const noSearch = props.noSearch ? props.noSearch : false;
+
     return (
         <Navbar flexGrow="initial">
             <Box className={classes.search_bar_container}>
-                <SearchBar className={classes.search_bar} />
+                {noSearch ? "" : <SearchBar className={classes.search_bar} />}
             </Box>
 
             <Link href={props.link} color="inherit">
