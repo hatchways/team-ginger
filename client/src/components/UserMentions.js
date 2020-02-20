@@ -5,6 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
+import {RESPONSE_TAG} from "../Constants";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -58,8 +59,8 @@ const styles = theme => ({
 });
 
 class UserMentions extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tabValue: 1,
             mentions: {}
@@ -99,6 +100,7 @@ class UserMentions extends Component {
                     <div className={classes.mention_tabs}>
                         <Tab
                             label="Most Recent"
+                            label="Most Recent"
                             className={`${classes.mention_tab} ${
                                 tabValue === 0 ? classes.tab_active : classes.tab_inactive
                             }`}
@@ -125,8 +127,18 @@ class UserMentions extends Component {
             .then(data => console.log(data))
             .then(() =>
                 fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
-                    .then(res => res.json())
-                    .then(data => this.setState({ mentions: data }))
+                    .then(res => {
+                        res.json().then(data => {
+                            if (res.status === 200) {
+                                this.setState({mentions: data});
+                            }
+                            else
+                            {
+                                console.log(res.status, data[RESPONSE_TAG]);
+                            }
+                        })
+                    }
+                )
             );
     }
 }

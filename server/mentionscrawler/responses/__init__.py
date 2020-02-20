@@ -16,41 +16,41 @@ Twitter = False
 Facebook = False
 
 
-def bad_request_response(message: str):
+def bad_request_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 400)
     return response
 
 
-def created_response(message: str, email: str, companies: list, user_id: int, sites: dict):
+def created_response(message, email: str, companies: list, user_id: int, sites: dict):
     response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
                                       _SITES_TAG: sites}), 201)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
 
 
-def ok_response(message: str):
+def ok_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 200)
     return response
 
 
-def error_response(message: str, error):
+def error_response(message, error):
     response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
     return response
 
 
-def unauthorized_response(message: str):
+def unauthorized_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 401)
     return response
 
 
-def token_response(message: str, email: str, companies: list, user_id: int, sites: dict):
+def token_response(message, email: str, companies: list, user_id: int, sites: dict):
     response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
                                       _SITES_TAG: sites}), 200)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
 
 
-def logout_response(message: str):
+def logout_response(message):
     response = make_response(jsonify(message), 200)
     response.delete_cookie(TOKEN_TAG)
     return response
