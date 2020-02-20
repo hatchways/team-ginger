@@ -44,16 +44,12 @@ def mention_response(user):
         output_mentions.append(output_mention)
     return jsonify(output_mentions), 200
 
-# Get details of a single mention
-@mention_bp.route("/mention", methods=["POST"])
-@enforce_json()
-@authenticate()
-def get_mention(user):
-    body = request.get_json()
-    if "id" not in body:
-        return bad_request_response("Invalid request! Missing fields!")
 
-    mention = Mention.query.filter_by(id=body.get("id")).first()
+# Get details of a single mention
+@mention_bp.route("/mentions/<int:mention_id>", methods=["GET"])
+@authenticate()
+def get_mention(user, mention_id):
+    mention = Mention.query.filter_by(mention_id).first()
     output_mention = {
         URL_TAG: mention.url,
         SITE_TAG: mention.site_id,
