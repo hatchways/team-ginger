@@ -15,6 +15,7 @@ pyjwt = "*"
 psycopg2 = "*"
 praw = "*"
 python-dotenv = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
