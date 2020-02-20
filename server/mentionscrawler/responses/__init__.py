@@ -16,15 +16,8 @@ Twitter = False
 Facebook = False
 
 
-def bad_request_response(message):
-    response = make_response(jsonify({_RESPONSE_TAG: message}), 400)
-    return response
-
-
-def created_response(message, email: str, companies: list, user_id: int, sites: dict):
-    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
-                                      _SITES_TAG: sites}), 201)
-    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
+def data_response(data):
+    response = make_response(jsonify(data), 200)
     return response
 
 
@@ -32,21 +25,6 @@ def ok_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 200)
     return response
 
-def no_content_response(message):
-    response = make_response(jsonify({_RESPONSE_TAG: message}), 204)
-    return response
-
-def unauthorized_response(message):
-    response = make_response(jsonify({_RESPONSE_TAG: message}), 401)
-    return response
-
-def not_found_response(message):
-    response = make_response(jsonify({_RESPONSE_TAG: message}), 404)
-    return response
-
-def error_response(message, error):
-    response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
-    return response
 
 def token_response(message, email: str, companies: list, user_id: int, sites: dict):
     response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
@@ -59,4 +37,37 @@ def logout_response(message):
     response = make_response(jsonify(message), 200)
     response.delete_cookie(TOKEN_TAG)
     return response
+
+
+def created_response(message, email: str, companies: list, user_id: int, sites: dict):
+    response = make_response(jsonify({_RESPONSE_TAG: message, _EMAIL_TAG: email, _COMPANY_NAMES_TAG: companies,
+                                      _SITES_TAG: sites}), 201)
+    response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
+    return response
+
+
+def no_content_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 204)
+    return response
+
+
+def bad_request_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 400)
+    return response
+
+
+def unauthorized_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 401)
+    return response
+
+
+def not_found_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 404)
+    return response
+
+
+def error_response(message, error):
+    response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)
+    return response
+
 

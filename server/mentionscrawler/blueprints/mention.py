@@ -1,11 +1,11 @@
-from flask import Blueprint, jsonify, request
-from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response, no_content_response, not_found_response
+from flask import Blueprint, jsonify
+from ..authentication.authenticate import authenticate
+from ..responses import ok_response, data_response, no_content_response, not_found_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
 from ..db import insert_rows
-from sqlalchemy.exc import IntegrityError, DataError
+
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
@@ -34,6 +34,7 @@ def set_mentions(user):
 
     return ok_response("Crawl was successful!")
 
+
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/mentions/<int:page>", methods=["GET"])
 @authenticate()
@@ -54,7 +55,7 @@ def mention_response(user, page):
     if len(output_mentions) == 0:
         # return no content status code
         return no_content_response("No more mentions available")
-    return jsonify(output_mentions), 200
+    return data_response(output_mentions)
 
 
 # Get details of a single mention
@@ -71,4 +72,4 @@ def get_mention(user, mention_id):
         SNIPPET_TAG: mention.snippet,
         HITS_TAG: mention.hits
     }
-    return jsonify(output_mention), 200
+    return data_response(output_mention)
