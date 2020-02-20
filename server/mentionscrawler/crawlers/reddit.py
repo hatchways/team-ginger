@@ -1,5 +1,8 @@
 import praw
-from . import REDDIT, _Mention
+import requests
+from . import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, _Mention
+from redis import Redis
+from rq import Queue
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -9,12 +12,22 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       client_secret=_CLIENT_SECRET,
                       user_agent=_USER_AGENT)
 
+reddit_queue = Queue(connection=Redis())
+
 # TODO Remove all database references
 # TODO search needs to start no later than the latest mention
 # TODO pass list of company names and list of most recent mention of said company
 
 
-def search(user_id, companies: list, first_run: bool):
+def enqueue(site: str, user_id: int, companies: list, key: str):
+    reddit_queue.enqueue(search, site, user_id, companies, key)
+
+
+def stop_job(user_id: int):
+    pass
+
+
+def search(user_id: int, companies: list, key: str, first_run=True):
     #  get all company names associated with a user
     mentions = []  # initialize mentions as a list
     for company in companies:
@@ -28,4 +41,5 @@ def search(user_id, companies: list, first_run: bool):
                                    submission.selftext, submission.score, submission.created_utc,
                                    submission.title)
                 mentions.append(mention)
-    return mentions
+    payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
+    request = requests.post(RESPONSE_URL, json=payload)

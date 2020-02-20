@@ -5,10 +5,7 @@ from ..models.user import MentionUser
 from ..models.company import Company
 from ..models.site import get_sites
 from ..db import insert_row, commit
-from sqlalchemy.exc import IntegrityError, DataError
-from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
-                                 NUMERIC_VALUE_OUT_OF_RANGE)
-from ..responses import *
+from ..responses import bad_request_response, ok_response, created_response
 
 user_bp = Blueprint("users", __name__, url_prefix="/")
 
@@ -60,8 +57,4 @@ def update(user):
 def delete(user):
     return "DELETED!"
 
-
-@user_bp.route("/test")
-def test():
-    return jsonify({'cheese': 'GOUDA!'})
 
