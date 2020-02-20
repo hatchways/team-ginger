@@ -17,6 +17,7 @@ praw = "*"
 python-dotenv = "*"
 pytest = "*"
 rq = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

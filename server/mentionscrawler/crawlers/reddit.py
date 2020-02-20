@@ -1,5 +1,5 @@
 import praw
-from . import REDDIT, SITE_ID, USER_ID, COMPANY_ID, TITLE, DATE, HITS, SNIPPET, URL
+from . import REDDIT, _Mention
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -24,8 +24,8 @@ def search(user_id, companies: list, first_run: bool):
             submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="hour")
         for submission in submissions:
             if submission.is_self:
-                mention = {USER_ID: user_id, COMPANY_ID: company.id, SITE_ID: REDDIT, URL: submission.url,
-                           SNIPPET: submission.selftext, HITS: submission.score, DATE: submission.created_utc,
-                           TITLE: submission.title}
+                mention = _Mention(user_id, company.id, REDDIT, submission.url,
+                                   submission.selftext, submission.score, submission.created_utc,
+                                   submission.title)
                 mentions.append(mention)
     return mentions
