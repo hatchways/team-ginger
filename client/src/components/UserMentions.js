@@ -122,11 +122,11 @@ class UserMentions extends Component {
 
     componentDidMount() {
         // make request to populate mentions table
-        fetch(MENTIONS_ROUTE, { method: "POST", header: { "Content-Type": "application/json" } })
+        fetch(MENTIONS_ROUTE, { method: "POST", headers: { "Content-Type": "application/json" } })
             .then(res => res.json())
             .then(data => console.log(data))
             .then(() =>
-                fetch(MENTIONS_ROUTE, { method: "GET", header: { "Content-Type": "application/json" } })
+                fetch(MENTIONS_ROUTE, { method: "GET", headers: { "Content-Type": "application/json" } })
                     .then(res => {
                         res.json().then(data => {
                             if (res.status === 200) {

@@ -56,7 +56,7 @@ def mention_response(user):
 @mention_bp.route("/mentions/<int:mention_id>", methods=["GET"])
 @authenticate()
 def get_mention(user, mention_id):
-    mention = Mention.query.filter_by(mention_id).first()
+    mention = Mention.query.filter_by(id=mention_id).first()
     output_mention = {
         URL_TAG: mention.url,
         SITE_TAG: mention.site_id,

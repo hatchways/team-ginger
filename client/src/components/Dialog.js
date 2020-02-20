@@ -3,7 +3,7 @@
 */
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { DIALOG_ROUTE } from "../Routes";
+import {MENTIONS_ROUTE} from "../Routes";
 import { RESPONSE_TAG } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
@@ -87,19 +87,17 @@ class Dialog extends Component {
     }
 
     componentDidMount() {
-        let id = this.state.id;
-        fetch(DIALOG_ROUTE, {
-            method: "POST",
+        fetch(MENTIONS_ROUTE+"/"+this.state.id, {
+            method: "GET",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id })
         }).then(res => {
-            if (res.status === 200) {
-                res.json().then(data => this.setState({ mention: data }));
-            } else {
-                res.json().then(data => {
+            res.json().then(data => {
+                if (res.status === 200) {
+                    this.setState({ mention: data });
+                } else {
                     console.log(res.status, data[RESPONSE_TAG]);
-                });
-            }
+                }
+            })
         });
     }
 }
