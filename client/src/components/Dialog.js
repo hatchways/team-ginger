@@ -3,7 +3,7 @@
 */
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import {MENTIONS_ROUTE} from "../Routes";
+import { DIALOG_ROUTE } from "../Routes";
 import { RESPONSE_TAG } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
@@ -15,6 +15,8 @@ import CallMadeIcon from "@material-ui/icons/CallMade";
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
 
+const LOADING_MESSAGE = "Loading Mention";
+const NOT_FOUND_MESSAGE = "No Mention Found";
 const NO_SNIPPET_MESSAGE = "There is no text for this mention";
 
 const styles = theme => ({
@@ -43,13 +45,13 @@ const styles = theme => ({
 class Dialog extends Component {
     constructor(props) {
         super(props);
-        this.state = { id: props.id, mention: null };
+        this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
     }
     render() {
         const { classes } = this.props;
+        const { mention, message } = this.state;
 
-        if (this.state.mention) {
-            let mention = this.state.mention;
+        if (mention) {
             let snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             let snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
             return (
@@ -83,21 +85,27 @@ class Dialog extends Component {
                 </React.Fragment>
             );
         }
-        return <div>Loading Mention</div>;
+        return (
+            <Typography variant="h5" align="center" color={"textSecondary"}>
+                {message}
+            </Typography>
+        );
     }
 
     componentDidMount() {
-        fetch(MENTIONS_ROUTE+"/"+this.state.id, {
+        fetch(DIALOG_ROUTE + this.state.id, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" }
         }).then(res => {
             res.json().then(data => {
                 if (res.status === 200) {
                     this.setState({ mention: data });
+                } else if (res.status === 404) {
+                    this.setState({ message: NOT_FOUND_MESSAGE });
                 } else {
                     console.log(res.status, data[RESPONSE_TAG]);
                 }
-            })
+            });
         });
     }
 }
