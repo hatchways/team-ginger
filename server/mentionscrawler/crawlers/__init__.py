@@ -6,8 +6,10 @@ FACEBOOK = "Facebook"
 MENTIONS_TAG = "mentions"
 SECRET_HASH_TAG = "secret_hash"
 RESPONSE_URL = "/mentions/responses"
+SCHEDULE_TIME = 1  # time between crawls in minutes
 
-search_dict = {REDDIT: reddit.enqueue}
+enqueue_dict = {REDDIT: reddit.enqueue}
+stop_job_dict = {REDDIT: reddit.stop_job}
 
 
 class _Mention:
@@ -36,5 +38,9 @@ class _Mention:
                 "url": self.url, "snippet": self.snippet, "hits": self.hits, "date": self.date, "title": self.title}
 
 
+def stop_job(site: str, user_id: int):
+    stop_job_dict[site](user_id)
+
+
 def enqueue(site: str, user_id: int, companies: list, key: str):
-    search_dict[site](user_id, companies, key)
+    enqueue_dict[site](user_id, companies, key)

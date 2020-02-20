@@ -1,8 +1,10 @@
 import praw
 import requests
-from . import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, _Mention
+from datetime import datetime, timedelta
+from . import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, _Mention, SCHEDULE_TIME
 from redis import Redis
 from rq import Queue
+from rq.job import Job
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -19,15 +21,25 @@ reddit_queue = Queue(connection=Redis())
 # TODO pass list of company names and list of most recent mention of said company
 
 
-def enqueue(site: str, user_id: int, companies: list, key: str):
-    reddit_queue.enqueue(search, site, user_id, companies, key)
+def enqueue(user_id: int, companies: list, key: str):
+    job_id = user_id+REDDIT
+    job = Job.create(search, user_id, companies, key, True, id=job_id)
+    reddit_queue.enqueue(job)
+
+
+def enqueue_at(user_id: int, companies: list, key: str):
+    job_id = user_id + REDDIT
+    job = Job.create(search, user_id, companies, key, False, id=job_id)
+    scheduled_time = datetime.now() + timedelta(0, SCHEDULE_TIME * 60)
+    reddit_queue.enqueue_at(scheduled_time, job)
 
 
 def stop_job(user_id: int):
-    pass
+    job_id = user_id+REDDIT
+    reddit_queue.remove(job_id)
 
 
-def search(user_id: int, companies: list, key: str, first_run=True):
+def search(user_id: int, companies: list, key: str, first_run: bool):
     #  get all company names associated with a user
     mentions = []  # initialize mentions as a list
     for company in companies:
@@ -43,3 +55,6 @@ def search(user_id: int, companies: list, key: str, first_run=True):
                 mentions.append(mention)
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
     request = requests.post(RESPONSE_URL, json=payload)
+    print("Request status code: " + request.status_code)
+    stop_job(user_id)
+    enqueue_at(user_id, companies, key)
