@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
         height: 100
     },
     text: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.spacing(2),
+        wordBreak: "break-word"
     }
 }));
 

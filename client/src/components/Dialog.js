@@ -15,6 +15,8 @@ import CallMadeIcon from "@material-ui/icons/CallMade";
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
 
+const LOADING_MESSAGE = "Loading Mention";
+const NOT_FOUND_MESSAGE = "No Mention Found";
 const NO_SNIPPET_MESSAGE = "There is no text for this mention";
 
 const styles = theme => ({
@@ -43,13 +45,13 @@ const styles = theme => ({
 class Dialog extends Component {
     constructor(props) {
         super(props);
-        this.state = { id: props.id, mention: null };
+        this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
     }
     render() {
         const { classes } = this.props;
+        const { mention, message } = this.state;
 
-        if (this.state.mention) {
-            let mention = this.state.mention;
+        if (mention) {
             let snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             let snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
             return (
@@ -83,7 +85,11 @@ class Dialog extends Component {
                 </React.Fragment>
             );
         }
-        return <div>Loading Mention</div>;
+        return (
+            <Typography variant="h5" align="center" color={"textSecondary"}>
+                {message}
+            </Typography>
+        );
     }
 
     componentDidMount() {
@@ -94,6 +100,8 @@ class Dialog extends Component {
             res.json().then(data => {
                 if (res.status === 200) {
                     this.setState({ mention: data });
+                } else if (res.status === 404) {
+                    this.setState({ message: NOT_FOUND_MESSAGE });
                 } else {
                     console.log(res.status, data[RESPONSE_TAG]);
                 }

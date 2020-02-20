@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response, bad_request_response, no_content_response
+from ..responses import ok_response, no_content_response, not_found_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
@@ -58,10 +58,12 @@ def mention_response(user, page):
 
 
 # Get details of a single mention
-@mention_bp.route("/mention/<int:mention_id>", methods=["GET"])
+@mention_bp.route("/mentions/mention/<int:mention_id>", methods=["GET"])
 @authenticate()
 def get_mention(user, mention_id):
     mention = Mention.query.filter_by(id=mention_id).first()
+    if mention is None:
+        return not_found_response("There is no mention with that ID")
     output_mention = {
         URL_TAG: mention.url,
         SITE_TAG: mention.site_id,
@@ -69,6 +71,4 @@ def get_mention(user, mention_id):
         SNIPPET_TAG: mention.snippet,
         HITS_TAG: mention.hits
     }
-    if mention is None:
-        return bad_request_response("There is no mention with that ID")
     return jsonify(output_mention), 200
