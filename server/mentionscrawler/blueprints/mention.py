@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..authentication.authenticate import authenticate, enforce_json
-from ..responses import ok_response, bad_request_response
+from ..responses import ok_response, bad_request_response, no_content_response
 from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError, DataError
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
+MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
 URL_TAG = "url"
 SITE_TAG = "site"
@@ -33,27 +34,31 @@ def set_mentions(user):
 
     return ok_response("Crawl was successful!")
 
-
-@mention_bp.route("/mentions", methods=["GET"])
+# Get a set of mentions specified by the page number given
+@mention_bp.route("/mentions/<int:page>", methods=["GET"])
 @authenticate()
-def mention_response(user):
-    mentions = Mention.query.filter_by(mention_user_id=user.get("user_id")).limit(10).all()
+def mention_response(user, page):
+    mentions = Mention.query.filter_by(mention_user_id=user.get("user_id")).limit(MENTIONS_PER_PAGE).offset(
+        page * MENTIONS_PER_PAGE).all()
     output_mentions = []
     for mention in mentions:
         output_mention = {
-                            ID_TAG: mention.id,
-                            URL_TAG: mention.url,
-                            SITE_TAG: mention.site_id,
-                            TITLE_TAG: mention.title,
-                            SNIPPET_TAG: mention.snippet,
-                            HITS_TAG: mention.hits
-                         }
+            ID_TAG: mention.id,
+            URL_TAG: mention.url,
+            SITE_TAG: mention.site_id,
+            TITLE_TAG: mention.title,
+            SNIPPET_TAG: mention.snippet,
+            HITS_TAG: mention.hits
+        }
         output_mentions.append(output_mention)
+    if len(output_mentions) == 0:
+        # return no content status code
+        return no_content_response("No more mentions available")
     return jsonify(output_mentions), 200
 
 
 # Get details of a single mention
-@mention_bp.route("/mentions/<int:mention_id>", methods=["GET"])
+@mention_bp.route("/mention/<int:mention_id>", methods=["GET"])
 @authenticate()
 def get_mention(user, mention_id):
     mention = Mention.query.filter_by(id=mention_id).first()

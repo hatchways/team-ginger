@@ -32,6 +32,9 @@ def ok_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 200)
     return response
 
+def no_content_response(message):
+    response = make_response(jsonify({_RESPONSE_TAG: message}), 204)
+    return response
 
 def error_response(message, error):
     response = make_response(jsonify({_RESPONSE_TAG: message}, {_ERROR_TAG: repr(error)}), 500)

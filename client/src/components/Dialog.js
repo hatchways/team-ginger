@@ -3,7 +3,7 @@
 */
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import {MENTIONS_ROUTE} from "../Routes";
+import { DIALOG_ROUTE } from "../Routes";
 import { RESPONSE_TAG } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
@@ -87,9 +87,9 @@ class Dialog extends Component {
     }
 
     componentDidMount() {
-        fetch(MENTIONS_ROUTE+"/"+this.state.id, {
+        fetch(DIALOG_ROUTE + this.state.id, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" }
         }).then(res => {
             res.json().then(data => {
                 if (res.status === 200) {
@@ -97,7 +97,7 @@ class Dialog extends Component {
                 } else {
                     console.log(res.status, data[RESPONSE_TAG]);
                 }
-            })
+            });
         });
     }
 }
