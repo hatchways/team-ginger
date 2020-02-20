@@ -4,6 +4,8 @@ from ..authentication.authenticate import authenticate, enforce_json
 from ..crawlers import SECRET_HASH_TAG, MENTIONS_TAG, enqueue
 from ..responses import bad_request_response, unauthorized_response, ok_response
 from ..models.mention import Mention
+from ..models.site import SiteAssociation
+from ..models.company import Company
 from ..db import insert_rows
 
 job_bp = Blueprint("jobs", __name__, "/mentions")
@@ -13,7 +15,15 @@ job_bp = Blueprint("jobs", __name__, "/mentions")
 @enforce_json()
 @authenticate()
 def requests(user):
-    body = request.get_json()
+    sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
+    companies = Company.query.filter_by(mention_user_id=user.get("user_id"))
+    company_ids = []
+    for company in companies:
+        company_ids.append(company.id)
+
+    secret_key_hash = generate_password_hash(current_app.config.get("SECRET"))
+    for site in sites:
+        enqueue(site.site_name, user.get("user_id"), company_ids, secret_key_hash)
 
 
 @job_bp.route("/responses", methods=["POST"])

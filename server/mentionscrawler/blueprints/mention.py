@@ -1,7 +1,6 @@
 from flask import Blueprint
 from ..authentication.authenticate import authenticate
 from ..responses import ok_response, data_response, no_content_response, not_found_response
-from ..crawlers import search
 from ..models.site import SiteAssociation
 from ..models.mention import Mention
 from ..db import insert_rows
