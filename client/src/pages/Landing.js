@@ -1,11 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { LOGIN_URL, DASHBOARD_URL } from "../Constants";
 
-export default function Landing() {
-    return (
-        <div>
-            This is the landing page. Click <Link to="signup">here</Link> to go to the signup page. Click{" "}
-            <Link to="login">here</Link> to go to the login page.
-        </div>
-    );
+function Landing() {
+    if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
+        window.location = LOGIN_URL;
+    } else {
+        window.location = DASHBOARD_URL;
+    }
+    return;
 }
+
+export default Landing;
