@@ -34,10 +34,8 @@ function CompanyNames(props) {
     };
 
     const handleAdd = () => {
-        if (name !== "") {
-            add(name);
-            setName("");
-        }
+        add(name);
+        setName("");
     };
 
     return (

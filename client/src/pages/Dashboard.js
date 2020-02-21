@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
 import Platforms from "../components/Platforms";
 import UserMentions from "../components/UserMentions";
-import { SETTINGS_URL, LOGIN_URL } from "../Constants";
+import { SETTINGS_URL, REDIRECT_TO_LOGIN } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     mentions_layout: {
@@ -15,18 +15,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Dashboard(props) {
+    REDIRECT_TO_LOGIN();
+
     const classes = useStyles();
-    if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
-        window.location = LOGIN_URL;
-    }
+    const [updatePlatforms, setUpdate] = useState(0);
+
     return (
         <React.Fragment>
             <ServiceNavBar link={SETTINGS_URL}>
                 <SettingsIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.mentions_layout}>
-                <Platforms />
-                <UserMentions />
+                <Platforms updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
+                <UserMentions updatePlatforms={updatePlatforms} />
             </div>
         </React.Fragment>
     );
