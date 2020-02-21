@@ -1,8 +1,8 @@
 from flask import Blueprint, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..authentication.authenticate import authenticate, enforce_json
-from ..crawlers import enqueue, stop_job
-from ..crawlers.constants import SECRET_HASH_TAG, MENTIONS_TAG
+from server.mentions_crawler_apis import enqueue, stop_job
+from server.mentions_crawler_apis import SECRET_HASH_TAG, MENTIONS_TAG
 from ..responses import bad_request_response, unauthorized_response, ok_response
 from ..models.mention import Mention
 from ..models.site import SiteAssociation, Site

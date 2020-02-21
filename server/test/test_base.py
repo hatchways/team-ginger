@@ -1,6 +1,6 @@
 import pytest
-from ..mentionscrawler import create_app
-from ..mentionscrawler.db import db
+from ..mentions_crawler_flask import create_app
+from ..mentions_crawler_flask.db import db
 
 
 @pytest.fixture
