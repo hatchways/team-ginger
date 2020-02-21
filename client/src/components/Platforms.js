@@ -7,7 +7,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
-import TwitterImg from "../assets/twitter.png"
+import TwitterImg from "../assets/twitter.png";
 import { REDDIT } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
@@ -17,12 +17,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Platforms() {
+function Platforms(props) {
     const classes = useStyles();
+    const { updatePlatforms, setUpdate } = props;
     return (
         <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={REDDIT}/>
-            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"}/>
+            <PlatformCard site_img={RedditImg} site_name={REDDIT} updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
+            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"} />
         </div>
     );
 }

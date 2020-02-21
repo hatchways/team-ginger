@@ -22,3 +22,7 @@ export const SITES_TAG = "sites";
 export const REDDIT = "Reddit";
 export const TWITTER = "Twitter";
 export const FACEBOOK = "Facebook";
+
+//Snackbar Variant Constants
+export const GOOD_SNACKBAR = { variant: "success" };
+export const BAD_SNACKBAR = { variant: "error" };
