@@ -1,11 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { REDIRECT_TO_LOGIN, DASHBOARD_URL } from "../Constants";
 
-export default function Landing() {
-    return (
-        <div>
-            This is the landing page. Click <Link to="signup">here</Link> to go to the signup page. Click{" "}
-            <Link to="login">here</Link> to go to the login page.
-        </div>
-    );
+function Landing() {
+    REDIRECT_TO_LOGIN();
+    window.location = DASHBOARD_URL;
+    return;
 }
+
+export default Landing;
