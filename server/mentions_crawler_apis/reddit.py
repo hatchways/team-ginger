@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 import praw
 import requests
 from datetime import datetime, timedelta
@@ -18,26 +20,6 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       user_agent=_USER_AGENT)
 
 
-
-'
-def enqueue(user_id: int, companies: list, key: str):
-
-    search.delay(user_id, companies, key, True)
-
-
-def enqueue_at(user_id: int, companies: list, key: str):
-    job_id = str(user_id)+":"+REDDIT
-    job = Job.create(search, (user_id, companies, key), False, id=job_id)
-    scheduled_time = datetime.now() + timedelta(0, SCHEDULE_TIME * 60)
-    reddit_queue.enqueue_at(scheduled_time, job)
-
-
-def stop_job(user_id: int):
-    job_id = str(user_id)+":"+REDDIT
-    reddit_queue.remove(job_id)
-
-
-
 @app.task
 def search(user_id: int, companies: list, key: str, first_run: bool):
     #  get all company names associated with a user
@@ -56,4 +38,22 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
     request = requests.post(RESPONSE_URL, json=payload)
     print("Request status code: " + request.status_code)
+
+
+def enqueue(user_id: int, companies: list, key: str):
+    search.delay(user_id, companies, key, True)
+
+
+'''
+def enqueue_at(user_id: int, companies: list, key: str):
+    job_id = str(user_id)+":"+REDDIT
+    job = Job.create(search, (user_id, companies, key), False, id=job_id)
+    scheduled_time = datetime.now() + timedelta(0, SCHEDULE_TIME * 60)
+    reddit_queue.enqueue_at(scheduled_time, job)
+
+
+def stop_job(user_id: int):
+    job_id = str(user_id)+":"+REDDIT
+    reddit_queue.remove(job_id)
+'''
 
