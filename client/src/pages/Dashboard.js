@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
     const classes = useStyles();
+    const [updatePlatforms, setUpdate] = useState(0);
     if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
         window.location = LOGIN_URL;
     }
@@ -25,8 +26,8 @@ function Dashboard(props) {
                 <SettingsIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.mentions_layout}>
-                <Platforms />
-                <UserMentions />
+                <Platforms updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
+                <UserMentions updatePlatforms={updatePlatforms} />
             </div>
         </React.Fragment>
     );

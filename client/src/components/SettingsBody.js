@@ -54,6 +54,9 @@ function SettingsBody(props) {
     const [names, setNames] = useState(localStorage.getItem(COMPANY_NAMES_TAG).split(","));
 
     const [email, setEmail] = useState(localStorage.getItem(EMAIL_TAG));
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     // When a user adds a name
     const addName = name => {
         // Prevent duplicate and empty names
@@ -65,8 +68,6 @@ function SettingsBody(props) {
             enqueueSnackbar(DUPLICATE_NAME_MESSAGE, BAD_SNACKBAR);
         }
     };
-
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     // When a user removes a name
     const removeName = name => {
