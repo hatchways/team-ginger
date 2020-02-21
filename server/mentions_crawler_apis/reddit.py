@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-
+import json
 import praw
 import requests
 from datetime import datetime, timedelta
@@ -26,18 +26,18 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="month")
+            submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="month")
         else:
-            submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="hour")
+            submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="hour")
         for submission in submissions:
             if submission.is_self:
-                mention = Mention(user_id, company.id, REDDIT, submission.url,
+                mention = Mention(user_id, company["company_id"], REDDIT, submission.url,
                                   submission.selftext, submission.score, submission.created_utc,
                                   submission.title)
-                mentions.append(mention)
+                mentions.append(json.dumps(mention.__dict__))
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
     request = requests.post(RESPONSE_URL, json=payload)
-    print("Request status code: " + request.status_code)
+    return payload
 
 
 def enqueue(user_id: int, companies: list, key: str):

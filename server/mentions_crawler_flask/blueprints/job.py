@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..authentication.authenticate import authenticate, enforce_json
 from server.mentions_crawler_apis import enqueue
@@ -17,9 +17,9 @@ job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 def requests(user):
     sites = Site.query.all()
     companies = Company.query.filter_by(mention_user_id=user.get("user_id"))
-    company_ids = []
+    company_dicts = []
     for company in companies:
-        company_ids.append(company.id)
+        company_dicts.append({"company_id": company.id, "company_name": company.name})
 
     secret_key_hash = generate_password_hash(current_app.config.get("SECRET_KEY"))
     for site in sites:
@@ -29,7 +29,7 @@ def requests(user):
             # stop_job(site.name, user.get("user_id"))
             return "test", 200
         else:
-            enqueue(site.name, user.get("user_id"), company_ids, secret_key_hash)
+            enqueue(site.name, user.get("user_id"), company_dicts, secret_key_hash)
             return "test", 200
 
 
@@ -42,8 +42,10 @@ def responses():
             mentions = body.get(MENTIONS_TAG)
             db_mentions = []
             for mention in mentions:
-                db_mentions.append(Mention(mention.user_id, mention.company_id, mention.site_id,
-                                           mention.url, mention.snippet, mention.hits, mention.date, mention.title))
+                json_mention = json.loads(mention)
+                db_mentions.append(Mention(json_mention["user_id"], json_mention["company_id"], json_mention["site_id"],
+                                           json_mention["url"], json_mention["snippet"], json_mention["hits"],
+                                           json_mention["date"], json_mention["title"]))
             result = insert_rows(db_mentions)
             if result is not True:
                 return result
