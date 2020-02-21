@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
-import { SITES_ROUTE } from "../Routes";
+import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
 import { RESPONSE_TAG, SITES_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
@@ -47,8 +47,39 @@ function PlatformCard(props) {
                 sites[props.site_name] = !check;
                 localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                 setCheck(!check);
-                // Force refresh to populate db for now
-                window.location = window.location.href;
+
+                fetch(JOBS_ROUTE, {
+                    method: "POST"
+                }).then(res => {
+                    if (res.status === 200)
+                    {
+                        console.log("Success! Now crawling " + props.site_name + "!");
+                        // Force refresh to populate db for now
+                        window.location = window.location.href;
+                    }
+                    else
+                    {
+                        console.log("Something went wrong with setting up the " + props.site_name + " crawl, reverting crawl database back.")
+                        fetch(SITES_ROUTE + props.site_name, {
+                            method: "POST"
+                        }).then(res => {
+                            sites[props.site_name] = check;
+                            localStorage.setItem(SITES_TAG, JSON.stringify(sites));
+                            setCheck(check);
+                            if (res.status === 200)
+                            {
+                                console.log("Database reverted...")
+                            }
+                            else
+                            {
+                                console.log("Crap something really went wrong since this request worked just a moment ago...")
+                            }
+                        })
+                    }
+
+                });
+
+
             } else {
                 res.json().then(data => {
                     console.log(res.status, data[RESPONSE_TAG]);

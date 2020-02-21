@@ -1,18 +1,18 @@
 from flask import Blueprint, request, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..authentication.authenticate import authenticate, enforce_json
-from ..crawlers import SECRET_HASH_TAG, MENTIONS_TAG, enqueue, stop_job
+from ..crawlers import enqueue, stop_job
+from ..crawlers.constants import SECRET_HASH_TAG, MENTIONS_TAG
 from ..responses import bad_request_response, unauthorized_response, ok_response
 from ..models.mention import Mention
 from ..models.site import SiteAssociation, Site
 from ..models.company import Company
 from ..db import insert_rows
 
-job_bp = Blueprint("jobs", __name__, "/mentions")
+job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
 
 @job_bp.route("/requests", methods=["POST"])
-@enforce_json()
 @authenticate()
 def requests(user):
     sites = Site.query.all()
@@ -21,13 +21,13 @@ def requests(user):
     for company in companies:
         company_ids.append(company.id)
 
-    secret_key_hash = generate_password_hash(current_app.config.get("SECRET"))
+    secret_key_hash = generate_password_hash(current_app.config.get("SECRET_KEY"))
     for site in sites:
         assoc = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"), site_name=site.name).first()
         if assoc is None:
-            stop_job(site.site_name, user.get("user_id"))
+            stop_job(site.name, user.get("user_id"))
         else:
-            enqueue(site.site_name, user.get("user_id"), company_ids, secret_key_hash)
+            enqueue(site.name, user.get("user_id"), company_ids, secret_key_hash)
 
 
 @job_bp.route("/responses", methods=["POST"])

@@ -1,10 +1,12 @@
 import praw
 import requests
 from datetime import datetime, timedelta
-from . import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, _Mention, SCHEDULE_TIME
+from .Mention import Mention
+from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SCHEDULE_TIME
 from redis import Redis
 from rq import Queue
 from rq.job import Job
+
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -14,7 +16,8 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       client_secret=_CLIENT_SECRET,
                       user_agent=_USER_AGENT)
 
-reddit_queue = Queue(connection=Redis())
+connection = Redis("127.0.0.1", 6379)
+reddit_queue = Queue("awesome_queue", connection)
 
 # TODO Remove all database references
 # TODO search needs to start no later than the latest mention
@@ -22,20 +25,20 @@ reddit_queue = Queue(connection=Redis())
 
 
 def enqueue(user_id: int, companies: list, key: str):
-    job_id = user_id+REDDIT
-    job = Job.create(search, user_id, companies, key, True, id=job_id)
+    job_id = str(user_id)+":"+REDDIT
+    job = Job.create(search, (user_id, companies, key, True), id=job_id)
     reddit_queue.enqueue(job)
 
 
 def enqueue_at(user_id: int, companies: list, key: str):
-    job_id = user_id + REDDIT
-    job = Job.create(search, user_id, companies, key, False, id=job_id)
+    job_id = str(user_id)+":"+REDDIT
+    job = Job.create(search, (user_id, companies, key), False, id=job_id)
     scheduled_time = datetime.now() + timedelta(0, SCHEDULE_TIME * 60)
     reddit_queue.enqueue_at(scheduled_time, job)
 
 
 def stop_job(user_id: int):
-    job_id = user_id+REDDIT
+    job_id = str(user_id)+":"+REDDIT
     reddit_queue.remove(job_id)
 
 
@@ -49,9 +52,9 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
             submissions = _reddit.subreddit("all").search(company.name, sort="new", time_filter="hour")
         for submission in submissions:
             if submission.is_self:
-                mention = _Mention(user_id, company.id, REDDIT, submission.url,
-                                   submission.selftext, submission.score, submission.created_utc,
-                                   submission.title)
+                mention = Mention(user_id, company.id, REDDIT, submission.url,
+                                  submission.selftext, submission.score, submission.created_utc,
+                                  submission.title)
                 mentions.append(mention)
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
     request = requests.post(RESPONSE_URL, json=payload)
