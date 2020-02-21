@@ -16,7 +16,7 @@ psycopg2 = "*"
 praw = "*"
 python-dotenv = "*"
 pytest = "*"
-rq = "*"
+celery = "*"
 requests = "*"
 
 [requires]

@@ -6,7 +6,7 @@ from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SCHE
 from redis import Redis
 from rq import Queue
 from rq.job import Job
-from .task_worker import conn
+from .celery import app
 
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
@@ -17,20 +17,12 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       client_secret=_CLIENT_SECRET,
                       user_agent=_USER_AGENT)
 
-reddit_queue = Queue(connection=conn)
-
-# TODO Remove all database references
-# TODO search needs to start no later than the latest mention
-# TODO pass list of company names and list of most recent mention of said company
-
-if __name__ == '__main__':
-    print("oh no is main!")
 
 
+'
 def enqueue(user_id: int, companies: list, key: str):
-    job_id = str(user_id)+":"+REDDIT
-    job = Job.create(search, (user_id, companies, key, True), id=job_id)
-    reddit_queue.enqueue(job)
+
+    search.delay(user_id, companies, key, True)
 
 
 def enqueue_at(user_id: int, companies: list, key: str):
@@ -45,6 +37,8 @@ def stop_job(user_id: int):
     reddit_queue.remove(job_id)
 
 
+
+@app.task
 def search(user_id: int, companies: list, key: str, first_run: bool):
     #  get all company names associated with a user
     mentions = []  # initialize mentions as a list
@@ -62,5 +56,4 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
     request = requests.post(RESPONSE_URL, json=payload)
     print("Request status code: " + request.status_code)
-    stop_job(user_id)
-    enqueue_at(user_id, companies, key)
+
