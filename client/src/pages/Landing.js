@@ -1,8 +1,11 @@
-import { REDIRECT_TO_LOGIN, DASHBOARD_URL } from "../Constants";
+import { LOGIN_URL, DASHBOARD_URL } from "../Constants";
 
 function Landing() {
-    REDIRECT_TO_LOGIN();
-    window.location = DASHBOARD_URL;
+    if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
+        window.location = LOGIN_URL;
+    } else {
+        window.location = DASHBOARD_URL;
+    }
     return;
 }
 
