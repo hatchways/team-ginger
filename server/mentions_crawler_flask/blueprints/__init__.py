@@ -8,4 +8,4 @@ from .job import job_bp
 
 # array of blueprints to be added to the app
 # saves a bit of time on boilerplate code
-blueprints = [user_bp, session_bp, mention_bp, site_bp, company_bp]
+blueprints = [user_bp, session_bp, mention_bp, site_bp, company_bp, job_bp]
