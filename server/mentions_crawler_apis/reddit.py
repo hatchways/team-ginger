@@ -2,14 +2,10 @@ from __future__ import absolute_import, unicode_literals
 import json
 import praw
 import requests
-from datetime import datetime, timedelta
 from .Mention import Mention
 from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SCHEDULE_TIME
-from redis import Redis
-from rq import Queue
-from rq.job import Job
 from .celery import app
-
+from celery.exceptions import CeleryError
 
 _CLIENT_ID = "auo7pZGyIVaJhw"
 _CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
@@ -30,18 +26,22 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
         else:
             submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="hour")
         for submission in submissions:
-            if submission.is_self:
+            if submission.is_self and submission.over_18 is not True:
                 mention = Mention(user_id, company["company_id"], REDDIT, submission.url,
                                   submission.selftext, submission.score, submission.created_utc,
                                   submission.title)
                 mentions.append(json.dumps(mention.__dict__))
     payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
-    request = requests.post(RESPONSE_URL, json=payload)
-    return payload
+    requests.post(RESPONSE_URL, json=payload)
 
 
 def enqueue(user_id: int, companies: list, key: str):
-    search.delay(user_id, companies, key, True)
+    try:
+        search.apply_async((user_id, companies, key, True), task_id=str(user_id)+":"+REDDIT)
+    except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working
+        print(e)
+        return e
+    return True
 
 
 '''

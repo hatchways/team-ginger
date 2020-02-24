@@ -10,4 +10,4 @@ enqueue_dict = {REDDIT: reddit.enqueue}
 
 
 def enqueue(site: str, user_id: int, companies: list, key: str):
-    enqueue_dict[site](user_id, companies, key)
+    return enqueue_dict[site](user_id, companies, key)

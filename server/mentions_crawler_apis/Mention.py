@@ -4,18 +4,16 @@ import json
 class Mention:
     user_id: int
     company_id: int
-    site_id: str
     url: str
     snippet: str
     hits: int
     date: int
     title: str
 
-    def __init__(self, user_id: int, company_id: int, site_id: str, url: str, snippet: str,
+    def __init__(self, user_id: int, company_id: int, url: str, snippet: str,
                  hits: int, date: int, title: str):
         self.user_id = user_id
         self.company_id = company_id
-        self.site_id = site_id
         self.url = url
         self.snippet = snippet
         self.hits = hits
@@ -23,5 +21,5 @@ class Mention:
         self.title = title
 
     def __repr__(self):
-        return {"user_id": self.user_id, "company_id": self.company_id, "site_id": self.site_id,
+        return {"user_id": self.user_id, "company_id": self.company_id,
                 "url": self.url, "snippet": self.snippet, "hits": self.hits, "date": self.date, "title": self.title}
