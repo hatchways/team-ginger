@@ -20,7 +20,7 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
                       user_agent=_USER_AGENT)
 
 
-@app.task
+@app.task(name="reddit.search")
 def search(user_id: int, companies: list, key: str, first_run: bool):
     #  get all company names associated with a user
     mentions = []  # initialize mentions as a list
