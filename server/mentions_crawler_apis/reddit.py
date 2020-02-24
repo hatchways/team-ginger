@@ -3,7 +3,7 @@ import json
 import praw
 import requests
 from .Mention import Mention
-from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SCHEDULE_TIME
+from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SITE_TAG, USER_ID_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 
@@ -27,11 +27,11 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
             submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="hour")
         for submission in submissions:
             if submission.is_self and submission.over_18 is not True:
-                mention = Mention(user_id, company["company_id"], REDDIT, submission.url,
+                mention = Mention(company["company_id"], submission.url,
                                   submission.selftext, submission.score, submission.created_utc,
                                   submission.title)
                 mentions.append(json.dumps(mention.__dict__))
-    payload = {SECRET_HASH_TAG: key, MENTIONS_TAG: mentions}
+    payload = {SECRET_HASH_TAG: key, USER_ID_TAG: user_id, SITE_TAG: REDDIT, MENTIONS_TAG: mentions}
     requests.post(RESPONSE_URL, json=payload)
 
 
