@@ -9,5 +9,5 @@ enqueue_dict = {REDDIT: reddit.enqueue}
 #     stop_job_dict[site](user_id)
 
 
-def enqueue(site: str, user_id: int, companies: list, key: str):
-    return enqueue_dict[site](user_id, companies, key)
+def enqueue(site: str, user_id: int, companies: list, key: str, first_run=True):
+    return enqueue_dict[site](user_id, companies, key, first_run)

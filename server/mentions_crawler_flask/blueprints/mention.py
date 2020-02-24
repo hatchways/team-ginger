@@ -1,44 +1,21 @@
 from flask import Blueprint
+from ...json_constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG
 from ..authentication.authenticate import authenticate
-from ..responses import ok_response, data_response, no_content_response, not_found_response
-from ..models.site import SiteAssociation
+from ..responses import data_response, no_content_response, not_found_response
 from ..models.mention import Mention
-from ..db import insert_rows
 
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
 MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
-URL_TAG = "url"
-SITE_TAG = "site"
-TITLE_TAG = "title"
-SNIPPET_TAG = "snippet"
-HITS_TAG = "hits"
-
-
-# gets all sites that are toggled for the user, then calls the appropriate search function for the appropriate api
-@mention_bp.route("/mentions", methods=["POST"])
-@authenticate()
-def set_mentions(user):
-    sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
-    mentions = []
-    for site in sites:
-        temp_mentions = search(user, site.site_name)
-        if temp_mentions is not None:
-            mentions = mentions + temp_mentions
-    result = insert_rows(mentions)
-    if result is not True:
-        return result
-
-    return ok_response("Crawl was successful!")
 
 
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/mentions/<int:page>", methods=["GET"])
 @authenticate()
 def mention_response(user, page):
-    mentions = Mention.query.filter_by(mention_user_id=user.get("user_id")).limit(MENTIONS_PER_PAGE).offset(
+    mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).limit(MENTIONS_PER_PAGE).offset(
         page * MENTIONS_PER_PAGE).all()
     output_mentions = []
     for mention in mentions:

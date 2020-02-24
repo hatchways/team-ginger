@@ -2,8 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError, DataError
 from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
                                  NUMERIC_VALUE_OUT_OF_RANGE, NULL_VALUE_NOT_ALLOWED)
-from functools import wraps
-from .responses import ok_response, bad_request_response
+from .responses import bad_request_response
 
 db = SQLAlchemy()
 

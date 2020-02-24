@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from ...json_constants import USER_ID_TAG
 from ..models.company import Company
 from ..models.mention import Mention
 from ..db import insert_rows, delete_rows
@@ -18,7 +19,7 @@ def update_companies(user):
     names = request.get_json()
     if len(names) == 0:
         return bad_request_response("Must have at least one company name")
-    old_companies = Company.query.filter_by(mention_user_id=user.get("user_id")).all()
+    old_companies = Company.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).all()
     old_companies_map = {}
     old_mentions = []
     companies = []
@@ -31,12 +32,12 @@ def update_companies(user):
     for name in names:
         if name in old_companies_map:  # Spare existing names from deletion
             del old_companies[old_companies_map[name]]
-        company_count = Company.query.filter_by(mention_user_id=user.get("user_id"), name=name).count()
+        company_count = Company.query.filter_by(mention_user_id=user.get(USER_ID_TAG), name=name).count()
         if company_count == 0:  # ensure existing names don't try to get inserted
-            companies.append(Company(user.get("user_id"), name))
+            companies.append(Company(user.get(USER_ID_TAG), name))
 
     for company in old_companies:  # Line up mentions for execution
-        old_mentions = old_mentions + Mention.query.filter_by(mention_user_id=user.get("user_id"),
+        old_mentions = old_mentions + Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG),
                                                               company=company.id).all()
 
     result = delete_rows(old_mentions)

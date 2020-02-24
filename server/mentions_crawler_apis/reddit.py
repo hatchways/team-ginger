@@ -3,7 +3,8 @@ import json
 import praw
 import requests
 from .Mention import Mention
-from .constants import REDDIT, SECRET_HASH_TAG, MENTIONS_TAG, RESPONSE_URL, SITE_TAG, USER_ID_TAG
+from .constants import REDDIT, RESPONSE_URL
+from ..json_constants import SECRET_HASH_TAG, MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 
@@ -22,12 +23,12 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="month")
+            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="month")
         else:
-            submissions = _reddit.subreddit("all").search(company["company_name"], sort="new", time_filter="hour")
+            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="hour")
         for submission in submissions:
             if submission.is_self and submission.over_18 is not True:
-                mention = Mention(company["company_id"], submission.url,
+                mention = Mention(company[COMPANY_ID_TAG], submission.url,
                                   submission.selftext, submission.score, submission.created_utc,
                                   submission.title)
                 mentions.append(json.dumps(mention.__dict__))
@@ -35,9 +36,9 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
     requests.post(RESPONSE_URL, json=payload)
 
 
-def enqueue(user_id: int, companies: list, key: str):
+def enqueue(user_id: int, companies: list, key: str, first_run):
     try:
-        search.apply_async((user_id, companies, key, True), task_id=str(user_id)+":"+REDDIT)
+        search.apply_async((user_id, companies, key, first_run), task_id=str(user_id)+":"+REDDIT)
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working
         print(e)
         return e
