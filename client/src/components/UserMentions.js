@@ -5,7 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
-import { RESPONSE_TAG } from "../Constants";
+import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
@@ -14,7 +14,7 @@ const SITE_TO_IMG = { Reddit };
 
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
-const MAX_SNIPPET_CHARACTERS = 1000;
+const MAX_SNIPPET_CHARACTERS = 280;
 
 const styles = theme => ({
     container: {
@@ -94,22 +94,52 @@ class UserMentions extends Component {
         });
     };
 
+    normalizeSnippet = (snippet, regex) => {
+        if (snippet.length < MAX_SNIPPET_CHARACTERS) {
+            return snippet;
+        }
+        const match = snippet.match(regex);
+        if (match) {
+            // Index of first match
+            const index = match.index;
+
+            // Index is in the first MSC characters
+            if (index < MAX_SNIPPET_CHARACTERS) {
+                return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+            }
+            // Index is in the last MSC characters
+            else if (index > snippet.length - MAX_SNIPPET_CHARACTERS) {
+                return snippet.substring(snippet.length - MAX_SNIPPET_CHARACTERS);
+            }
+            // Index is somewhere in the middle
+            else {
+                return snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2);
+            }
+        } else {
+            // Could not find company name so return first
+            return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+        }
+    };
+
+    normalizeTitle = title => (title > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title);
+
     render() {
         const { classes } = this.props;
         const { tabValue, mentions, hasMore } = this.state;
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        // Get regex containing each of the company names as the whole word
+        let reg = names.map(name => "\\b" + name + "\\b");
+        reg = reg.join("|");
+        // g = global flag, i = ignorecase flag
+        const regex = new RegExp(reg, "i");
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // trim long snippets and titles
-                let snippet =
-                    mention.snippet.length > MAX_SNIPPET_CHARACTERS
-                        ? mention.snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "..."
-                        : mention.snippet;
-                let title =
-                    mention.title.length > MAX_TITLE_CHARACTERS
-                        ? mention.title.substring(0, MAX_TITLE_CHARACTERS) + "..."
-                        : mention.title;
+                let snippet = this.normalizeSnippet(mention.snippet, regex);
+
+                let title = this.normalizeTitle(mention.title);
                 renderMentions.push(
                     <Mention
                         key={mention.id}
@@ -118,6 +148,8 @@ class UserMentions extends Component {
                         title={title}
                         snippet={snippet}
                         site={mention.site}
+                        sentiment={mention.sentiment}
+                        regex={reg}
                     />
                 );
             });
@@ -131,7 +163,6 @@ class UserMentions extends Component {
                     </Typography>
                     <div className={classes.mention_tabs}>
                         <Tab
-                            label="Most Recent"
                             label="Most Recent"
                             className={`${classes.mention_tab} ${
                                 tabValue === 0 ? classes.tab_active : classes.tab_inactive

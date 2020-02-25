@@ -14,6 +14,7 @@ class Mention(db.Model):
     hits = db.Column(db.Integer, nullable=False)
     # using integer for now because the reddit api returns things in unix time
     date = db.Column(db.Integer, nullable=False)
+    sentiment = db.Column(db.Float, nullable=False)
 
     def __init__(self, mention_user_id: int, company: int, site_id: str, url: str, snippet: str,
                  hits: int, date: date, title=None):

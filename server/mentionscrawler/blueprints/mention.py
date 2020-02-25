@@ -6,6 +6,7 @@ from ..models.site import SiteAssociation
 from ..models.mention import Mention
 from ..db import insert_rows
 from sqlalchemy.exc import IntegrityError, DataError
+from textblob import TextBlob
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
@@ -16,18 +17,24 @@ SITE_TAG = "site"
 TITLE_TAG = "title"
 SNIPPET_TAG = "snippet"
 HITS_TAG = "hits"
+SENTIMENT_TAG = "sentiment"
 
 
 # gets all sites that are toggled for the user, then calls the appropriate search function for the appropriate api
 @mention_bp.route("/mentions", methods=["POST"])
 @authenticate()
 def set_mentions(user):
-    sites = SiteAssociation.query.filter_by(mention_user_id=user.get("user_id"))
+    sites = SiteAssociation.query.filter_by(
+        mention_user_id=user.get("user_id"))
     mentions = []
     for site in sites:
         temp_mentions = search(user, site.site_name)
         if temp_mentions is not None:
             mentions = mentions + temp_mentions
+    # Perform sentiment analysis
+    for mention in mentions:
+        sentiment = TextBlob(mention.snippet).sentiment.polarity
+        mention.sentiment = sentiment
     result = insert_rows(mentions)
     if result is not True:
         return result
@@ -48,7 +55,8 @@ def mention_response(user, page):
             SITE_TAG: mention.site_id,
             TITLE_TAG: mention.title,
             SNIPPET_TAG: mention.snippet,
-            HITS_TAG: mention.hits
+            HITS_TAG: mention.hits,
+            SENTIMENT_TAG: mention.sentiment
         }
         output_mentions.append(output_mention)
     if len(output_mentions) == 0:
@@ -69,6 +77,7 @@ def get_mention(user, mention_id):
         SITE_TAG: mention.site_id,
         TITLE_TAG: mention.title,
         SNIPPET_TAG: mention.snippet,
-        HITS_TAG: mention.hits
+        HITS_TAG: mention.hits,
+        SENTIMENT_TAG: mention.sentiment
     }
     return jsonify(output_mention), 200
