@@ -42,9 +42,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function boldNames(names, text) {
-    let name = names[0];
+    let reg = names.map(name => "\\b" + name + "\\b");
+    reg = reg.join("|");
+    console.log(reg);
     // g = global flag, i = ignorecase flag
-    const regex = new RegExp("\\b" + name + "\\b", "gi");
+    const regex = new RegExp(reg, "gi");
     const matches = text.matchAll(regex);
 
     // Collect the indices of the bold words
@@ -58,7 +60,9 @@ export function boldNames(names, text) {
     let result = [];
     let index = 0;
     for (let i = 0; i < Indices.length; i += 2) {
+        // Push unbolded string
         result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
+        // Push bolded name
         result.push(
             <Box component="strong" key={i + 1}>
                 {text.substring(Indices[i], Indices[i + 1])}
