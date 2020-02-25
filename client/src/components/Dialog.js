@@ -80,7 +80,7 @@ class Dialog extends Component {
                                 </Typography>
 
                                 <Tooltip
-                                    title={`Score: ${sentiment * 100}`}
+                                    title={`Score: ${Number(sentiment * 100).toFixed()}`}
                                     placement="top"
                                     aria-label="Sentiment score"
                                     className={classes.icon}
