@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
-from ...json_constants import EMAIL_TAG, PASSWORD_TAG, USER_ID_TAG, COMPANY_NAME_TAG
+from ...json_constants import EMAIL_TAG, PASSWORD_TAG, USER_ID_TAG, COMPANIES_TAG
 from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company
@@ -15,7 +15,7 @@ user_bp = Blueprint("users", __name__, url_prefix="/")
 @enforce_json()
 def add():
     body = request.get_json()
-    if EMAIL_TAG in body and COMPANY_NAME_TAG in body and PASSWORD_TAG in body:
+    if EMAIL_TAG in body and COMPANIES_TAG in body and PASSWORD_TAG in body:
         if len(body.get(PASSWORD_TAG)) < 7:
             return bad_request_response("Password too short! Must be greater than 6 characters!")
         new_user = MentionUser(body.get(EMAIL_TAG), generate_password_hash(body.get(PASSWORD_TAG)))
@@ -24,7 +24,7 @@ def add():
             return result
     else:
         return bad_request_response("Invalid request! Missing fields!")
-    new_company = Company(new_user.id, body.get(COMPANY_NAME_TAG))
+    new_company = Company(new_user.id, body.get(COMPANIES_TAG))
     result = insert_row(new_company)
     if result is not True:
         return result

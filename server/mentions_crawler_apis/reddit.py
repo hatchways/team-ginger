@@ -3,7 +3,7 @@ import json
 import praw
 import requests
 from .Mention import Mention
-from .constants import REDDIT, RESPONSE_URL
+from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
 from ..json_constants import SECRET_HASH_TAG, MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
@@ -18,7 +18,7 @@ _reddit = praw.Reddit(client_id=_CLIENT_ID,
 
 
 @app.task(name="reddit.search")
-def search(user_id: int, companies: list, key: str, first_run: bool):
+def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     #  get all company names associated with a user
     mentions = []  # initialize mentions as a list
     for company in companies:
@@ -32,13 +32,17 @@ def search(user_id: int, companies: list, key: str, first_run: bool):
                                   submission.selftext, submission.score, submission.created_utc,
                                   submission.title)
                 mentions.append(json.dumps(mention.__dict__))
-    payload = {SECRET_HASH_TAG: key, USER_ID_TAG: user_id, SITE_TAG: REDDIT, MENTIONS_TAG: mentions}
-    requests.post(RESPONSE_URL, json=payload)
+    payload = {USER_ID_TAG: user_id, SITE_TAG: REDDIT, MENTIONS_TAG: mentions}
+    requests.post(RESPONSE_URL, json=payload, cookies=cookies)
 
 
-def enqueue(user_id: int, companies: list, key: str, first_run):
+def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
-        search.apply_async((user_id, companies, key, first_run), task_id=str(user_id)+":"+REDDIT)
+        if first_run is True:
+            search.apply_async((user_id, companies, cookies, first_run), task_id=str(user_id)+":"+REDDIT)
+        search.apply_async((user_id, companies, cookies, first_run),
+                           task_id=str(user_id)+":"+REDDIT, countdown=SCHEDULE_TIME)
+
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working
         print(e)
         return e

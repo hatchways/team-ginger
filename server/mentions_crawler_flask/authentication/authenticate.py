@@ -29,6 +29,6 @@ def authenticate():
 
                 return fn(user=user, *args, **kwargs)
 
-            return error_response("No user logged in. Please log in again.")
+            return error_response("No user logged in. Please log in again.", "No User Logged In")
         return wrapper
     return wrap

@@ -1,5 +1,7 @@
+from ..json_constants import TOKEN_TAG, COMPANIES_TAG
 from . import reddit
-from .constants import REDDIT
+from .constants import REDDIT, COMPANIES_URL
+import requests
 
 enqueue_dict = {REDDIT: reddit.enqueue}
 # stop_job_dict = {REDDIT: reddit.stop_job}
@@ -9,5 +11,22 @@ enqueue_dict = {REDDIT: reddit.enqueue}
 #     stop_job_dict[site](user_id)
 
 
-def enqueue(site: str, user_id: int, companies: list, key: str, first_run=True):
-    return enqueue_dict[site](user_id, companies, key, first_run)
+def enqueue(site: str, user_id: int, token: str, first_run=True):
+    cookies = {TOKEN_TAG: token}
+    try:
+        request = requests.get(COMPANIES_URL, cookies=cookies)
+        if request.status_code == 200:
+            print("Entered enqueue")
+            try:
+                companies = request.json().get(COMPANIES_TAG)
+            except ValueError as e:
+                print(e)
+                return False
+
+            return enqueue_dict[site](user_id, companies, cookies, first_run)
+        else:
+            print(request.text)
+    except requests.RequestException as e:
+        print(e)
+
+    return False

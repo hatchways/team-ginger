@@ -1,5 +1,6 @@
 # Some convenience functions to ensure consistent response data (no typos in response tags)
 from flask import make_response, jsonify, current_app
+from ...json_constants import TOKEN_TAG
 from ..authentication.token import generate_token
 
 _RESPONSE_TAG = "response"
@@ -8,7 +9,6 @@ _EMAIL_TAG = "email"
 _COMPANY_NAMES_TAG = "names"
 _SITES_TAG = "sites"
 
-TOKEN_TAG = "mentions_crawler_token"
 EXPECTED_JSON = "Expected to receive json, did not get json!"
 
 Reddit = False

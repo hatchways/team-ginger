@@ -9,7 +9,7 @@ export const DIALOG_URL = DASHBOARD_URL + "/mention/";
 //Server Response Constants
 export const EMAIL_TAG = "email";
 export const RESPONSE_TAG = "response";
-export const COMPANY_NAMES_TAG = "company_name";
+export const COMPANY_NAMES_TAG = "companies";
 export const SITES_TAG = "sites";
 
 //Crawling Service Constants

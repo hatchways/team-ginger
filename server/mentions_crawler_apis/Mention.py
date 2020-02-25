@@ -1,6 +1,3 @@
-import json
-
-
 class Mention:
     company_id: int
     url: str
