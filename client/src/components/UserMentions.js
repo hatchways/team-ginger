@@ -118,6 +118,7 @@ class UserMentions extends Component {
                         title={title}
                         snippet={snippet}
                         site={mention.site}
+                        sentiment={mention.sentiment}
                     />
                 );
             });

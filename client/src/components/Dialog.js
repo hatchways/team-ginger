@@ -4,12 +4,13 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG } from "../Constants";
+import { RESPONSE_TAG, SentimentToIcon } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
+import Tooltip from "@material-ui/core/Tooltip";
 import CallMadeIcon from "@material-ui/icons/CallMade";
 
 // Map the name of a site to their logo image reference
@@ -36,6 +37,16 @@ const styles = theme => ({
         marginLeft: theme.spacing(2),
         maxWidth: 900
     },
+    header: {
+        display: "flex"
+    },
+    title: {
+        flexGrow: 1,
+        marginRight: theme.spacing(1)
+    },
+    icon: {
+        color: theme.primary
+    },
     snippet: {
         gridColumn: "span 2",
         wordBreak: "break-word"
@@ -52,17 +63,30 @@ class Dialog extends Component {
         const { mention, message } = this.state;
 
         if (mention) {
-            let snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
-            let snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
+            const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
+            const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
+            const sentiment = Number(Number(mention.sentiment).toFixed(2));
             return (
                 <React.Fragment>
                     <Paper className={classes.container}>
                         <img src={SITE_TO_IMG[mention.site]} className={classes.image} />
 
                         <Box className={classes.info}>
-                            <Typography variant="h4" noWrap>
-                                {mention.title}
-                            </Typography>
+                            <Box className={classes.header}>
+                                <Typography variant="h4" noWrap className={classes.title}>
+                                    {mention.title}
+                                </Typography>
+
+                                <Tooltip
+                                    title={`Score: ${sentiment}`}
+                                    placement="top"
+                                    aria-label="Sentiment score"
+                                    className={classes.icon}
+                                >
+                                    {SentimentToIcon(mention.sentiment)}
+                                </Tooltip>
+                            </Box>
+
                             <Typography variant="h5" color="textSecondary">
                                 {mention.site}
                             </Typography>
