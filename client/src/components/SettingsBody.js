@@ -10,10 +10,16 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
-import "../utilities/array";
-import {COMPANY_NAMES_TAG, EMAIL_TAG, RESPONSE_TAG} from "../Constants";
+import { COMPANY_NAMES_TAG, EMAIL_TAG, RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR } from "../Constants";
+import { useSnackbar } from "notistack";
 
 const MAX_NAME_LIMIT = 5;
+const NO_NAME_MESSAGE = "Must have at least one name";
+const DUPLICATE_NAME_MESSAGE = "Cannot have two identical names";
+const EMPTY_NAME_MESSAGE = "Cannot have an empty name";
+const EMAIL_CHANGE_MESSAGE = "Email succesfully changed";
+const NAME_CHANGE_MESSAGE = "Company names succesfully changed";
+const BOTH_CHANGE_MESSAGE = "Email and Company names successfully changed";
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -45,15 +51,21 @@ const useStyles = makeStyles(theme => ({
 function SettingsBody(props) {
     const classes = useStyles();
 
-    let [names, setNames] = useState(localStorage.getItem(COMPANY_NAMES_TAG).split(","));
-    // Array of 1 converts into string in localstorage
+    const [names, setNames] = useState(localStorage.getItem(COMPANY_NAMES_TAG).split(","));
 
     const [email, setEmail] = useState(localStorage.getItem(EMAIL_TAG));
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     // When a user adds a name
     const addName = name => {
-        // Prevent duplicate names
-        if (!names.find(entry => entry === name)) {
+        // Prevent duplicate and empty names
+        if (name === "") {
+            enqueueSnackbar(EMPTY_NAME_MESSAGE, BAD_SNACKBAR);
+        } else if (!names.find(entry => entry === name)) {
             setNames(names.concat(name));
+        } else {
+            enqueueSnackbar(DUPLICATE_NAME_MESSAGE, BAD_SNACKBAR);
         }
     };
 
@@ -63,59 +75,96 @@ function SettingsBody(props) {
             let index = names.findIndex(n => n === name);
             setNames(names.slice(0, index).concat(names.slice(index + 1, names.length)));
         } else {
-            // Popup alert here
+            enqueueSnackbar(NO_NAME_MESSAGE, BAD_SNACKBAR);
         }
     };
 
-    //  When the user hits save
-    const handleSave = () => {
-        if (localStorage.getItem(EMAIL_TAG) !== email)
-        {
-            fetch(USERS_ROUTE, {
+    const isEqualNames = () => {
+        const oldNames = localStorage
+            .getItem("names")
+            .split(",")
+            .sort();
+        const newNames = names.sort();
+        let isSame = oldNames.length === newNames.length;
+        if (isSame) {
+            oldNames.forEach((oldName, index) => (isSame = isSame && oldName === newNames[index]));
+        }
+
+        return isSame;
+    };
+
+    const handleEmailChange = (resolve, reject) =>
+        fetch(USERS_ROUTE, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ email })
-            }).then(res => {
-                if (res.status === 200) {
-                    localStorage.setItem(EMAIL_TAG, email);
-                    console.log("Changed email");
-                } else {
-                    res.json().then(data => {
-                        console.log(res.status, data[RESPONSE_TAG]);
-                    });
-                }
-            });
-        }
-        else
-        {
-            console.log("Email has not changed!");
-        }
+        })
+            .then(res => resolve(res))
+            .catch(err => reject(err));
 
-        if (!localStorage.getItem("names").split(",").equals(names))
-        {
-            fetch(COMPANIES_ROUTE, {
+    const handleNamesChange = (resolve, reject) =>
+        fetch(COMPANIES_ROUTE, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(names)
-            })
-            .then(res => {
-                if (res.status === 200) {
-                    localStorage.setItem(COMPANY_NAMES_TAG, names);
-                    console.log("Names have been changed");
+        })
+            .then(res => resolve(res))
+            .catch(err => reject(err));
+
+    //  When the user hits save
+    const handleSave = () => {
+        let requestedEmailChange = false;
+        let requestedNameChange = false;
+        let emailChanged = false;
+        let namesChanged = false;
+        let emailPromise = Promise.resolve(true);
+        let namesPromise = Promise.resolve(true);
+
+        if (localStorage.getItem(EMAIL_TAG) !== email) {
+            emailPromise = new Promise(handleEmailChange);
+            requestedEmailChange = true;
+        }
+
+        if (!isEqualNames()) {
+            namesPromise = new Promise(handleNamesChange);
+            requestedNameChange = true;
+        }
+
+        Promise.all([emailPromise, namesPromise]).then(function([emailResponse, namesResponse]) {
+            if (requestedEmailChange) {
+                if (emailResponse.status === 200) {
+                    localStorage.setItem(EMAIL_TAG, email);
+                    emailChanged = true;
                 } else {
-                    res.json().then(data => {
-                        console.log(res.status, data[RESPONSE_TAG]);
+                    emailResponse.json().then(data => {
+                        enqueueSnackbar(data[RESPONSE_TAG], BAD_SNACKBAR);
                     });
                 }
-            })
-            .catch(err => console.error("Error: ", err));
-        }
-        else
-        {
-            console.log("Names have not changed!");
-        }
+            }
+
+            if (requestedNameChange) {
+                if (namesResponse.status === 200) {
+                    localStorage.setItem(COMPANY_NAMES_TAG, names);
+                    namesChanged = true;
+                } else {
+                    namesResponse.json().then(data => {
+                        enqueueSnackbar(`Error: ${data[RESPONSE_TAG]}`, BAD_SNACKBAR);
+                    });
+                }
+            }
+
+            if (emailChanged) {
+                if (namesChanged) {
+                    enqueueSnackbar(BOTH_CHANGE_MESSAGE, GOOD_SNACKBAR);
+                } else {
+                    enqueueSnackbar(EMAIL_CHANGE_MESSAGE, GOOD_SNACKBAR);
+                }
+            } else if (namesChanged) {
+                enqueueSnackbar(NAME_CHANGE_MESSAGE, GOOD_SNACKBAR);
+            }
+        });
     };
 
     const filledNames = names.map(name => (

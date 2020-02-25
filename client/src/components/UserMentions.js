@@ -166,6 +166,13 @@ class UserMentions extends Component {
         );
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.updatePlatforms !== prevProps.updatePlatforms) {
+            // platforms have changed so populate mentions table again
+            this.componentDidMount();
+        }
+    }
+
     componentDidMount() {
         this.fetchMentions();
     }
