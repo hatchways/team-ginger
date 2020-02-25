@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SentimentToIcon } from "../Constants";
+import { RESPONSE_TAG, SentimentToIcon, COMPANY_NAMES_TAG } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import Tooltip from "@material-ui/core/Tooltip";
 import CallMadeIcon from "@material-ui/icons/CallMade";
+import { boldNames } from "./Mention";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -66,6 +67,7 @@ class Dialog extends Component {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
             const sentiment = Number(Number(mention.sentiment).toFixed(2));
+            const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
             return (
                 <React.Fragment>
                     <Paper className={classes.container}>
@@ -74,7 +76,7 @@ class Dialog extends Component {
                         <Box className={classes.info}>
                             <Box className={classes.header}>
                                 <Typography variant="h4" noWrap className={classes.title}>
-                                    {mention.title}
+                                    {boldNames(names, mention.title)}
                                 </Typography>
 
                                 <Tooltip
@@ -102,7 +104,7 @@ class Dialog extends Component {
 
                         <Box className={classes.snippet}>
                             <Typography variant="body1" color={snippetColor}>
-                                {snippet}
+                                {boldNames(names, snippet)}
                             </Typography>
                         </Box>
                     </Paper>

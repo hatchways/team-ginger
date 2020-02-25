@@ -5,7 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
-import { RESPONSE_TAG } from "../Constants";
+import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
@@ -14,7 +14,7 @@ const SITE_TO_IMG = { Reddit };
 
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
-const MAX_SNIPPET_CHARACTERS = 1000;
+const MAX_SNIPPET_CHARACTERS = 280;
 
 const styles = theme => ({
     container: {
@@ -94,6 +94,12 @@ class UserMentions extends Component {
         });
     };
 
+    normalizeSnippet = snippet => {
+        return snippet;
+    };
+
+    normalizeTitle = title => (title > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title);
+
     render() {
         const { classes } = this.props;
         const { tabValue, mentions, hasMore } = this.state;
@@ -102,14 +108,9 @@ class UserMentions extends Component {
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // trim long snippets and titles
-                let snippet =
-                    mention.snippet.length > MAX_SNIPPET_CHARACTERS
-                        ? mention.snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "..."
-                        : mention.snippet;
-                let title =
-                    mention.title.length > MAX_TITLE_CHARACTERS
-                        ? mention.title.substring(0, MAX_TITLE_CHARACTERS) + "..."
-                        : mention.title;
+                let snippet = this.normalizeSnippet(mention.snippet);
+
+                let title = this.normalizeTitle(mention.title);
                 renderMentions.push(
                     <Mention
                         key={mention.id}
@@ -132,7 +133,6 @@ class UserMentions extends Component {
                     </Typography>
                     <div className={classes.mention_tabs}>
                         <Tab
-                            label="Most Recent"
                             label="Most Recent"
                             className={`${classes.mention_tab} ${
                                 tabValue === 0 ? classes.tab_active : classes.tab_inactive

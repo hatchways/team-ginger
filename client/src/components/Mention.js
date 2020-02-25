@@ -9,7 +9,7 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { default as Modal } from "@material-ui/core/Dialog";
 import Tooltip from "@material-ui/core/Tooltip";
-import { SentimentToIcon } from "../Constants";
+import { SentimentToIcon, COMPANY_NAMES_TAG } from "../Constants";
 import Dialog from "./Dialog";
 
 const useStyles = makeStyles(theme => ({
@@ -41,10 +41,41 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+export function boldNames(names, text) {
+    let name = names[0];
+    // g = global flag, i = ignorecase flag
+    const regex = new RegExp("\\b" + name + "\\b", "gi");
+    const matches = text.matchAll(regex);
+
+    // Collect the indices of the bold words
+    let Indices = [];
+    for (const match of matches) {
+        Indices.push(match.index);
+        Indices.push(match.index + match[0].length);
+    }
+
+    // Bold the words by wrapping a strong tag around them
+    let result = [];
+    let index = 0;
+    for (let i = 0; i < Indices.length; i += 2) {
+        result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
+        result.push(
+            <Box component="strong" key={i + 1}>
+                {text.substring(Indices[i], Indices[i + 1])}
+            </Box>
+        );
+        index = Indices[i + 1];
+    }
+    result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
+    return result;
+}
+
 function Mention(props) {
     const classes = useStyles();
+    const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
     const [open, setOpen] = useState(false);
     const sentiment = Number(Number(props.sentiment).toFixed(2));
+    //boldNames(names, props.snippet);
     return (
         <React.Fragment>
             <Paper className={classes.card} onClick={() => setOpen(true)}>
@@ -53,7 +84,7 @@ function Mention(props) {
                 <Box className={classes.text}>
                     <Box className={classes.header}>
                         <Typography variant="body1" className={classes.title}>
-                            {props.title}
+                            {boldNames(names, props.title)}
                         </Typography>
 
                         <Tooltip
@@ -69,7 +100,7 @@ function Mention(props) {
                         {props.site}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                        {props.snippet}
+                        {boldNames(names, props.snippet)}
                     </Typography>
                 </Box>
             </Paper>
