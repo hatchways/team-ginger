@@ -14,14 +14,16 @@ class Mention(db.Model):
     hits = db.Column(db.Integer, nullable=False)
     # using integer for now because the reddit api returns things in unix time
     date = db.Column(db.Integer, nullable=False)
+    sentiment = db.Column(db.Float, nullable=False)
 
     def __init__(self, mention_user_id: int, company: int, site_id: str, url: str, snippet: str,
-                 hits: int, date: date, title=None):
+                 hits: int, date: int, sentiment: float, title: str = None):
         self.mention_user_id = mention_user_id
         self.company = company
         self.site_id = site_id
         self.url = url
         self.snippet = snippet
         self.hits = hits
+        self.sentiment = sentiment
         self.title = title
         self.date = date

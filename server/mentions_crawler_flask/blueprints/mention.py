@@ -1,9 +1,9 @@
 from flask import Blueprint
-from ...json_constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG
+from ...json_constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, no_content_response, not_found_response
 from ..models.mention import Mention
-
+from ..db import insert_rows
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
@@ -25,7 +25,8 @@ def mention_response(user, page):
             SITE_TAG: mention.site_id,
             TITLE_TAG: mention.title,
             SNIPPET_TAG: mention.snippet,
-            HITS_TAG: mention.hits
+            HITS_TAG: mention.hits,
+            SENTIMENT_TAG: mention.sentiment
         }
         output_mentions.append(output_mention)
     if len(output_mentions) == 0:
@@ -46,6 +47,7 @@ def get_mention(user, mention_id):
         SITE_TAG: mention.site_id,
         TITLE_TAG: mention.title,
         SNIPPET_TAG: mention.snippet,
-        HITS_TAG: mention.hits
+        HITS_TAG: mention.hits,
+        SENTIMENT_TAG: mention.sentiment
     }
     return data_response(output_mention)

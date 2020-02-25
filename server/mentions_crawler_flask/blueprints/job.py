@@ -8,6 +8,7 @@ from ..models.mention import Mention
 from ..models.site import SiteAssociation, Site
 from ..db import insert_rows
 from celery.result import AsyncResult
+from textblob import TextBlob
 
 job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
@@ -62,9 +63,11 @@ def responses(user):
                 mention_count = Mention.query.filter_by(mention_user_id=user_id, url=json_mention[URL_TAG],
                                                         date=json_mention[DATE_TAG]).count()
                 if mention_count == 0:
+                    sentiment = TextBlob(json_mention[SNIPPET_TAG]).sentiment.polarity
                     db_mentions.append(Mention(user_id, json_mention[COMPANY_ID_TAG], site,
                                                json_mention[URL_TAG], json_mention[SNIPPET_TAG], json_mention[HITS_TAG],
-                                               json_mention[DATE_TAG], json_mention[TITLE_TAG]))
+                                               json_mention[DATE_TAG], sentiment, json_mention[TITLE_TAG]))
+
             result = insert_rows(db_mentions)
             if result is not True:
                 return result

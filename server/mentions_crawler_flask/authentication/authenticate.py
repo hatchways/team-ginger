@@ -26,9 +26,7 @@ def authenticate():
                     user = decode_token(current_app.secret_key, auth_token)
                 except InvalidTokenError:
                     return unauthorized_response("Invalid token")
-
                 return fn(user=user, *args, **kwargs)
-
-            return error_response("No user logged in. Please log in again.", "No User Logged In")
+            return error_response("No user logged in. Please log in again.", "Unauthorized")
         return wrapper
     return wrap
