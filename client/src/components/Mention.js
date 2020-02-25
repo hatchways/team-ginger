@@ -57,7 +57,7 @@ function Mention(props) {
                         </Typography>
 
                         <Tooltip
-                            title={`Score: ${sentiment}`}
+                            title={`Score: ${sentiment * 100}`}
                             placement="top"
                             aria-label="Sentiment score"
                             className={classes.icon}
