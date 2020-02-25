@@ -94,8 +94,31 @@ class UserMentions extends Component {
         });
     };
 
-    normalizeSnippet = snippet => {
-        return snippet;
+    normalizeSnippet = (snippet, regex) => {
+        if (snippet.length < MAX_SNIPPET_CHARACTERS) {
+            return snippet;
+        }
+        const match = snippet.match(regex);
+        if (match) {
+            // Index of first match
+            const index = match.index;
+
+            // Index is in the first MSC characters
+            if (index < MAX_SNIPPET_CHARACTERS) {
+                return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+            }
+            // Index is in the last MSC characters
+            else if (index > snippet.length - MAX_SNIPPET_CHARACTERS) {
+                return snippet.substring(snippet.length - MAX_SNIPPET_CHARACTERS);
+            }
+            // Index is somewhere in the middle
+            else {
+                return snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2);
+            }
+        } else {
+            // Could not find company name so return first
+            return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+        }
     };
 
     normalizeTitle = title => (title > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title);
@@ -103,12 +126,18 @@ class UserMentions extends Component {
     render() {
         const { classes } = this.props;
         const { tabValue, mentions, hasMore } = this.state;
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        // Get regex containing each of the company names as the whole word
+        let reg = names.map(name => "\\b" + name + "\\b");
+        reg = reg.join("|");
+        // g = global flag, i = ignorecase flag
+        const regex = new RegExp(reg, "i");
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // trim long snippets and titles
-                let snippet = this.normalizeSnippet(mention.snippet);
+                let snippet = this.normalizeSnippet(mention.snippet, regex);
 
                 let title = this.normalizeTitle(mention.title);
                 renderMentions.push(
@@ -120,6 +149,7 @@ class UserMentions extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
+                        regex={reg}
                     />
                 );
             });

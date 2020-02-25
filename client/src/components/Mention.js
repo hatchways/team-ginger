@@ -41,10 +41,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export function boldNames(names, text) {
-    let reg = names.map(name => "\\b" + name + "\\b");
-    reg = reg.join("|");
-    console.log(reg);
+export function boldNames(reg, text) {
     // g = global flag, i = ignorecase flag
     const regex = new RegExp(reg, "gi");
     const matches = text.matchAll(regex);
@@ -76,10 +73,10 @@ export function boldNames(names, text) {
 
 function Mention(props) {
     const classes = useStyles();
-    const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
     const [open, setOpen] = useState(false);
     const sentiment = Number(Number(props.sentiment).toFixed(2));
-    //boldNames(names, props.snippet);
+    const regex = props.regex;
+
     return (
         <React.Fragment>
             <Paper className={classes.card} onClick={() => setOpen(true)}>
@@ -88,11 +85,11 @@ function Mention(props) {
                 <Box className={classes.text}>
                     <Box className={classes.header}>
                         <Typography variant="body1" className={classes.title}>
-                            {boldNames(names, props.title)}
+                            {boldNames(regex, props.title)}
                         </Typography>
 
                         <Tooltip
-                            title={`Score: ${sentiment * 100}`}
+                            title={`Score: ${Number(sentiment * 100).toFixed()}`}
                             placement="top"
                             aria-label="Sentiment score"
                             className={classes.icon}
@@ -104,12 +101,12 @@ function Mention(props) {
                         {props.site}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                        {boldNames(names, props.snippet)}
+                        {boldNames(regex, props.snippet)}
                     </Typography>
                 </Box>
             </Paper>
             <Modal open={open} onClose={() => setOpen(false)} maxWidth="xl" scroll="paper">
-                <Dialog id={props.id} />
+                <Dialog id={props.id} regex={props.regex} />
             </Modal>
         </React.Fragment>
     );

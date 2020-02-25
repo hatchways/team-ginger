@@ -67,7 +67,7 @@ class Dialog extends Component {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
             const sentiment = Number(Number(mention.sentiment).toFixed(2));
-            const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+            const regex = this.props.regex;
             return (
                 <React.Fragment>
                     <Paper className={classes.container}>
@@ -76,7 +76,7 @@ class Dialog extends Component {
                         <Box className={classes.info}>
                             <Box className={classes.header}>
                                 <Typography variant="h4" noWrap className={classes.title}>
-                                    {boldNames(names, mention.title)}
+                                    {boldNames(regex, mention.title)}
                                 </Typography>
 
                                 <Tooltip
@@ -104,7 +104,7 @@ class Dialog extends Component {
 
                         <Box className={classes.snippet}>
                             <Typography variant="body1" color={snippetColor}>
-                                {boldNames(names, snippet)}
+                                {boldNames(regex, snippet)}
                             </Typography>
                         </Box>
                     </Paper>
