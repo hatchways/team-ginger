@@ -4,7 +4,7 @@ import praw
 import requests
 from .Mention import Mention
 from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
-from ..json_constants import SECRET_HASH_TAG, MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
+from ..json_constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 
@@ -39,14 +39,15 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
 def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
         if first_run is True:
-            search.apply_async((user_id, companies, cookies, first_run), task_id=str(user_id)+":"+REDDIT)
-        search.apply_async((user_id, companies, cookies, first_run),
-                           task_id=str(user_id)+":"+REDDIT, countdown=SCHEDULE_TIME)
+            result = search.apply_async((user_id, companies, cookies, first_run))
+        else:
+            result = search.apply_async((user_id, companies, cookies, first_run),
+                                        countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working
         print(e)
         return e
-    return True
+    return result
 
 
 '''

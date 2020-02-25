@@ -17,7 +17,9 @@ praw = "*"
 python-dotenv = "*"
 pytest = "*"
 celery = "*"
+redis = "*"
 requests = "*"
+flower = "*"
 
 [requires]
 python_version = "3.7"

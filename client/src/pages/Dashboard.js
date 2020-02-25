@@ -4,7 +4,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
 import Platforms from "../components/Platforms";
 import UserMentions from "../components/UserMentions";
-import { SETTINGS_URL, LOGIN_URL } from "../Constants";
+import { SETTINGS_URL, LOGIN_URL, COMPANY_NAMES_TAG, EMAIL_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     mentions_layout: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
     const classes = useStyles();
-    if (!localStorage.getItem("names") || !localStorage.getItem("email")) {
+    if (!localStorage.getItem(COMPANY_NAMES_TAG) || !localStorage.getItem(EMAIL_TAG)) {
         window.location = LOGIN_URL;
     }
     return (
