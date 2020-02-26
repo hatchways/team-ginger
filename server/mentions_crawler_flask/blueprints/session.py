@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
+from ...json_constants import EMAIL_TAG, PASSWORD_TAG
 from ..models.user import MentionUser
 from ..models.company import Company
 from ..models.site import SiteAssociation, get_sites
@@ -13,10 +14,10 @@ session_bp = Blueprint("session", __name__, url_prefix="/")
 @enforce_json()
 def login():
     body = request.get_json()
-    if body.get("email") and body.get("password"):
-        user = MentionUser.query.filter_by(email=body.get("email")).first()
+    if body.get(EMAIL_TAG) and body.get(PASSWORD_TAG):
+        user = MentionUser.query.filter_by(email=body.get(EMAIL_TAG)).first()
         if user is not None:
-            if check_password_hash(user.password, body.get("password")):
+            if check_password_hash(user.password, body.get(PASSWORD_TAG)):
 
                 companies = Company.query.filter_by(mention_user_id=user.id).all()
                 company_names = []
@@ -28,7 +29,7 @@ def login():
                 # Set the sites associated with the user to true
                 for site_association in site_associations:
                     sites[site_association.site_name] = True
-                return token_response("Successfully validated "+body.get("email"),
+                return token_response("Successfully validated "+body.get(EMAIL_TAG),
                                       user.email, company_names, user.id, sites)
         return bad_request_response("Either email or password was incorrect!")
 

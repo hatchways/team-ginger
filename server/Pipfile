@@ -16,6 +16,10 @@ psycopg2 = "*"
 praw = "*"
 python-dotenv = "*"
 pytest = "*"
+celery = "*"
+redis = "*"
+requests = "*"
+flower = "*"
 textblob = "*"
 
 [requires]

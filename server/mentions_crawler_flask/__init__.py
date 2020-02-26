@@ -7,7 +7,6 @@ def create_app(testing=False):
     from .responses import error_response
     from .blueprints import blueprints
     import os
-    
     app = Flask(__name__, instance_relative_config=True)
 
     directory_name = os.path.dirname(__file__)

@@ -205,12 +205,7 @@ class UserMentions extends Component {
     }
 
     componentDidMount() {
-        // make request to populate mentions table
-        fetch(MENTIONS_ROUTE, { method: "POST", headers: { "Content-Type": "application/json" } })
-            .then(res => res.json())
-            .then(data => {
-                this.fetchMentions();
-            });
+        this.fetchMentions();
     }
 }
 

@@ -1,14 +1,12 @@
 from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
+from ...json_constants import EMAIL_TAG, PASSWORD_TAG, USER_ID_TAG, COMPANIES_TAG
 from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company
 from ..models.site import get_sites
 from ..db import insert_row, commit
-from sqlalchemy.exc import IntegrityError, DataError
-from psycopg2.errorcodes import (UNIQUE_VIOLATION, FOREIGN_KEY_VIOLATION, STRING_DATA_RIGHT_TRUNCATION,
-                                 NUMERIC_VALUE_OUT_OF_RANGE)
-from ..responses import *
+from ..responses import bad_request_response, ok_response, created_response
 
 user_bp = Blueprint("users", __name__, url_prefix="/")
 
@@ -17,16 +15,16 @@ user_bp = Blueprint("users", __name__, url_prefix="/")
 @enforce_json()
 def add():
     body = request.get_json()
-    if "email" in body and "name" in body and "password" in body:
-        if len(body["password"]) < 7:
+    if EMAIL_TAG in body and COMPANIES_TAG in body and PASSWORD_TAG in body:
+        if len(body.get(PASSWORD_TAG)) < 7:
             return bad_request_response("Password too short! Must be greater than 6 characters!")
-        new_user = MentionUser(body["email"], generate_password_hash(body["password"]))
+        new_user = MentionUser(body.get(EMAIL_TAG), generate_password_hash(body.get(PASSWORD_TAG)))
         result = insert_row(new_user)
         if result is not True:
             return result
     else:
         return bad_request_response("Invalid request! Missing fields!")
-    new_company = Company(new_user.id, body.get("name"))
+    new_company = Company(new_user.id, body.get(COMPANIES_TAG))
     result = insert_row(new_company)
     if result is not True:
         return result
@@ -40,10 +38,10 @@ def add():
 @authenticate()
 def update(user):
     body = request.get_json()
-    if body.get("email"):
-        if MentionUser.query.filter_by(email=body.get("email")).count() == 0:
-            _user = MentionUser.query.filter_by(id=user.get("user_id")).first()
-            _user.email = body.get("email")
+    if body.get(EMAIL_TAG):
+        if MentionUser.query.filter_by(email=body.get(EMAIL_TAG)).count() == 0:
+            _user = MentionUser.query.filter_by(id=user.get(USER_ID_TAG)).first()
+            _user.email = body.get(EMAIL_TAG)
             result = commit()
             if result is not True:
                 return result
@@ -58,10 +56,6 @@ def update(user):
 @enforce_json()
 @authenticate()
 def delete(user):
-    return "DELETED!"
+    return "DELETED! (not really though)"
 
-
-@user_bp.route("/test")
-def test():
-    return jsonify({'cheese': 'GOUDA!'})
 
