@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import AccountForm from "./AccountForm";
 import { LOGIN_ROUTE } from "../Routes";
-import {COMPANY_NAMES_TAG, DASHBOARD_URL, EMAIL_TAG, SITES_TAG} from "../Constants";
+import { COMPANY_NAMES_TAG, DASHBOARD_URL, EMAIL_TAG, SITES_TAG } from "../Constants";
 
 const INCORRECT_ERR_MSG = "Incorrect email or password";
 
