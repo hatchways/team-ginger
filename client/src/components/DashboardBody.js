@@ -60,7 +60,7 @@ const styles = theme => ({
     }
 });
 
-class UserMentions extends Component {
+class DashboardBody extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -197,16 +197,9 @@ class UserMentions extends Component {
         );
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.updatePlatforms !== prevProps.updatePlatforms) {
-            // platforms have changed so populate mentions table again
-            this.componentDidMount();
-        }
-    }
-
     componentDidMount() {
         this.fetchMentions();
     }
 }
 
-export default withStyles(styles)(UserMentions);
+export default withStyles(styles)(DashboardBody);

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
-import Platforms from "../components/Platforms";
-import UserMentions from "../components/UserMentions";
+import DashboardSideBar from "../components/DashboardSideBar";
+import DashboardBody from "../components/DashboardBody";
 
 import { SETTINGS_URL, REDIRECT_TO_LOGIN } from "../Constants";
 
@@ -15,11 +15,10 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Dashboard(props) {
+function Dashboard() {
     REDIRECT_TO_LOGIN();
 
     const classes = useStyles();
-    const [updatePlatforms, setUpdate] = useState(0);
 
     return (
         <React.Fragment>
@@ -27,8 +26,8 @@ function Dashboard(props) {
                 <SettingsIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.mentions_layout}>
-                <Platforms updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
-                <UserMentions updatePlatforms={updatePlatforms} />
+                <DashboardSideBar />
+                <DashboardBody />
             </div>
         </React.Fragment>
     );

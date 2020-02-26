@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SentimentToIcon, COMPANY_NAMES_TAG } from "../Constants";
+import { RESPONSE_TAG, SentimentToIcon } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -71,7 +71,7 @@ class Dialog extends Component {
             return (
                 <React.Fragment>
                     <Paper className={classes.container}>
-                        <img src={SITE_TO_IMG[mention.site]} className={classes.image} />
+                        <img src={SITE_TO_IMG[mention.site]} className={classes.image} alt="Thumbnail" />
 
                         <Box className={classes.info}>
                             <Box className={classes.header}>

@@ -9,7 +9,7 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { default as Modal } from "@material-ui/core/Dialog";
 import Tooltip from "@material-ui/core/Tooltip";
-import { SentimentToIcon, COMPANY_NAMES_TAG } from "../Constants";
+import { SentimentToIcon } from "../Constants";
 import Dialog from "./Dialog";
 
 const useStyles = makeStyles(theme => ({
@@ -80,7 +80,7 @@ function Mention(props) {
     return (
         <React.Fragment>
             <Paper className={classes.card} onClick={() => setOpen(true)}>
-                <img src={props.img} className={classes.image} />
+                <img src={props.img} className={classes.image} alt="Thumbnail" />
 
                 <Box className={classes.text}>
                     <Box className={classes.header}>
