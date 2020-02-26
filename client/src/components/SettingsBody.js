@@ -81,7 +81,7 @@ function SettingsBody(props) {
 
     const isEqualNames = () => {
         const oldNames = localStorage
-            .getItem("names")
+            .getItem(COMPANY_NAMES_TAG)
             .split(",")
             .sort();
         const newNames = names.sort();
