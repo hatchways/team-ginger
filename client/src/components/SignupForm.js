@@ -57,8 +57,8 @@ class SignupForm extends Component {
                     // Token received => success
                     if (res.status === 201) {
                         res.json().then(data => {
-                            localStorage.setItem(EMAIL_TAG, data.email);
-                            localStorage.setItem(COMPANY_NAMES_TAG, data.names);
+                            localStorage.setItem(EMAIL_TAG, data[EMAIL_TAG]);
+                            localStorage.setItem(COMPANY_NAMES_TAG, data[COMPANY_NAMES_TAG]);
                             localStorage.setItem(SITES_TAG, JSON.stringify(data[SITES_TAG]));
                             window.location = DASHBOARD_URL;
                         });

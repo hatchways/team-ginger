@@ -55,7 +55,7 @@ function SettingsBody(props) {
 
     const [email, setEmail] = useState(localStorage.getItem(EMAIL_TAG));
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     // When a user adds a name
     const addName = name => {

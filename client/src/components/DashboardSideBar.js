@@ -17,15 +17,14 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Platforms(props) {
+function DashboardSideBar() {
     const classes = useStyles();
-    const { updatePlatforms, setUpdate } = props;
     return (
         <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={REDDIT} updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
+            <PlatformCard site_img={RedditImg} site_name={REDDIT} />
             <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"} />
         </div>
     );
 }
 
-export default Platforms;
+export default DashboardSideBar;
