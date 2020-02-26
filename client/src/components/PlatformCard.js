@@ -104,7 +104,7 @@ function PlatformCard(props) {
         <div className={classes.card}>
             <img src={site_img} className={classes.platform_logo} alt={"Platform logo"} />
             <Typography className={classes.platform_name}>{site_name}</Typography>
-            <CustomSwitch checked={check} onClick={handleClick} inputProps={{ "aria-label": site_name + "checkbox" }} />
+            <CustomSwitch checked={check} onClick={handleClick} inputProps={{ "aria-label": site_name + " checkbox" }} />
         </div>
     );
 }
