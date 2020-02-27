@@ -17,6 +17,7 @@ const SITE_TO_IMG = { Reddit };
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;
+
 const styles = theme => ({
     container: {
         width: "90%",
@@ -60,6 +61,7 @@ const styles = theme => ({
         height: "70vh"
     }
 });
+
 class DashboardBody extends Component {
     constructor(props) {
         super(props);
@@ -67,7 +69,8 @@ class DashboardBody extends Component {
             tabValue: 1,
             page: 0,
             mentions: {},
-            hasMore: true
+            hasMore: true,
+            fetched: false
         };
     }
 
@@ -107,7 +110,7 @@ class DashboardBody extends Component {
         fetch(MENTIONS_ROUTE + "/" + page, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => {
             if (res.status === 204) {
                 // no more mentions to fetch
-                this.setState({ hasMore: false });
+                this.setState({ hasMore: false, fetched: true });
             } else {
                 res.json().then(data => {
                     if (res.status === 200) {
@@ -115,7 +118,7 @@ class DashboardBody extends Component {
                         let newMentions = mentions;
                         let numEntries = Object.entries(newMentions).length;
                         data.forEach(mention => (newMentions[numEntries++] = mention));
-                        this.setState({ mentions: newMentions, page: page + 1 });
+                        this.setState({ mentions: newMentions, page: page + 1, fetched: true });
                     } else {
                         console.log(res.status, data[RESPONSE_TAG]);
                     }
@@ -123,6 +126,7 @@ class DashboardBody extends Component {
             }
         });
     };
+
     normalizeSnippet = (snippet, regex) => {
         if (snippet.length < MAX_SNIPPET_CHARACTERS) {
             return snippet;
@@ -148,17 +152,19 @@ class DashboardBody extends Component {
             return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
         }
     };
+
     normalizeTitle = title => (title > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title);
+
     render() {
         const { classes } = this.props;
-        const { tabValue, mentions, hasMore } = this.state;
+        const { tabValue, mentions, hasMore, fetched } = this.state;
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
         // Get regex containing each of the company names as the whole word
-        let reg = names.map(name => "\\b" + name + "\\b");
-        reg = reg.join("|");
+        let expression = names.map(name => "\\b" + name + "\\b");
+        expression = expression.join("|");
         // g = global flag, i = ignorecase flag
-        const regex = new RegExp(reg, "i");
-        const globalRegex = new RegExp(reg, "gi");
+        const regex = new RegExp(expression, "i");
+        const globalRegex = new RegExp(expression, "gi");
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
@@ -175,7 +181,7 @@ class DashboardBody extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
-                        regex={reg}
+                        regex={expression}
                         bold={this.boldNames}
                     />
                 );
@@ -220,20 +226,23 @@ class DashboardBody extends Component {
                     {renderMentions.length !== 0 ? <hr></hr> : ""}
                 </InfiniteScroll>
 
-                <Route
-                    path={`/dashboard/mention/:id`}
-                    component={props => (
-                        <Dialog
-                            id={props.match.params.id}
-                            regex={globalRegex}
-                            history={props.history}
-                            bold={this.boldNames}
-                        />
-                    )}
-                />
+                {fetched && (
+                    <Route
+                        path={`/dashboard/mention/:id`}
+                        component={props => (
+                            <Dialog
+                                id={props.match.params.id}
+                                regex={globalRegex}
+                                history={props.history}
+                                bold={this.boldNames}
+                            />
+                        )}
+                    />
+                )}
             </div>
         );
     }
+
     componentDidMount() {
         this.fetchMentions();
     }

@@ -5,10 +5,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import MentionContainer from "./MentionContainer";
 import MentionHeader from "./MentionHeader";
+import MentionInfo from "./MentionInfo";
+import MentionText from "./MentionText";
+import { DASHBOARD_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -30,7 +32,7 @@ function Mention(props) {
     const { id, img, regex, title, site, snippet, bold, sentiment } = props;
 
     return (
-        <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
+        <Link to={`${DASHBOARD_URL}/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
             <MentionContainer container={classes.container} img={img}>
                 <Box className={classes.text}>
                     <MentionHeader
@@ -41,12 +43,8 @@ function Mention(props) {
                         title={title}
                         sentiment={sentiment}
                     />
-                    <Typography variant="body2" color="textSecondary">
-                        {site}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                        {bold(regex, snippet)}
-                    </Typography>
+                    <MentionInfo siteVariant="body2" site={site} />
+                    <MentionText variant="caption" color="textSecondary" bold={bold} regex={regex} text={snippet} />
                 </Box>
             </MentionContainer>
         </Link>
