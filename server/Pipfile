@@ -19,6 +19,7 @@ pytest = "*"
 celery = "*"
 redis = "*"
 requests = "*"
+requests_oauthlib = "*"
 flower = "*"
 textblob = "*"
 
