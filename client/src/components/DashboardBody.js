@@ -1,13 +1,11 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
+import Mention from "./Mention";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
 import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
-import Mention from "./Mention";
-import Dialog from "./Dialog";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
@@ -86,7 +84,7 @@ class DashboardBody extends Component {
                         // concatenate the new mentions
                         let newMentions = mentions;
                         let numEntries = Object.entries(newMentions).length;
-                        data.forEach(mention => (newMentions[numEntries++] = mention));
+                        data.forEach((mention, index) => (newMentions[numEntries++] = mention));
                         this.setState({ mentions: newMentions, page: page + 1 });
                     } else {
                         console.log(res.status, data[RESPONSE_TAG]);
@@ -134,7 +132,6 @@ class DashboardBody extends Component {
         reg = reg.join("|");
         // g = global flag, i = ignorecase flag
         const regex = new RegExp(reg, "i");
-        const globalRegex = new RegExp(reg, "gi");
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
@@ -196,11 +193,6 @@ class DashboardBody extends Component {
                     {renderMentions}
                     {renderMentions.length !== 0 ? <hr></hr> : ""}
                 </InfiniteScroll>
-
-                <Route
-                    path={`/dashboard/mention/:id`}
-                    component={props => <Dialog id={props.match.params.id} regex={globalRegex} history={props.history} />}
-                />
             </div>
         );
     }
