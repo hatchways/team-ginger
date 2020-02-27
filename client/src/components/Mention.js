@@ -2,14 +2,15 @@
    weekly report 
 */
 
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
+import { default as Modal } from "@material-ui/core/Dialog";
 import Tooltip from "@material-ui/core/Tooltip";
 import { SentimentToIcon } from "../Constants";
+import Dialog from "./Dialog";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -71,18 +72,22 @@ export function boldNames(reg, text) {
 
 function Mention(props) {
     const classes = useStyles();
+    const [open, setOpen] = useState(false);
     const sentiment = Number(Number(props.sentiment).toFixed(2));
-    const { id, regex, img, site, title, snippet } = props;
+    const regex = props.regex;
 
     return (
         <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
             <Paper className={classes.card}>
                 <img src={img} className={classes.image} alt="Thumbnail" />
 
+
                 <Box className={classes.text}>
                     <Box className={classes.header}>
                         <Typography variant="body1" className={classes.title}>
+
                             {boldNames(regex, title)}
+
                         </Typography>
 
                         <Tooltip
@@ -103,6 +108,7 @@ function Mention(props) {
                 </Box>
             </Paper>
         </Link>
+
     );
 }
 
