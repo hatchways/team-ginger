@@ -1,10 +1,11 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import ServiceNavBar from "../components/ServiceNavBar";
 import SettingsBody from "../components/SettingsBody";
 import SettingsSideBar from "../components/SettingsSideBar";
-import { DASHBOARD_URL, REDIRECT_TO_LOGIN } from "../Constants";
+import { DASHBOARD_URL, LOGIN_URL, COMPANY_NAMES_TAG, SITES_TAG, EMAIL_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     settings_layout: {
@@ -21,16 +22,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Settings(props) {
-    REDIRECT_TO_LOGIN();
-
     const classes = useStyles();
+
+    if (!localStorage.getItem(COMPANY_NAMES_TAG) || !localStorage.getItem(EMAIL_TAG) || !localStorage.getItem(SITES_TAG)) {
+        return <Redirect to={LOGIN_URL} />;
+    }
+
     return (
         <React.Fragment>
             <ServiceNavBar link={DASHBOARD_URL}>
                 <ViewListIcon fontSize="large" />
             </ServiceNavBar>
             <div className={classes.settings_layout}>
-                <SettingsSideBar />
+                <SettingsSideBar history={props.history} />
                 <SettingsBody />
             </div>
         </React.Fragment>

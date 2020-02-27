@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function SettingsSideBar() {
+function SettingsSideBar(props) {
     const classes = useStyles();
     const [index, setIndex] = useState(0);
     const tabNames = ["Company", "Security", "Log out"];
@@ -50,8 +50,8 @@ function SettingsSideBar() {
         fetch(LOGOUT_ROUTE, {
             method: "POST"
         }).then(res => {
-            localStorage.clear()
-            window.location = LOGIN_URL;
+            localStorage.clear();
+            props.history.push(LOGIN_URL);
         });
     };
 

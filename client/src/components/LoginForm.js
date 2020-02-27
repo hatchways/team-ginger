@@ -51,7 +51,7 @@ class LoginForm extends Component {
                         localStorage.setItem(EMAIL_TAG, data[EMAIL_TAG]);
                         localStorage.setItem(COMPANY_NAMES_TAG, data[COMPANY_NAMES_TAG]);
                         localStorage.setItem(SITES_TAG, JSON.stringify(data[SITES_TAG]));
-                        window.location = DASHBOARD_URL;
+                        this.props.history.push(DASHBOARD_URL);
                     });
                 } else {
                     this.setState({
