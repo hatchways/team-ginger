@@ -3,7 +3,6 @@ from ...json_constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TA
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, no_content_response, not_found_response
 from ..models.mention import Mention
-from ..db import insert_rows
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
 
