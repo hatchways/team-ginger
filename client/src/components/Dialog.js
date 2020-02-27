@@ -13,6 +13,7 @@ import Link from "@material-ui/core/Link";
 import Tooltip from "@material-ui/core/Tooltip";
 import CallMadeIcon from "@material-ui/icons/CallMade";
 import { boldNames } from "./Mention";
+import { default as Modal } from "@material-ui/core/Dialog";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -22,6 +23,10 @@ const NOT_FOUND_MESSAGE = "No Mention Found";
 const NO_SNIPPET_MESSAGE = "There is no text for this mention";
 
 const styles = theme => ({
+    simpleContainer: {
+        padding: theme.spacing(4),
+        margin: "auto"
+    },
     container: {
         display: "grid",
         gridTemplateColumns: "1fr 9fr",
@@ -69,7 +74,14 @@ class Dialog extends Component {
             const sentiment = Number(Number(mention.sentiment).toFixed(2));
             const regex = this.props.regex;
             return (
-                <React.Fragment>
+                <Modal
+                    open={true}
+                    onClose={() => {
+                        this.props.history.push("/dashboard");
+                    }}
+                    maxWidth="xl"
+                    scroll="paper"
+                >
                     <Paper className={classes.container}>
                         <img src={SITE_TO_IMG[mention.site]} className={classes.image} alt="Thumbnail" />
 
@@ -108,13 +120,24 @@ class Dialog extends Component {
                             </Typography>
                         </Box>
                     </Paper>
-                </React.Fragment>
+                </Modal>
             );
         }
         return (
-            <Typography variant="h5" align="center" color={"textSecondary"}>
-                {message}
-            </Typography>
+            <Modal
+                open={true}
+                onClose={() => {
+                    this.props.history.push("/dashboard");
+                }}
+                maxWidth="xl"
+                scroll="paper"
+            >
+                <Paper className={classes.simpleContainer}>
+                    <Typography variant="h5" align="center" color={"textSecondary"}>
+                        {message}
+                    </Typography>
+                </Paper>
+            </Modal>
         );
     }
 

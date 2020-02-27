@@ -2,15 +2,14 @@
    weekly report 
 */
 
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
-import { default as Modal } from "@material-ui/core/Dialog";
 import Tooltip from "@material-ui/core/Tooltip";
 import { SentimentToIcon } from "../Constants";
-import Dialog from "./Dialog";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -73,41 +72,39 @@ export function boldNames(reg, text) {
 
 function Mention(props) {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
     const sentiment = Number(Number(props.sentiment).toFixed(2));
-    const regex = props.regex;
+    const { id, regex, img, site, title, snippet } = props;
 
     return (
         <React.Fragment>
-            <Paper className={classes.card} onClick={() => setOpen(true)}>
-                <img src={props.img} className={classes.image} alt="Thumbnail" />
+            <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none" }}>
+                <Paper className={classes.card}>
+                    <img src={img} className={classes.image} alt="Thumbnail" />
 
-                <Box className={classes.text}>
-                    <Box className={classes.header}>
-                        <Typography variant="body1" className={classes.title}>
-                            {boldNames(regex, props.title)}
+                    <Box className={classes.text}>
+                        <Box className={classes.header}>
+                            <Typography variant="body1" className={classes.title}>
+                                {boldNames(regex, title)}
+                            </Typography>
+
+                            <Tooltip
+                                title={`Score: ${Number(sentiment * 100).toFixed()}`}
+                                placement="top"
+                                aria-label="Sentiment score"
+                                className={classes.icon}
+                            >
+                                {SentimentToIcon(sentiment)}
+                            </Tooltip>
+                        </Box>
+                        <Typography variant="body2" color="textSecondary">
+                            {site}
                         </Typography>
-
-                        <Tooltip
-                            title={`Score: ${Number(sentiment * 100).toFixed()}`}
-                            placement="top"
-                            aria-label="Sentiment score"
-                            className={classes.icon}
-                        >
-                            {SentimentToIcon(props.sentiment)}
-                        </Tooltip>
+                        <Typography variant="caption" color="textSecondary">
+                            {boldNames(regex, snippet)}
+                        </Typography>
                     </Box>
-                    <Typography variant="body2" color="textSecondary">
-                        {props.site}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                        {boldNames(regex, props.snippet)}
-                    </Typography>
-                </Box>
-            </Paper>
-            <Modal open={open} onClose={() => setOpen(false)} maxWidth="xl" scroll="paper">
-                <Dialog id={props.id} regex={props.regex} />
-            </Modal>
+                </Paper>
+            </Link>
         </React.Fragment>
     );
 }
