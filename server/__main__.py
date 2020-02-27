@@ -1,15 +1,16 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_socketio import SocketIO
 
 from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
+from server.sockets import socketio
 import os
 
 app = Flask(__name__, instance_relative_config=True)
-socketio = SocketIO(cors_allowed_origins="*")
+
+connection = []
 
 
 @socketio.on("connection")

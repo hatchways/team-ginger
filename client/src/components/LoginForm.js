@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import AccountForm from "./AccountForm";
 import { LOGIN_ROUTE } from "../Routes";
 import {COMPANY_NAMES_TAG, DASHBOARD_URL, EMAIL_TAG, SITES_TAG} from "../Constants";
+import {socket} from "../sockets";
 
 const INCORRECT_ERR_MSG = "Incorrect email or password";
 
@@ -36,7 +37,6 @@ class LoginForm extends Component {
 
         let email = this.email.current.value;
         let password = this.password.current.value;
-
         fetch(LOGIN_ROUTE, {
             method: "POST",
             headers: {
@@ -52,6 +52,7 @@ class LoginForm extends Component {
                         localStorage.setItem(COMPANY_NAMES_TAG, data[COMPANY_NAMES_TAG]);
                         localStorage.setItem(SITES_TAG, JSON.stringify(data[SITES_TAG]));
                         window.location = DASHBOARD_URL;
+                        socket.open();
                     });
                 } else {
                     this.setState({

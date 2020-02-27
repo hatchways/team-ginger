@@ -7,6 +7,8 @@ import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
 import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {socket} from "../sockets";
+//import io from "socket.io-client"
 
 const LOADING_MESSAGE = "Loading Mentions";
 // Map the name of a site to their logo image reference
@@ -15,6 +17,8 @@ const SITE_TO_IMG = { Reddit };
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;
+
+// TODO Fix encountered two children with the same key error
 
 const styles = theme => ({
     container: {
@@ -205,6 +209,11 @@ class UserMentions extends Component {
     }
 
     componentDidMount() {
+        socket.on('mentions', () => {
+            socket.emit("hi");
+            console.log("cheeseburger");
+            this.fetchMentions();
+        });
         this.fetchMentions();
     }
 }

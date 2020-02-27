@@ -9,11 +9,11 @@ from ..models.site import SiteAssociation, Site
 from ..db import insert_rows
 from celery.result import AsyncResult
 from textblob import TextBlob
+from ...sockets import socketio
 
 job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
-# TODO add a return value to enqueue/stop_job to see if the task was successfully
-#      queued so we can return the appropriate response
+# TODO track connected sockets clients so we're not broadcasting to everyone who's connected
 
 tasks = {}
 
@@ -76,6 +76,9 @@ def responses(user):
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
+                print("emit")
+                socketio.emit("mentions")
+                print("cheese")
                 return ok_response("Mentions added to database! And next crawl queued!")
         else:
             return bad_request_response("Missing fields!")
