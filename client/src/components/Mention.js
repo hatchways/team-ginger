@@ -17,8 +17,7 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         padding: theme.spacing(2),
         width: "100%",
-        boxSizing: "border-box",
-        cursor: "pointer"
+        boxSizing: "border-box"
     },
     header: {
         display: "flex"
@@ -78,14 +77,17 @@ function Mention(props) {
     const regex = props.regex;
 
     return (
-        <React.Fragment>
-            <Paper className={classes.card} onClick={() => setOpen(true)}>
-                <img src={props.img} className={classes.image} alt="Thumbnail" />
+        <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
+            <Paper className={classes.card}>
+                <img src={img} className={classes.image} alt="Thumbnail" />
+
 
                 <Box className={classes.text}>
                     <Box className={classes.header}>
                         <Typography variant="body1" className={classes.title}>
-                            {boldNames(regex, props.title)}
+
+                            {boldNames(regex, title)}
+
                         </Typography>
 
                         <Tooltip
@@ -94,21 +96,19 @@ function Mention(props) {
                             aria-label="Sentiment score"
                             className={classes.icon}
                         >
-                            {SentimentToIcon(props.sentiment)}
+                            {SentimentToIcon(sentiment)}
                         </Tooltip>
                     </Box>
                     <Typography variant="body2" color="textSecondary">
-                        {props.site}
+                        {site}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                        {boldNames(regex, props.snippet)}
+                        {boldNames(regex, snippet)}
                     </Typography>
                 </Box>
             </Paper>
-            <Modal open={open} onClose={() => setOpen(false)} maxWidth="xl" scroll="paper">
-                <Dialog id={props.id} regex={props.regex} />
-            </Modal>
-        </React.Fragment>
+        </Link>
+
     );
 }
 
