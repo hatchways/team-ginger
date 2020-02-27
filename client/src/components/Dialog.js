@@ -12,7 +12,6 @@ import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import Tooltip from "@material-ui/core/Tooltip";
 import CallMadeIcon from "@material-ui/icons/CallMade";
-import { boldNames } from "./Mention";
 import { default as Modal } from "@material-ui/core/Dialog";
 
 // Map the name of a site to their logo image reference
@@ -65,19 +64,18 @@ class Dialog extends Component {
         this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
     }
     render() {
-        const { classes } = this.props;
+        const { classes, regex, bold, history } = this.props;
         const { mention, message } = this.state;
 
         if (mention) {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
             const sentiment = Number(Number(mention.sentiment).toFixed(2));
-            const regex = this.props.regex;
             return (
                 <Modal
                     open={true}
                     onClose={() => {
-                        this.props.history.push("/dashboard");
+                        history.push("/dashboard");
                     }}
                     maxWidth="xl"
                     scroll="paper"
@@ -88,7 +86,7 @@ class Dialog extends Component {
                         <Box className={classes.info}>
                             <Box className={classes.header}>
                                 <Typography variant="h4" noWrap className={classes.title}>
-                                    {boldNames(regex, mention.title)}
+                                    {bold(regex, mention.title)}
                                 </Typography>
 
                                 <Tooltip
@@ -116,7 +114,7 @@ class Dialog extends Component {
 
                         <Box className={classes.snippet}>
                             <Typography variant="body1" color={snippetColor}>
-                                {boldNames(regex, snippet)}
+                                {bold(regex, snippet)}
                             </Typography>
                         </Box>
                     </Paper>

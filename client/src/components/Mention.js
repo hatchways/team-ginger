@@ -39,40 +39,10 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export function boldNames(reg, text) {
-    // g = global flag, i = ignorecase flag
-    const regex = new RegExp(reg, "gi");
-    const matches = text.matchAll(regex);
-
-    // Collect the indices of the bold words
-    let Indices = [];
-    for (const match of matches) {
-        Indices.push(match.index);
-        Indices.push(match.index + match[0].length);
-    }
-
-    // Bold the words by wrapping a strong tag around them
-    let result = [];
-    let index = 0;
-    for (let i = 0; i < Indices.length; i += 2) {
-        // Push unbolded string
-        result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
-        // Push bolded name
-        result.push(
-            <Box component="strong" key={i + 1}>
-                {text.substring(Indices[i], Indices[i + 1])}
-            </Box>
-        );
-        index = Indices[i + 1];
-    }
-    result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
-    return result;
-}
-
 function Mention(props) {
     const classes = useStyles();
     const sentiment = Number(Number(props.sentiment).toFixed(2));
-    const { id, img, regex, title, site, snippet } = props;
+    const { id, img, regex, title, site, snippet, bold } = props;
 
     return (
         <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
@@ -82,7 +52,7 @@ function Mention(props) {
                 <Box className={classes.text}>
                     <Box className={classes.header}>
                         <Typography variant="body1" className={classes.title}>
-                            {boldNames(regex, title)}
+                            {bold(regex, title)}
                         </Typography>
 
                         <Tooltip
@@ -98,7 +68,7 @@ function Mention(props) {
                         {site}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
-                        {boldNames(regex, snippet)}
+                        {bold(regex, snippet)}
                     </Typography>
                 </Box>
             </Paper>

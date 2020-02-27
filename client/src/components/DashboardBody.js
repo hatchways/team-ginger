@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
@@ -69,6 +70,38 @@ class DashboardBody extends Component {
             hasMore: true
         };
     }
+
+    // Find the company names using regex and bold them
+    boldNames = (reg, text) => {
+        // g = global flag, i = ignorecase flag
+        const regex = new RegExp(reg, "gi");
+        const matches = text.matchAll(regex);
+
+        // Collect the indices of the bold words
+        let Indices = [];
+        for (const match of matches) {
+            Indices.push(match.index);
+            Indices.push(match.index + match[0].length);
+        }
+
+        // Bold the words by wrapping a strong tag around them
+        let result = [];
+        let index = 0;
+        for (let i = 0; i < Indices.length; i += 2) {
+            // Push unbolded string
+            result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
+            // Push bolded name
+            result.push(
+                <Box component="strong" key={i + 1}>
+                    {text.substring(Indices[i], Indices[i + 1])}
+                </Box>
+            );
+            index = Indices[i + 1];
+        }
+        result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
+        return result;
+    };
+
     fetchMentions = () => {
         const { page, mentions } = this.state;
         fetch(MENTIONS_ROUTE + "/" + page, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => {
@@ -143,6 +176,7 @@ class DashboardBody extends Component {
                         site={mention.site}
                         sentiment={mention.sentiment}
                         regex={reg}
+                        bold={this.boldNames}
                     />
                 );
             });
@@ -188,7 +222,14 @@ class DashboardBody extends Component {
 
                 <Route
                     path={`/dashboard/mention/:id`}
-                    component={props => <Dialog id={props.match.params.id} regex={globalRegex} history={props.history} />}
+                    component={props => (
+                        <Dialog
+                            id={props.match.params.id}
+                            regex={globalRegex}
+                            history={props.history}
+                            bold={this.boldNames}
+                        />
+                    )}
                 />
             </div>
         );
