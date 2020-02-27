@@ -16,8 +16,7 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         padding: theme.spacing(2),
         width: "100%",
-        boxSizing: "border-box",
-        cursor: "pointer"
+        boxSizing: "border-box"
     },
     header: {
         display: "flex"
@@ -76,36 +75,34 @@ function Mention(props) {
     const { id, regex, img, site, title, snippet } = props;
 
     return (
-        <React.Fragment>
-            <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none" }}>
-                <Paper className={classes.card}>
-                    <img src={img} className={classes.image} alt="Thumbnail" />
+        <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
+            <Paper className={classes.card}>
+                <img src={img} className={classes.image} alt="Thumbnail" />
 
-                    <Box className={classes.text}>
-                        <Box className={classes.header}>
-                            <Typography variant="body1" className={classes.title}>
-                                {boldNames(regex, title)}
-                            </Typography>
+                <Box className={classes.text}>
+                    <Box className={classes.header}>
+                        <Typography variant="body1" className={classes.title}>
+                            {boldNames(regex, title)}
+                        </Typography>
 
-                            <Tooltip
-                                title={`Score: ${Number(sentiment * 100).toFixed()}`}
-                                placement="top"
-                                aria-label="Sentiment score"
-                                className={classes.icon}
-                            >
-                                {SentimentToIcon(sentiment)}
-                            </Tooltip>
-                        </Box>
-                        <Typography variant="body2" color="textSecondary">
-                            {site}
-                        </Typography>
-                        <Typography variant="caption" color="textSecondary">
-                            {boldNames(regex, snippet)}
-                        </Typography>
+                        <Tooltip
+                            title={`Score: ${Number(sentiment * 100).toFixed()}`}
+                            placement="top"
+                            aria-label="Sentiment score"
+                            className={classes.icon}
+                        >
+                            {SentimentToIcon(sentiment)}
+                        </Tooltip>
                     </Box>
-                </Paper>
-            </Link>
-        </React.Fragment>
+                    <Typography variant="body2" color="textSecondary">
+                        {site}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                        {boldNames(regex, snippet)}
+                    </Typography>
+                </Box>
+            </Paper>
+        </Link>
     );
 }
 
