@@ -7,31 +7,17 @@ import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
-import Tooltip from "@material-ui/core/Tooltip";
-import { SentimentToIcon } from "../Constants";
+import MentionContainer from "./MentionContainer";
+import MentionHeader from "./MentionHeader";
 
 const useStyles = makeStyles(theme => ({
-    card: {
+    container: {
         display: "flex",
         padding: theme.spacing(2),
         width: "100%",
         boxSizing: "border-box"
     },
-    header: {
-        display: "flex"
-    },
-    title: {
-        flexGrow: 1,
-        marginRight: theme.spacing(1)
-    },
-    icon: {
-        color: theme.primary
-    },
-    image: {
-        width: 100,
-        height: 100
-    },
+
     text: {
         marginLeft: theme.spacing(2),
         wordBreak: "break-word",
@@ -41,29 +27,20 @@ const useStyles = makeStyles(theme => ({
 
 function Mention(props) {
     const classes = useStyles();
-    const sentiment = Number(Number(props.sentiment).toFixed(2));
-    const { id, img, regex, title, site, snippet, bold } = props;
+    const { id, img, regex, title, site, snippet, bold, sentiment } = props;
 
     return (
         <Link to={`dashboard/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
-            <Paper className={classes.card}>
-                <img src={img} className={classes.image} alt="Thumbnail" />
-
+            <MentionContainer container={classes.container} img={img}>
                 <Box className={classes.text}>
-                    <Box className={classes.header}>
-                        <Typography variant="body1" className={classes.title}>
-                            {bold(regex, title)}
-                        </Typography>
-
-                        <Tooltip
-                            title={`Score: ${Number(sentiment * 100).toFixed()}`}
-                            placement="top"
-                            aria-label="Sentiment score"
-                            className={classes.icon}
-                        >
-                            {SentimentToIcon(sentiment)}
-                        </Tooltip>
-                    </Box>
+                    <MentionHeader
+                        variant="body1"
+                        noWrap={false}
+                        bold={bold}
+                        regex={regex}
+                        title={title}
+                        sentiment={sentiment}
+                    />
                     <Typography variant="body2" color="textSecondary">
                         {site}
                     </Typography>
@@ -71,7 +48,7 @@ function Mention(props) {
                         {bold(regex, snippet)}
                     </Typography>
                 </Box>
-            </Paper>
+            </MentionContainer>
         </Link>
     );
 }

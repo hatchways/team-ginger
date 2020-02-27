@@ -4,15 +4,15 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SentimentToIcon } from "../Constants";
+import { RESPONSE_TAG } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
-import Tooltip from "@material-ui/core/Tooltip";
 import CallMadeIcon from "@material-ui/icons/CallMade";
 import { default as Modal } from "@material-ui/core/Dialog";
+import MentionContainer from "./MentionContainer";
+import MentionHeader from "./MentionHeader";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -34,23 +34,9 @@ const styles = theme => ({
         maxWidth: 1000,
         margin: "auto"
     },
-    image: {
-        width: 100,
-        height: 100
-    },
     info: {
         marginLeft: theme.spacing(2),
         maxWidth: 900
-    },
-    header: {
-        display: "flex"
-    },
-    title: {
-        flexGrow: 1,
-        marginRight: theme.spacing(1)
-    },
-    icon: {
-        color: theme.primary
     },
     snippet: {
         gridColumn: "span 2",
@@ -70,7 +56,7 @@ class Dialog extends Component {
         if (mention) {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
-            const sentiment = Number(Number(mention.sentiment).toFixed(2));
+
             return (
                 <Modal
                     open={true}
@@ -80,24 +66,16 @@ class Dialog extends Component {
                     maxWidth="xl"
                     scroll="paper"
                 >
-                    <Paper className={classes.container}>
-                        <img src={SITE_TO_IMG[mention.site]} className={classes.image} alt="Thumbnail" />
-
+                    <MentionContainer container={classes.container} img={SITE_TO_IMG[mention.site]}>
                         <Box className={classes.info}>
-                            <Box className={classes.header}>
-                                <Typography variant="h4" noWrap className={classes.title}>
-                                    {bold(regex, mention.title)}
-                                </Typography>
-
-                                <Tooltip
-                                    title={`Score: ${Number(sentiment * 100).toFixed()}`}
-                                    placement="top"
-                                    aria-label="Sentiment score"
-                                    className={classes.icon}
-                                >
-                                    {SentimentToIcon(mention.sentiment)}
-                                </Tooltip>
-                            </Box>
+                            <MentionHeader
+                                variant="h4"
+                                noWrap={true}
+                                bold={bold}
+                                regex={regex}
+                                title={mention.title}
+                                sentiment={mention.sentiment}
+                            />
 
                             <Typography variant="h5" color="textSecondary">
                                 {mention.site}
@@ -117,7 +95,7 @@ class Dialog extends Component {
                                 {bold(regex, snippet)}
                             </Typography>
                         </Box>
-                    </Paper>
+                    </MentionContainer>
                 </Modal>
             );
         }
@@ -130,11 +108,11 @@ class Dialog extends Component {
                 maxWidth="xl"
                 scroll="paper"
             >
-                <Paper className={classes.simpleContainer}>
-                    <Typography variant="h5" align="center" color={"textSecondary"}>
+                <MentionContainer container={classes.simpleContainer}>
+                    <Typography variant="h5" color={"textSecondary"}>
                         {message}
                     </Typography>
-                </Paper>
+                </MentionContainer>
             </Modal>
         );
     }
