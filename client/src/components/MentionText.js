@@ -3,10 +3,10 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 
 function MentionText(props) {
-    const { variant, color, bold, regex, text } = props;
+    const { variant, color, bold, text } = props;
     return (
         <Typography variant={variant} color={color}>
-            {bold ? bold(regex, text) : text}
+            {bold ? bold(text) : text}
         </Typography>
     );
 }

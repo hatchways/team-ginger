@@ -54,7 +54,7 @@ class Dialog extends Component {
         this.props.history.push(DASHBOARD_URL);
     };
     render() {
-        const { classes, regex, bold } = this.props;
+        const { classes, bold } = this.props;
         const { mention, message } = this.state;
 
         if (mention) {
@@ -70,7 +70,6 @@ class Dialog extends Component {
                                 variant="h4"
                                 noWrap={true}
                                 bold={bold}
-                                regex={regex}
                                 title={mention.title}
                                 sentiment={mention.sentiment}
                             />
@@ -85,7 +84,7 @@ class Dialog extends Component {
                         </Box>
 
                         <Box className={classes.snippet}>
-                            <MentionText variant="body1" color={snippetColor} bold={bold} regex={regex} text={snippet} />
+                            <MentionText variant="body1" color={snippetColor} bold={bold} text={snippet} />
                         </Box>
                     </MentionContainer>
                 </Modal>

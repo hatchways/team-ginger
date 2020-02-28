@@ -29,22 +29,15 @@ const useStyles = makeStyles(theme => ({
 
 function Mention(props) {
     const classes = useStyles();
-    const { id, img, regex, title, site, snippet, bold, sentiment } = props;
+    const { id, img, title, site, snippet, bold, sentiment } = props;
 
     return (
         <Link to={`${DASHBOARD_URL}/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
             <MentionContainer container={classes.container} img={img}>
                 <Box className={classes.text}>
-                    <MentionHeader
-                        variant="body1"
-                        noWrap={false}
-                        bold={bold}
-                        regex={regex}
-                        title={title}
-                        sentiment={sentiment}
-                    />
+                    <MentionHeader variant="body1" noWrap={false} bold={bold} title={title} sentiment={sentiment} />
                     <MentionInfo siteVariant="body2" site={site} />
-                    <MentionText variant="caption" color="textSecondary" bold={bold} regex={regex} text={snippet} />
+                    <MentionText variant="caption" color="textSecondary" bold={bold} text={snippet} />
                 </Box>
             </MentionContainer>
         </Link>

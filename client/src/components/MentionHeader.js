@@ -60,11 +60,11 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { regex, title, bold, variant, noWrap } = props;
+    const { title, bold, variant, noWrap } = props;
     return (
         <Box className={classes.header}>
             <Typography variant={variant} noWrap={noWrap} className={classes.title}>
-                {bold(regex, title)}
+                {bold(title)}
             </Typography>
 
             <Tooltip title={`Score: ${sentiment}`} placement="top" aria-label="Sentiment score" className={classes.icon}>

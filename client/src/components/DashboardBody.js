@@ -3,12 +3,12 @@ import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Tab from "@material-ui/core/Tab";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
-import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
+import { RESPONSE_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
+import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
@@ -23,32 +23,7 @@ const styles = theme => ({
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
     },
-    top_section: {
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-        maxWidth: 800,
-        margin: `0 auto ${theme.spacing(4)}px auto`
-    },
-    mention_header: {
-        flexGrow: 1
-    },
-    mention_tabs: {
-        backgroundColor: theme.secondary,
-        // High border radius to give a 'pill' look
-        borderRadius: 500
-    },
-    mention_tab: {
-        borderRadius: 500
-    },
-    tab_active: {
-        backgroundColor: theme.primary,
-        color: "white"
-    },
-    tab_inactive: {
-        backgroundColor: "transparent",
-        color: theme.primary
-    },
+
     grid: {
         width: "100%",
         boxSizing: "border-box",
@@ -65,20 +40,28 @@ const styles = theme => ({
 class DashboardBody extends Component {
     constructor(props) {
         super(props);
+        // Get regex containing each of the company names as the whole word
+        const expression = props.names.map(name => "\\b" + name + "\\b").join("|");
         this.state = {
             tabValue: 1,
             page: 0,
             mentions: {},
             hasMore: true,
-            fetched: false
+            fetched: false,
+            // g = global flag, i = ignorecase flag
+            regex: new RegExp(expression, "i"),
+            globalRegex: new RegExp(expression, "gi")
         };
     }
 
+    handleTabChange = tabValue => {
+        // Insert sorting code here
+        this.setState({ tabValue });
+    };
+
     // Find the company names using regex and bold them
-    boldNames = (reg, text) => {
-        // g = global flag, i = ignorecase flag
-        const regex = new RegExp(reg, "gi");
-        const matches = text.matchAll(regex);
+    boldNames = text => {
+        const matches = text.matchAll(this.state.globalRegex);
 
         // Collect the indices of the bold words
         let Indices = [];
@@ -127,11 +110,11 @@ class DashboardBody extends Component {
         });
     };
 
-    normalizeSnippet = (snippet, regex) => {
+    normalizeSnippet = snippet => {
         if (snippet.length < MAX_SNIPPET_CHARACTERS) {
             return snippet;
         }
-        const match = snippet.match(regex);
+        const match = snippet.match(this.state.regex);
         if (match) {
             // Index of first match
             const index = match.index;
@@ -148,7 +131,7 @@ class DashboardBody extends Component {
                 return snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2);
             }
         } else {
-            // Could not find company name so return first
+            // Could not find company name so return first MSC characters
             return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
         }
     };
@@ -158,20 +141,14 @@ class DashboardBody extends Component {
     render() {
         const { classes } = this.props;
         const { tabValue, mentions, hasMore, fetched } = this.state;
-        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
-        // Get regex containing each of the company names as the whole word
-        let expression = names.map(name => "\\b" + name + "\\b");
-        expression = expression.join("|");
-        // g = global flag, i = ignorecase flag
-        const regex = new RegExp(expression, "i");
-        const globalRegex = new RegExp(expression, "gi");
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // trim long snippets and titles
-                let snippet = this.normalizeSnippet(mention.snippet, regex);
+                let snippet = this.normalizeSnippet(mention.snippet);
                 let title = this.normalizeTitle(mention.title);
+
                 renderMentions.push(
                     <Mention
                         key={mention.id}
@@ -181,7 +158,6 @@ class DashboardBody extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
-                        regex={expression}
                         bold={this.boldNames}
                     />
                 );
@@ -189,27 +165,12 @@ class DashboardBody extends Component {
         }
         return (
             <div className={classes.container}>
-                <div className={classes.top_section}>
-                    <Typography variant="h4" className={classes.mention_header}>
-                        My Mentions
-                    </Typography>
-                    <div className={classes.mention_tabs}>
-                        <Tab
-                            label="Most Recent"
-                            className={`${classes.mention_tab} ${
-                                tabValue === 0 ? classes.tab_active : classes.tab_inactive
-                            }`}
-                            onClick={() => this.setState({ tabValue: 0 })}
-                        />
-                        <Tab
-                            label="Most Popular"
-                            className={`${classes.mention_tab} ${
-                                tabValue === 1 ? classes.tab_active : classes.tab_inactive
-                            }`}
-                            onClick={() => this.setState({ tabValue: 1 })}
-                        />
-                    </div>
-                </div>
+                <DashboardHead
+                    tab={tabValue}
+                    click1={() => this.handleTabChange(0)}
+                    click2={() => this.handleTabChange(1)}
+                />
+
                 <InfiniteScroll
                     className={classes.grid}
                     dataLength={renderMentions.length}
@@ -230,12 +191,7 @@ class DashboardBody extends Component {
                     <Route
                         path={`/dashboard/mention/:id`}
                         component={props => (
-                            <Dialog
-                                id={props.match.params.id}
-                                regex={globalRegex}
-                                history={props.history}
-                                bold={this.boldNames}
-                            />
+                            <Dialog id={props.match.params.id} history={props.history} bold={this.boldNames} />
                         )}
                     />
                 )}
