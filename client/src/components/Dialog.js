@@ -108,6 +108,7 @@ class Dialog extends Component {
                 if (res.status === 200) {
                     this.setState({ mention: data });
                 } else if (res.status === 401) {
+                    localStorage.clear();
                     this.props.history.push(LOGIN_URL);
                 } else if (res.status === 404) {
                     this.setState({ message: NOT_FOUND_MESSAGE });

@@ -138,6 +138,7 @@ function SettingsBody(props) {
                     localStorage.setItem(EMAIL_TAG, email);
                     emailChanged = true;
                 } else if (emailResponse.status === 401) {
+                    localStorage.clear();
                     history.push(LOGIN_URL);
                 } else {
                     emailResponse.json().then(data => {
@@ -151,6 +152,7 @@ function SettingsBody(props) {
                     localStorage.setItem(COMPANY_NAMES_TAG, names);
                     namesChanged = true;
                 } else if (namesResponse.status === 401) {
+                    localStorage.clear();
                     history.push(LOGIN_URL);
                 } else {
                     namesResponse.json().then(data => {
