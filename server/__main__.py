@@ -1,22 +1,14 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 
 from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
-from server.sockets import socketio
+from server.sockets import socketio, connections
 import os
 
 app = Flask(__name__, instance_relative_config=True)
-
-connection = []
-
-
-@socketio.on("connection")
-def connect(message):
-    print("hi")
-    print(message)
 
 
 @socketio.on("hi")
@@ -24,9 +16,17 @@ def hi():
     print("hi!!!!")
 
 
-@socketio.on("connect")
-def diditwork():
-    print("OMG")
+@socketio.on("register")
+def register(email: str):
+    connections[email] = request.sid
+    print("Registered: "+email)
+
+
+@socketio.on("logout")
+def disconnect(email: str):
+    if connections.get(email) is not None:
+        del connections[email]
+    print(email+" has disconnected!")
 
 
 @app.errorhandler(500)

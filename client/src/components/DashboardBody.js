@@ -204,9 +204,12 @@ class DashboardBody extends Component {
 
     componentDidMount() {
         socket.on('mentions', () => {
-            socket.emit("hi");
-            console.log("cheeseburger");
+            console.log("fetching new mentions");
             this.fetchMentions();
+        });
+        socket.on('disconnect', () => {
+            console.log("connection was lost, attempting to reconnect");
+            socket.open();
         });
         this.fetchMentions();
     }

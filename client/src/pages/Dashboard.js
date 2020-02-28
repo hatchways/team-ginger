@@ -6,6 +6,7 @@ import ServiceNavBar from "../components/ServiceNavBar";
 import DashboardSideBar from "../components/DashboardSideBar";
 import DashboardBody from "../components/DashboardBody";
 import { SETTINGS_URL, LOGIN_URL, COMPANY_NAMES_TAG, EMAIL_TAG, SITES_TAG } from "../Constants";
+import {socket} from "../sockets";
 
 const useStyles = makeStyles(theme => ({
     mentions_layout: {
@@ -19,9 +20,12 @@ function Dashboard(props) {
     const classes = useStyles();
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
-        // Insert Socket connection here
-
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        if (socket.disconnected)
+        {
+            socket.open();
+            socket.emit("register", localStorage.getItem(EMAIL_TAG));
+        }
         return (
             <React.Fragment>
                 <ServiceNavBar link={SETTINGS_URL}>
