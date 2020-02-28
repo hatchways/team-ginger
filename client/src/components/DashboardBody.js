@@ -4,7 +4,6 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { MENTIONS_ROUTE } from "../Routes";
-import Reddit from "../assets/reddit.png";
 import { RESPONSE_TAG, LOGIN_URL } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
@@ -12,8 +11,6 @@ import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
-// Map the name of a site to their logo image reference
-const SITE_TO_IMG = { Reddit };
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;
@@ -155,7 +152,7 @@ class DashboardBody extends Component {
                     <Mention
                         key={mention.id}
                         id={mention.id}
-                        img={SITE_TO_IMG[mention.site]}
+                        img={mention.thumbnail}
                         title={title}
                         snippet={snippet}
                         site={mention.site}

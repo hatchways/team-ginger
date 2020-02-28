@@ -2,6 +2,10 @@
 import React from "react";
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Reddit from "../assets/reddit.png";
+import Twitter from "../assets/twitter.png";
+
+const SITE_TO_IMG = { Reddit, Twitter };
 
 const useStyles = makeStyles(theme => ({
     image: {
@@ -12,10 +16,10 @@ const useStyles = makeStyles(theme => ({
 
 function MentionContainer(props) {
     const classes = useStyles();
-    const { container, img, children } = props;
+    const { container, img, children, site } = props;
     return (
         <Paper className={container}>
-            {img && <img src={img} alt="Thumbnail" className={classes.image} />}
+            <img src={img ? img : SITE_TO_IMG[site]} alt="Thumbnail" className={classes.image} />
             {children}
         </Paper>
     );

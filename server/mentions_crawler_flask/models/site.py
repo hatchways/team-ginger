@@ -30,7 +30,7 @@ def create_sites():
     if len(sites) == 0:
         db.session.add(Site(REDDIT))
         # db.session.add(Site(FACEBOOK))
-        # db.session.add(Site(TWITTER))
+        db.session.add(Site(TWITTER))
         db.session.commit()
 
 

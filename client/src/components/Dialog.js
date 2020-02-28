@@ -5,16 +5,12 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
 import { RESPONSE_TAG, DASHBOARD_URL, LOGIN_URL } from "../Constants";
-import Reddit from "../assets/reddit.png";
 import Box from "@material-ui/core/Box";
 import { default as Modal } from "@material-ui/core/Dialog";
 import MentionContainer from "./MentionContainer";
 import MentionHeader from "./MentionHeader";
 import MentionInfo from "./MentionInfo";
 import MentionText from "./MentionText";
-
-// Map the name of a site to their logo image reference
-const SITE_TO_IMG = { Reddit };
 
 const LOADING_MESSAGE = "Loading Mention";
 const NOT_FOUND_MESSAGE = "No Mention Found";
@@ -64,7 +60,7 @@ class Dialog extends Component {
 
             return (
                 <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
-                    <MentionContainer container={classes.container} img={SITE_TO_IMG[mention.site]}>
+                    <MentionContainer container={classes.container} img={mention.thumbnail} site={site}>
                         <Box className={classes.info}>
                             <MentionHeader
                                 variant="h4"

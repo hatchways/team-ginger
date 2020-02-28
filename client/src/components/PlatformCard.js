@@ -44,11 +44,6 @@ function PlatformCard(props) {
 
     // When the user clicks the toggle
     const handleClick = props => {
-        // Disable eveything but reddit for now
-        if (site_name !== REDDIT) {
-            enqueueSnackbar("Not implemented yet", BAD_SNACKBAR);
-            return;
-        }
         fetch(SITES_ROUTE + site_name, {
             method: "POST"
         }).then(res => {
@@ -56,7 +51,7 @@ function PlatformCard(props) {
                 sites[props.site_name] = !check;
                 localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                 setCheck(!check);
-                fetch(JOBS_ROUTE, {
+                fetch(JOBS_ROUTE+props.site_name, {
                     method: "POST"
                 }).then(res => {
                     if (res.status === 200) {
