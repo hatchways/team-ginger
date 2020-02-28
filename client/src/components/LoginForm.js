@@ -3,8 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import AccountForm from "./AccountForm";
 import { LOGIN_ROUTE } from "../Routes";
-import {COMPANY_NAMES_TAG, DASHBOARD_URL, EMAIL_TAG, SITES_TAG} from "../Constants";
-import {socket} from "../sockets";
+import { COMPANY_NAMES_TAG, DASHBOARD_URL, EMAIL_TAG, SITES_TAG } from "../Constants";
 
 const INCORRECT_ERR_MSG = "Incorrect email or password";
 
@@ -51,8 +50,7 @@ class LoginForm extends Component {
                         localStorage.setItem(EMAIL_TAG, data[EMAIL_TAG]);
                         localStorage.setItem(COMPANY_NAMES_TAG, data[COMPANY_NAMES_TAG]);
                         localStorage.setItem(SITES_TAG, JSON.stringify(data[SITES_TAG]));
-                        window.location = DASHBOARD_URL;
-                        socket.open();
+                        this.props.history.push(DASHBOARD_URL);
                     });
                 } else {
                     this.setState({

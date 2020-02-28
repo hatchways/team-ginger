@@ -22,25 +22,26 @@ def get_tasks_id(site: str, user_id: int):
     return str(user_id)+":"+site
 
 
-@job_bp.route("/requests", methods=["POST"])
+@job_bp.route("/requests/<string:site_name>", methods=["POST"])
 @authenticate()
-def requests(user):
+def requests(user, site_name: str):
     sites = Site.query.all()
     user_id = user.get(USER_ID_TAG)
     token = request.cookies.get(TOKEN_TAG)
-    for site in sites:
-        assoc = SiteAssociation.query.filter_by(mention_user_id=user_id, site_name=site.name).first()
-        if assoc is None:
-            if tasks.get(get_tasks_id(site.name, user_id)) is not None:
-                tasks[get_tasks_id(site.name, user_id)].revoke()  # cancel job
-                del tasks[get_tasks_id(site.name, user_id)]
-            return "test", 200
-        else:
-            result = enqueue(site.name, user_id, token)
-            if isinstance(result, AsyncResult):
-                tasks[get_tasks_id(site.name, user_id)] = result
-                return ok_response("Task successfully queued up!")
-            return error_response("Failed to queue task!", result)
+    print(sites)
+    assoc = SiteAssociation.query.filter_by(mention_user_id=user_id, site_name=site_name).first()
+    if assoc is None:
+        if tasks.get(get_tasks_id(site_name, user_id)) is not None:
+            tasks[get_tasks_id(site_name, user_id)].revoke()  # cancel job
+            del tasks[get_tasks_id(site_name, user_id)]
+        return ok_response("Task successfully cancelled!")
+
+    else:
+        result = enqueue(site_name, user_id, token)
+        if isinstance(result, AsyncResult):
+            tasks[get_tasks_id(site_name, user_id)] = result
+            return ok_response("Task successfully queued up!")
+        return error_response("Failed to queue task!", result)
 
 
 @job_bp.route("/responses", methods=["POST"])

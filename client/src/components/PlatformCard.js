@@ -36,19 +36,14 @@ const useStyles = makeStyles(theme => ({
 
 function PlatformCard(props) {
     const classes = useStyles();
-    const {site_name, site_img, updatePlatforms, setUpdate} = props;
+    const { site_name, site_img } = props;
     const theme = useTheme();
     let sites = JSON.parse(localStorage.getItem(SITES_TAG));
     const [check, setCheck] = useState(sites[site_name] ? sites[site_name] : false);
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     // When the user clicks the toggle
     const handleClick = () => {
-        // Disable eveything but reddit for now
-        if (site_name !== REDDIT) {
-            enqueueSnackbar("Not implemented yet", BAD_SNACKBAR);
-            return;
-        }
         fetch(SITES_ROUTE + site_name, {
             method: "POST"
         }).then(res => {
@@ -56,15 +51,15 @@ function PlatformCard(props) {
                 sites[props.site_name] = !check;
                 localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                 setCheck(!check);
-                fetch(JOBS_ROUTE, {
+                fetch(JOBS_ROUTE+props.site_name, {
                     method: "POST"
                 }).then(res => {
                     if (res.status === 200) {
-                        console.log("Success! Now crawling " + props.site_name + "!");
                         enqueueSnackbar(CRAWLING_MESSAGE(site_name, !check), GOOD_SNACKBAR);
-                        setUpdate(1 - updatePlatforms);
                     } else {
-                        console.log("Something went wrong with setting up the " + props.site_name + " crawl, reverting crawl database back.")
+                        console.log(
+                            `Something went wrong with setting up the ${props.site_name} crawl, reverting crawl database back.`
+                        );
                         res.json().then(data => {
                             console.log(res.status, data[RESPONSE_TAG]);
                             enqueueSnackbar(data[RESPONSE_TAG], BAD_SNACKBAR);
@@ -76,17 +71,17 @@ function PlatformCard(props) {
                             localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                             setCheck(check);
                             if (res.status === 200) {
-                                console.log("Database reverted...")
+                                console.log("Database reverted...");
                             } else {
-                                console.log("Crap something really went wrong since this request worked just a moment ago...")
+                                console.log(
+                                    "Crap something really went wrong since this request worked just a moment ago..."
+                                );
                             }
-                        })
+                        });
                     }
-
                 });
             }
         });
-
     };
     const CustomSwitch = withStyles({
         switchBase: {
@@ -94,7 +89,7 @@ function PlatformCard(props) {
             "&$checked": {
                 color: theme.primary
             },
-            "&$checked + $track": {backgroundColor: theme.primary}
+            "&$checked + $track": { backgroundColor: theme.primary }
         },
         checked: {},
         track: {}
@@ -102,10 +97,9 @@ function PlatformCard(props) {
 
     return (
         <div className={classes.card}>
-            <img src={site_img} className={classes.platform_logo} alt={"an icon image"}/>
+            <img src={site_img} className={classes.platform_logo} alt={"Platform logo"} />
             <Typography className={classes.platform_name}>{site_name}</Typography>
-            <CustomSwitch checked={check} onClick={handleClick}
-                          inputProps={{"aria-label": site_name + "checkbox"}}/>
+            <CustomSwitch checked={check} onClick={handleClick} inputProps={{ "aria-label": site_name + " checkbox" }} />
         </div>
     );
 }

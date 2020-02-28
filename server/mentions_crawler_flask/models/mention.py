@@ -9,7 +9,7 @@ class Mention(db.Model):
     company = db.Column(db.Integer, db.ForeignKey("company.id"), nullable=False)
     url = db.Column(db.Text, nullable=False)
     # Not every mention will have an article title, such as facebook or twitter, I think?
-    title = db.Column(db.Text, nullable=True)
+    title = db.Column(db.Text, nullable=False)
     snippet = db.Column(db.Text, nullable=False)
     hits = db.Column(db.Integer, nullable=False)
     # using integer for now because the reddit api returns things in unix time
@@ -17,7 +17,7 @@ class Mention(db.Model):
     sentiment = db.Column(db.Float, nullable=False)
 
     def __init__(self, mention_user_id: int, company: int, site_id: str, url: str, snippet: str,
-                 hits: int, date: int, sentiment: float, title: str = None):
+                 hits: int, date: int, sentiment: float, title: str = ""):
         self.mention_user_id = mention_user_id
         self.company = company
         self.site_id = site_id

@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png";
-import { REDDIT } from "../Constants";
+import { REDDIT, TWITTER } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     platform_container: {
@@ -17,15 +17,14 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Platforms(props) {
+function DashboardSideBar() {
     const classes = useStyles();
-    const { updatePlatforms, setUpdate } = props;
     return (
         <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={REDDIT} updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
-            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"} />
+            <PlatformCard site_img={RedditImg} site_name={REDDIT} />
+            <PlatformCard site_img={TwitterImg} site_name={TWITTER} />
         </div>
     );
 }
 
-export default Platforms;
+export default DashboardSideBar;

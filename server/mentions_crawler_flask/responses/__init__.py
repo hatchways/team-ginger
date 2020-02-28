@@ -6,7 +6,7 @@ from ..authentication.token import generate_token
 _RESPONSE_TAG = "response"
 _ERROR_TAG = "error"
 _EMAIL_TAG = "email"
-_COMPANY_NAMES_TAG = "names"
+_COMPANY_NAMES_TAG = "companies"
 _SITES_TAG = "sites"
 
 EXPECTED_JSON = "Expected to receive json, did not get json!"

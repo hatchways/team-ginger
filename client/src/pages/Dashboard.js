@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
-import Platforms from "../components/Platforms";
-import UserMentions from "../components/UserMentions";
-
-import { SETTINGS_URL, REDIRECT_TO_LOGIN } from "../Constants";
+import DashboardSideBar from "../components/DashboardSideBar";
+import DashboardBody from "../components/DashboardBody";
+import { SETTINGS_URL, LOGIN_URL, COMPANY_NAMES_TAG, EMAIL_TAG, SITES_TAG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     mentions_layout: {
@@ -15,23 +15,27 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Dashboard(props) {
-    REDIRECT_TO_LOGIN();
-
+function Dashboard() {
     const classes = useStyles();
-    const [updatePlatforms, setUpdate] = useState(0);
 
-    return (
-        <React.Fragment>
-            <ServiceNavBar link={SETTINGS_URL}>
-                <SettingsIcon fontSize="large" />
-            </ServiceNavBar>
-            <div className={classes.mentions_layout}>
-                <Platforms updatePlatforms={updatePlatforms} setUpdate={setUpdate} />
-                <UserMentions updatePlatforms={updatePlatforms} />
-            </div>
-        </React.Fragment>
-    );
+    if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
+        // Insert Socket connection here
+
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        return (
+            <React.Fragment>
+                <ServiceNavBar link={SETTINGS_URL}>
+                    <SettingsIcon fontSize="large" />
+                </ServiceNavBar>
+                <div className={classes.mentions_layout}>
+                    <DashboardSideBar />
+                    <DashboardBody names={names} />
+                </div>
+            </React.Fragment>
+        );
+    }
+
+    return <Redirect to={LOGIN_URL} />;
 }
 
 export default Dashboard;

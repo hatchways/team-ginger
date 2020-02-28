@@ -4,15 +4,14 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SentimentToIcon, COMPANY_NAMES_TAG } from "../Constants";
+import { RESPONSE_TAG, DASHBOARD_URL } from "../Constants";
 import Reddit from "../assets/reddit.png";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
-import Link from "@material-ui/core/Link";
-import Tooltip from "@material-ui/core/Tooltip";
-import CallMadeIcon from "@material-ui/icons/CallMade";
-import { boldNames } from "./Mention";
+import { default as Modal } from "@material-ui/core/Dialog";
+import MentionContainer from "./MentionContainer";
+import MentionHeader from "./MentionHeader";
+import MentionInfo from "./MentionInfo";
+import MentionText from "./MentionText";
 
 // Map the name of a site to their logo image reference
 const SITE_TO_IMG = { Reddit };
@@ -22,31 +21,22 @@ const NOT_FOUND_MESSAGE = "No Mention Found";
 const NO_SNIPPET_MESSAGE = "There is no text for this mention";
 
 const styles = theme => ({
+    simpleContainer: {
+        padding: theme.spacing(4),
+        margin: "auto"
+    },
     container: {
         display: "grid",
         gridTemplateColumns: "1fr 9fr",
+        gridGap: theme.spacing(2),
         padding: theme.spacing(4),
         width: "fit-content",
         maxWidth: 1000,
         margin: "auto"
     },
-    image: {
-        width: 100,
-        height: 100
-    },
     info: {
         marginLeft: theme.spacing(2),
         maxWidth: 900
-    },
-    header: {
-        display: "flex"
-    },
-    title: {
-        flexGrow: 1,
-        marginRight: theme.spacing(1)
-    },
-    icon: {
-        color: theme.primary
     },
     snippet: {
         gridColumn: "span 2",
@@ -59,62 +49,53 @@ class Dialog extends Component {
         super(props);
         this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
     }
+
+    handleClose = () => {
+        this.props.history.push(DASHBOARD_URL);
+    };
     render() {
-        const { classes } = this.props;
+        const { classes, bold } = this.props;
         const { mention, message } = this.state;
 
         if (mention) {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
-            const sentiment = Number(Number(mention.sentiment).toFixed(2));
-            const regex = this.props.regex;
+            const { site, hits, url } = mention;
+
             return (
-                <React.Fragment>
-                    <Paper className={classes.container}>
-                        <img src={SITE_TO_IMG[mention.site]} className={classes.image} />
-
+                <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
+                    <MentionContainer container={classes.container} img={SITE_TO_IMG[mention.site]}>
                         <Box className={classes.info}>
-                            <Box className={classes.header}>
-                                <Typography variant="h4" noWrap className={classes.title}>
-                                    {boldNames(regex, mention.title)}
-                                </Typography>
-
-                                <Tooltip
-                                    title={`Score: ${Number(sentiment * 100).toFixed()}`}
-                                    placement="top"
-                                    aria-label="Sentiment score"
-                                    className={classes.icon}
-                                >
-                                    {SentimentToIcon(mention.sentiment)}
-                                </Tooltip>
-                            </Box>
-
-                            <Typography variant="h5" color="textSecondary">
-                                {mention.site}
-                            </Typography>
-                            <Typography variant="h5" color="textSecondary">
-                                Hits: {mention.hits}
-                            </Typography>
-                            <Link href={mention.url} variant="h5">
-                                Source <CallMadeIcon />
-                            </Link>
-                            <br></br>
-                            <br></br>
+                            <MentionHeader
+                                variant="h4"
+                                noWrap={true}
+                                bold={bold}
+                                title={mention.title}
+                                sentiment={mention.sentiment}
+                            />
+                            <MentionInfo
+                                siteVariant="h5"
+                                site={site}
+                                hitsVariant="h5"
+                                hits={hits}
+                                url={url}
+                                urlVariant="h5"
+                            />
                         </Box>
 
                         <Box className={classes.snippet}>
-                            <Typography variant="body1" color={snippetColor}>
-                                {boldNames(regex, snippet)}
-                            </Typography>
+                            <MentionText variant="body1" color={snippetColor} bold={bold} text={snippet} />
                         </Box>
-                    </Paper>
-                </React.Fragment>
+                    </MentionContainer>
+                </Modal>
             );
         }
         return (
-            <Typography variant="h5" align="center" color={"textSecondary"}>
-                {message}
-            </Typography>
+            <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
+                <MentionContainer container={classes.simpleContainer}>
+                    <MentionText variant="h5" color="textSecondary" text={message} />
+                </MentionContainer>
+            </Modal>
         );
     }
 

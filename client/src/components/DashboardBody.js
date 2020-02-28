@@ -1,19 +1,22 @@
 import React, { Component } from "react";
+import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Tab from "@material-ui/core/Tab";
-import Mention from "./Mention";
+import Box from "@material-ui/core/Box";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
-import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
+import Twitter from "../assets/twitter.png";
+import { RESPONSE_TAG } from "../Constants";
+import Mention from "./Mention";
+import Dialog from "./Dialog";
+import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {socket} from "../sockets";
 //import io from "socket.io-client"
 
 const LOADING_MESSAGE = "Loading Mentions";
 // Map the name of a site to their logo image reference
-const SITE_TO_IMG = { Reddit };
-
+const SITE_TO_IMG = { Reddit, Twitter };
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;
@@ -25,32 +28,7 @@ const styles = theme => ({
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
     },
-    top_section: {
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-        maxWidth: 800,
-        margin: `0 auto ${theme.spacing(4)}px auto`
-    },
-    mention_header: {
-        flexGrow: 1
-    },
-    mention_tabs: {
-        backgroundColor: theme.secondary,
-        // High border radius to give a 'pill' look
-        borderRadius: 500
-    },
-    mention_tab: {
-        borderRadius: 500
-    },
-    tab_active: {
-        backgroundColor: theme.primary,
-        color: "white"
-    },
-    tab_inactive: {
-        backgroundColor: "transparent",
-        color: theme.primary
-    },
+
     grid: {
         width: "100%",
         boxSizing: "border-box",
@@ -64,32 +42,71 @@ const styles = theme => ({
     }
 });
 
-class UserMentions extends Component {
+class DashboardBody extends Component {
     constructor(props) {
         super(props);
+        // Get regex containing each of the company names as the whole word
+        const expression = props.names.map(name => "\\b" + name + "\\b").join("|");
         this.state = {
             tabValue: 1,
             page: 0,
             mentions: {},
-            hasMore: true
+            hasMore: true,
+            fetched: false,
+            // g = global flag, i = ignorecase flag
+            regex: new RegExp(expression, "i"),
+            globalRegex: new RegExp(expression, "gi")
         };
     }
 
+    handleTabChange = tabValue => {
+        // Insert sorting code here
+        this.setState({ tabValue });
+    };
+
+    // Find the company names using regex and bold them
+    boldNames = text => {
+        const matches = text.matchAll(this.state.globalRegex);
+
+        // Collect the indices of the bold words
+        let Indices = [];
+        for (const match of matches) {
+            Indices.push(match.index);
+            Indices.push(match.index + match[0].length);
+        }
+
+        // Bold the words by wrapping a strong tag around them
+        let result = [];
+        let index = 0;
+        for (let i = 0; i < Indices.length; i += 2) {
+            // Push unbolded string
+            result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
+            // Push bolded name
+            result.push(
+                <Box component="strong" key={i + 1}>
+                    {text.substring(Indices[i], Indices[i + 1])}
+                </Box>
+            );
+            index = Indices[i + 1];
+        }
+        result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
+        return result;
+    };
+
     fetchMentions = () => {
         const { page, mentions } = this.state;
-
         fetch(MENTIONS_ROUTE + "/" + page, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => {
             if (res.status === 204) {
                 // no more mentions to fetch
-                this.setState({ hasMore: false });
+                this.setState({ hasMore: false, fetched: true });
             } else {
                 res.json().then(data => {
                     if (res.status === 200) {
                         // concatenate the new mentions
                         let newMentions = mentions;
                         let numEntries = Object.entries(newMentions).length;
-                        data.forEach((mention, index) => (newMentions[numEntries++] = mention));
-                        this.setState({ mentions: newMentions, page: page + 1 });
+                        data.forEach(mention => (newMentions[numEntries++] = mention));
+                        this.setState({ mentions: newMentions, page: page + 1, fetched: true });
                     } else {
                         console.log(res.status, data[RESPONSE_TAG]);
                     }
@@ -98,15 +115,14 @@ class UserMentions extends Component {
         });
     };
 
-    normalizeSnippet = (snippet, regex) => {
+    normalizeSnippet = snippet => {
         if (snippet.length < MAX_SNIPPET_CHARACTERS) {
             return snippet;
         }
-        const match = snippet.match(regex);
+        const match = snippet.match(this.state.regex);
         if (match) {
             // Index of first match
             const index = match.index;
-
             // Index is in the first MSC characters
             if (index < MAX_SNIPPET_CHARACTERS) {
                 return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
@@ -120,7 +136,7 @@ class UserMentions extends Component {
                 return snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2);
             }
         } else {
-            // Could not find company name so return first
+            // Could not find company name so return first MSC characters
             return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
         }
     };
@@ -129,21 +145,15 @@ class UserMentions extends Component {
 
     render() {
         const { classes } = this.props;
-        const { tabValue, mentions, hasMore } = this.state;
-        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
-        // Get regex containing each of the company names as the whole word
-        let reg = names.map(name => "\\b" + name + "\\b");
-        reg = reg.join("|");
-        // g = global flag, i = ignorecase flag
-        const regex = new RegExp(reg, "i");
+        const { tabValue, mentions, hasMore, fetched } = this.state;
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // trim long snippets and titles
-                let snippet = this.normalizeSnippet(mention.snippet, regex);
-
+                let snippet = this.normalizeSnippet(mention.snippet);
                 let title = this.normalizeTitle(mention.title);
+
                 renderMentions.push(
                     <Mention
                         key={mention.id}
@@ -153,35 +163,19 @@ class UserMentions extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
-                        regex={reg}
+                        bold={this.boldNames}
                     />
                 );
             });
         }
-
         return (
             <div className={classes.container}>
-                <div className={classes.top_section}>
-                    <Typography variant="h4" className={classes.mention_header}>
-                        My Mentions
-                    </Typography>
-                    <div className={classes.mention_tabs}>
-                        <Tab
-                            label="Most Recent"
-                            className={`${classes.mention_tab} ${
-                                tabValue === 0 ? classes.tab_active : classes.tab_inactive
-                            }`}
-                            onClick={() => this.setState({ tabValue: 0 })}
-                        />
-                        <Tab
-                            label="Most Popular"
-                            className={`${classes.mention_tab} ${
-                                tabValue === 1 ? classes.tab_active : classes.tab_inactive
-                            }`}
-                            onClick={() => this.setState({ tabValue: 1 })}
-                        />
-                    </div>
-                </div>
+                <DashboardHead
+                    tab={tabValue}
+                    click1={() => this.handleTabChange(0)}
+                    click2={() => this.handleTabChange(1)}
+                />
+
                 <InfiniteScroll
                     className={classes.grid}
                     dataLength={renderMentions.length}
@@ -197,15 +191,17 @@ class UserMentions extends Component {
                     {renderMentions}
                     {renderMentions.length !== 0 ? <hr></hr> : ""}
                 </InfiniteScroll>
+
+                {fetched && (
+                    <Route
+                        path={`/dashboard/mention/:id`}
+                        component={props => (
+                            <Dialog id={props.match.params.id} history={props.history} bold={this.boldNames} />
+                        )}
+                    />
+                )}
             </div>
         );
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.updatePlatforms !== prevProps.updatePlatforms) {
-            // platforms have changed so populate mentions table again
-            this.componentDidMount();
-        }
     }
 
     componentDidMount() {
@@ -217,5 +213,4 @@ class UserMentions extends Component {
         this.fetchMentions();
     }
 }
-
-export default withStyles(styles)(UserMentions);
+export default withStyles(styles)(DashboardBody);

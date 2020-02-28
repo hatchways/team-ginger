@@ -55,7 +55,7 @@ function SettingsBody(props) {
 
     const [email, setEmail] = useState(localStorage.getItem(EMAIL_TAG));
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     // When a user adds a name
     const addName = name => {
@@ -81,7 +81,7 @@ function SettingsBody(props) {
 
     const isEqualNames = () => {
         const oldNames = localStorage
-            .getItem("names")
+            .getItem(COMPANY_NAMES_TAG)
             .split(",")
             .sort();
         const newNames = names.sort();
