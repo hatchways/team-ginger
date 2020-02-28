@@ -11,7 +11,7 @@ function MentionInfo(props) {
             <Typography variant={siteVariant} color="textSecondary">
                 {site}
             </Typography>
-            {hits && (
+            {hits !== null && (
                 <Typography variant={hitsVariant} color="textSecondary">
                     Hits: {hits}
                 </Typography>

@@ -10,7 +10,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
-import { COMPANY_NAMES_TAG, EMAIL_TAG, RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR } from "../Constants";
+import { COMPANY_NAMES_TAG, EMAIL_TAG, RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL } from "../Constants";
 import { useSnackbar } from "notistack";
 
 const MAX_NAME_LIMIT = 5;
@@ -114,7 +114,7 @@ function SettingsBody(props) {
             .catch(err => reject(err));
 
     //  When the user hits save
-    const handleSave = () => {
+    const handleSave = history => {
         let requestedEmailChange = false;
         let requestedNameChange = false;
         let emailChanged = false;
@@ -137,6 +137,9 @@ function SettingsBody(props) {
                 if (emailResponse.status === 200) {
                     localStorage.setItem(EMAIL_TAG, email);
                     emailChanged = true;
+                } else if (emailResponse.status === 401) {
+                    localStorage.clear();
+                    history.push(LOGIN_URL);
                 } else {
                     emailResponse.json().then(data => {
                         enqueueSnackbar(data[RESPONSE_TAG], BAD_SNACKBAR);
@@ -148,6 +151,9 @@ function SettingsBody(props) {
                 if (namesResponse.status === 200) {
                     localStorage.setItem(COMPANY_NAMES_TAG, names);
                     namesChanged = true;
+                } else if (namesResponse.status === 401) {
+                    localStorage.clear();
+                    history.push(LOGIN_URL);
                 } else {
                     namesResponse.json().then(data => {
                         enqueueSnackbar(`Error: ${data[RESPONSE_TAG]}`, BAD_SNACKBAR);
@@ -216,7 +222,7 @@ function SettingsBody(props) {
             <div></div>
             <div></div>
 
-            <Button className={classes.save_btn} onClick={handleSave}>
+            <Button className={classes.save_btn} onClick={() => handleSave(props.history)}>
                 Save
             </Button>
         </div>
