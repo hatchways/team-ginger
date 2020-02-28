@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Dashboard() {
+function Dashboard(props) {
     const classes = useStyles();
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
@@ -28,8 +28,8 @@ function Dashboard() {
                     <SettingsIcon fontSize="large" />
                 </ServiceNavBar>
                 <div className={classes.mentions_layout}>
-                    <DashboardSideBar />
-                    <DashboardBody names={names} />
+                    <DashboardSideBar history={props.history} />
+                    <DashboardBody names={names} history={props.history} />
                 </div>
             </React.Fragment>
         );

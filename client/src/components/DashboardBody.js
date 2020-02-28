@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { MENTIONS_ROUTE } from "../Routes";
-import { RESPONSE_TAG } from "../Constants";
+import { RESPONSE_TAG, LOGIN_URL } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
 import DashboardHead from "./DashboardHead";
@@ -91,6 +91,8 @@ class DashboardBody extends Component {
             if (res.status === 204) {
                 // no more mentions to fetch
                 this.setState({ hasMore: false, fetched: true });
+            } else if (res.status === 401) {
+                this.props.history.push(LOGIN_URL);
             } else {
                 res.json().then(data => {
                     if (res.status === 200) {
