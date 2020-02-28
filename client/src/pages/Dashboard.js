@@ -38,6 +38,11 @@ function Dashboard(props) {
             </React.Fragment>
         );
     }
+    if (socket.connected)
+    {
+        socket.off("disconnect");
+        socket.close();
+    }
 
     return <Redirect to={LOGIN_URL} />;
 }
