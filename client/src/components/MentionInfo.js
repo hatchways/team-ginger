@@ -1,4 +1,4 @@
-/* Component for rendering the details of a mention such as the # 0f hits and url */
+/* Component for rendering the details of a mention such as the # of hits and url */
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
