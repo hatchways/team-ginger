@@ -68,15 +68,10 @@ class Dialog extends Component {
                                 bold={bold}
                                 title={mention.title}
                                 sentiment={mention.sentiment}
-                            />
-                            <MentionInfo
                                 siteVariant="h5"
                                 site={site}
-                                hitsVariant="h5"
-                                hits={hits}
-                                url={url}
-                                urlVariant="h5"
                             />
+                            <MentionInfo hitsVariant="h5" hits={hits} url={url} urlVariant="h5" />
                         </Box>
 
                         <Box className={classes.snippet}>

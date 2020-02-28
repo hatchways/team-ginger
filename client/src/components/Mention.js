@@ -35,8 +35,15 @@ function Mention(props) {
         <Link to={`${DASHBOARD_URL}/mention/${id}`} style={{ textDecoration: "none", width: "100%" }}>
             <MentionContainer container={classes.container} img={img} site={site}>
                 <Box className={classes.text}>
-                    <MentionHeader variant="body1" noWrap={false} bold={bold} title={title} sentiment={sentiment} />
-                    <MentionInfo siteVariant="body2" site={site} />
+                    <MentionHeader
+                        titleVariant="body1"
+                        noWrap={false}
+                        bold={bold}
+                        title={title}
+                        sentiment={sentiment}
+                        site={site}
+                        siteVariant="body1"
+                    />
                     <MentionText variant="caption" color="textSecondary" bold={bold} text={snippet} />
                 </Box>
             </MentionContainer>

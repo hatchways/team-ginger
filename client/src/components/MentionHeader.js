@@ -1,4 +1,4 @@
-/* Component for rendering the title and sentiment icon of a mention */
+/* Component for rendering the title, source site, and sentiment icon of a mention */
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -60,12 +60,17 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, variant, noWrap } = props;
+    const { title, bold, titleVariant, noWrap, site, siteVariant } = props;
     return (
         <Box className={classes.header}>
-            <Typography variant={variant} noWrap={noWrap} className={classes.title}>
-                {bold(title)}
-            </Typography>
+            <Box className={classes.title}>
+                <Typography variant={titleVariant} noWrap={noWrap}>
+                    {bold(title)}
+                </Typography>
+                <Typography variant={siteVariant} color="textSecondary">
+                    {site}
+                </Typography>
+            </Box>
 
             <Tooltip title={`Score: ${sentiment}`} placement="top" aria-label="Sentiment score" className={classes.icon}>
                 {SentimentToIcon(props.sentiment)}
