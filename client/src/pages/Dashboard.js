@@ -20,21 +20,22 @@ function Dashboard() {
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         // Insert Socket connection here
-    } else {
-        return <Redirect to={LOGIN_URL} />;
+
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        return (
+            <React.Fragment>
+                <ServiceNavBar link={SETTINGS_URL}>
+                    <SettingsIcon fontSize="large" />
+                </ServiceNavBar>
+                <div className={classes.mentions_layout}>
+                    <DashboardSideBar />
+                    <DashboardBody names={names} />
+                </div>
+            </React.Fragment>
+        );
     }
 
-    return (
-        <React.Fragment>
-            <ServiceNavBar link={SETTINGS_URL}>
-                <SettingsIcon fontSize="large" />
-            </ServiceNavBar>
-            <div className={classes.mentions_layout}>
-                <DashboardSideBar />
-                <DashboardBody />
-            </div>
-        </React.Fragment>
-    );
+    return <Redirect to={LOGIN_URL} />;
 }
 
 export default Dashboard;
