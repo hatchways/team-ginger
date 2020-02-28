@@ -51,7 +51,7 @@ function PlatformCard(props) {
                 sites[props.site_name] = !check;
                 localStorage.setItem(SITES_TAG, JSON.stringify(sites));
                 setCheck(!check);
-                fetch(JOBS_ROUTE+this.props.siteName, {
+                fetch(JOBS_ROUTE+props.site_name, {
                     method: "POST"
                 }).then(res => {
                     if (res.status === 200) {

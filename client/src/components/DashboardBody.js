@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
 import { MENTIONS_ROUTE } from "../Routes";
 import Reddit from "../assets/reddit.png";
+import Twitter from "../assets/twitter.png";
 import { RESPONSE_TAG, COMPANY_NAMES_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
@@ -12,7 +13,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 const LOADING_MESSAGE = "Loading Mentions";
 // Map the name of a site to their logo image reference
-const SITE_TO_IMG = { Reddit };
+const SITE_TO_IMG = { Reddit, Twitter };
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;

@@ -7,7 +7,7 @@ class Mention:
     title: str
 
     def __init__(self, company_id: int, url: str, snippet: str,
-                 hits: int, date: int, title: str):
+                 hits: int, date: int, title: str = ""):
         self.company_id = company_id
         self.url = url
         self.snippet = snippet

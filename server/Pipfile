@@ -22,7 +22,6 @@ requests = "*"
 requests_oauthlib = "*"
 flower = "*"
 textblob = "*"
-dateparser = "*"
 
 [requires]
 python_version = "3.7"
