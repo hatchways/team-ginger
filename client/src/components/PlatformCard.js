@@ -9,7 +9,7 @@ import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SITES_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, REDDIT } from "../Constants";
+import { RESPONSE_TAG, SITES_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, REDDIT, LOGIN_URL } from "../Constants";
 import { useSnackbar } from "notistack";
 
 const CRAWLING_MESSAGE = (site, isEnabled) => `${site} crawling has been ${isEnabled ? "enabled" : "disabled"}`;
@@ -43,7 +43,7 @@ function PlatformCard(props) {
     const { enqueueSnackbar } = useSnackbar();
 
     // When the user clicks the toggle
-    const handleClick = () => {
+    const handleClick = props => {
         // Disable eveything but reddit for now
         if (site_name !== REDDIT) {
             enqueueSnackbar("Not implemented yet", BAD_SNACKBAR);
@@ -69,7 +69,7 @@ function PlatformCard(props) {
                             console.log(res.status, data[RESPONSE_TAG]);
                             enqueueSnackbar(data[RESPONSE_TAG], BAD_SNACKBAR);
                         });
-                        fetch(SITES_ROUTE + props.site_name, {
+                        fetch(SITES_ROUTE + site_name, {
                             method: "POST"
                         }).then(res => {
                             sites[props.site_name] = check;
@@ -85,6 +85,8 @@ function PlatformCard(props) {
                         });
                     }
                 });
+            } else if (res.status === 401) {
+                props.history.push(LOGIN_URL);
             }
         });
     };
@@ -104,7 +106,11 @@ function PlatformCard(props) {
         <div className={classes.card}>
             <img src={site_img} className={classes.platform_logo} alt={"Platform logo"} />
             <Typography className={classes.platform_name}>{site_name}</Typography>
-            <CustomSwitch checked={check} onClick={handleClick} inputProps={{ "aria-label": site_name + " checkbox" }} />
+            <CustomSwitch
+                checked={check}
+                onClick={() => handleClick(props)}
+                inputProps={{ "aria-label": site_name + " checkbox" }}
+            />
         </div>
     );
 }
