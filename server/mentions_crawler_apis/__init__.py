@@ -1,11 +1,12 @@
 from ..json_constants import TOKEN_TAG, COMPANIES_TAG
 from . import reddit
-from .constants import REDDIT, COMPANIES_URL
+from . import twitter
+from .constants import REDDIT, TWITTER, COMPANIES_URL
 from .celery import app
 
 import requests
 
-enqueue_dict = {REDDIT: reddit.enqueue}
+enqueue_dict = {REDDIT: reddit.enqueue, TWITTER: twitter.enqueue}
 
 
 def enqueue(site: str, user_id: int, token: str, first_run=True):
