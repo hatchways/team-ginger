@@ -17,12 +17,12 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function DashboardSideBar() {
+function DashboardSideBar(props) {
     const classes = useStyles();
     return (
         <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={REDDIT} />
-            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"} />
+            <PlatformCard site_img={RedditImg} site_name={REDDIT} history={props.history} />
+            <PlatformCard site_img={TwitterImg} site_name={"Twitter (Not Implemented Yet)"} history={props.history} />
         </div>
     );
 }

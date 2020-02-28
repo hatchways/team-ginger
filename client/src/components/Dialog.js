@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { DIALOG_ROUTE } from "../Routes";
-import { RESPONSE_TAG, DASHBOARD_URL } from "../Constants";
+import { RESPONSE_TAG, DASHBOARD_URL, LOGIN_URL } from "../Constants";
 import Reddit from "../assets/reddit.png";
 import Box from "@material-ui/core/Box";
 import { default as Modal } from "@material-ui/core/Dialog";
@@ -107,6 +107,8 @@ class Dialog extends Component {
             res.json().then(data => {
                 if (res.status === 200) {
                     this.setState({ mention: data });
+                } else if (res.status === 401) {
+                    this.props.history.push(LOGIN_URL);
                 } else if (res.status === 404) {
                     this.setState({ message: NOT_FOUND_MESSAGE });
                 } else {

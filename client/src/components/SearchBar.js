@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function SearchBar(props) {
+function SearchBar(props) {
     const classes = useStyles();
     return (
         <React.Fragment>
@@ -39,3 +39,5 @@ export default function SearchBar(props) {
         </React.Fragment>
     );
 }
+
+export default SearchBar;
