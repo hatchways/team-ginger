@@ -14,8 +14,8 @@ ID_TAG = "id"
 @mention_bp.route("/mentions/<int:page>", methods=["GET"])
 @authenticate()
 def mention_response(user, page):
-    mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).limit(MENTIONS_PER_PAGE).offset(
-        page * MENTIONS_PER_PAGE).all()
+    mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).limit(MENTIONS_PER_PAGE * page).all()
+    mentions_count = Mention.query.count()
     output_mentions = []
     for mention in mentions:
         output_mention = {
@@ -28,9 +28,10 @@ def mention_response(user, page):
             SENTIMENT_TAG: mention.sentiment
         }
         output_mentions.append(output_mention)
-    if len(output_mentions) == 0:
+    print(mentions_count, len(output_mentions))
+    if len(output_mentions) == mentions_count:
         # return no content status code
-        return no_content_response("No more mentions available")
+        return no_content_response("Reached end of available mentions", output_mentions)
     return data_response(output_mentions)
 
 

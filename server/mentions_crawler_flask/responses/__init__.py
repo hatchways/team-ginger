@@ -46,7 +46,7 @@ def created_response(message, email: str, companies: list, user_id: int, sites: 
     return response
 
 
-def no_content_response(message):
+def no_content_response(message, output):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 204)
     return response
 
