@@ -27,7 +27,7 @@ function Dashboard(props) {
         if (socket.disconnected)
         {
             socket.open();
-            socket.emit("register", localStorage.getItem(EMAIL_TAG));
+            socket.emit("login", localStorage.getItem(EMAIL_TAG));
         }
         return (
             <React.Fragment>

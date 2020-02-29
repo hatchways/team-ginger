@@ -12,7 +12,7 @@ app = Flask(__name__, instance_relative_config=True)
 
 
 @socketio.on("login")
-def register(email: str):
+def login(email: str):
     if connections.get(email) is None:
         connections[email] = {request.sid}
     else:
@@ -27,9 +27,7 @@ def disconnect():
     if email is not None:
         connections[email].discard(request.sid)
         print(email + " has disconnected!")
-    else:
-        print(email + " is not connected!")
-    del connections_by_sid[request.sid]
+        del connections_by_sid[request.sid]
 
 
 @app.errorhandler(500)
