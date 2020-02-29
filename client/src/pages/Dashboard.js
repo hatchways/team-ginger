@@ -21,6 +21,9 @@ function Dashboard(props) {
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        socket.on("connect", () => {
+            console.log("connected")
+        });
         if (socket.disconnected)
         {
             socket.open();

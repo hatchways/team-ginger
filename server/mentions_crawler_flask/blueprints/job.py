@@ -25,7 +25,6 @@ def get_tasks_id(site: str, user_id: int):
 @job_bp.route("/requests/<string:site_name>", methods=["POST"])
 @authenticate()
 def requests(user, site_name: str):
-    sites = Site.query.all()
     user_id = user.get(USER_ID_TAG)
     token = request.cookies.get(TOKEN_TAG)
     assoc = SiteAssociation.query.filter_by(mention_user_id=user_id, site_name=site_name).first()
@@ -76,7 +75,9 @@ def responses(user):
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
-                socketio.emit("mentions", room=connections[user.get(EMAIL_TAG)])
+                if connections.get(user.get(EMAIL_TAG)) is not None:
+                    for connection in connections[user.get(EMAIL_TAG)]:
+                        socketio.emit("mentions", room=connection)
                 return ok_response("Mentions added to database! And next crawl queued!")
         else:
             return bad_request_response("Missing fields!")

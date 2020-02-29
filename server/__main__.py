@@ -5,28 +5,31 @@ from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
-from server.sockets import socketio, connections
+from server.sockets import socketio, connections, connections_by_sid
 import os
 
 app = Flask(__name__, instance_relative_config=True)
 
 
-@socketio.on("hi")
-def hi():
-    print("hi!!!!")
-
-
-@socketio.on("register")
+@socketio.on("login")
 def register(email: str):
-    connections[email] = request.sid
-    print("Registered: "+email)
+    if connections.get(email) is None:
+        connections[email] = {request.sid}
+    else:
+        connections[email].add(request.sid)
+    connections_by_sid[request.sid] = email
+    print(email + " has logged in.")
 
 
-@socketio.on("logout")
-def disconnect(email: str):
-    if connections.get(email) is not None:
-        del connections[email]
-    print(email+" has disconnected!")
+@socketio.on("disconnect")
+def disconnect():
+    email = connections_by_sid.get(request.sid)
+    if email is not None:
+        connections[email].discard(request.sid)
+        print(email + " has disconnected!")
+    else:
+        print(email + " is not connected!")
+    del connections_by_sid[request.sid]
 
 
 @app.errorhandler(500)

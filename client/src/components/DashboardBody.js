@@ -213,5 +213,9 @@ class DashboardBody extends Component {
         });
         this.fetchMentions();
     }
+
+    componentWillUnmount() {
+        socket.off('mentions');
+    }
 }
 export default withStyles(styles)(DashboardBody);
