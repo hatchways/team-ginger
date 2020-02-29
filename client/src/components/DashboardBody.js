@@ -88,7 +88,7 @@ class DashboardBody extends Component {
     };
 
     fetchMentions = (incrementPage = true) => {
-        const actualPage = this.state.page - (incrementPage ? 0 : 1);
+        const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
 
         fetch(MENTIONS_ROUTE + "/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
             res => {
@@ -97,16 +97,12 @@ class DashboardBody extends Component {
                 } else if (res.ok) {
                     res.json().then(data => {
                         // concatenate the new mentions
-                        let hasMore = true;
+                        let hasMore = !data.end;
                         let newMentions = {};
-                        if (res.status === 204) {
-                            // no more mentions to fetch after this one
-                            hasMore = false;
-                        }
+                        let mentions = data.mentions;
 
-                        if (hasMore || data.length > this.state.mentions.length) {
-                            data.forEach(mention => (newMentions[mention.id] = mention));
-                            console.log(Object.entries(newMentions).length, incrementPage);
+                        if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
+                            mentions.forEach(mention => (newMentions[mention.id] = mention));
                             this.setState({
                                 mentions: newMentions,
                                 page: actualPage + 1,
@@ -116,7 +112,7 @@ class DashboardBody extends Component {
                             return;
                         }
                         // there was no new mentions to fetch
-                        this.setState({ fetched: true, hasMore: hasMore });
+                        this.setState({ fetched: true, hasMore });
                     });
                 }
             }
@@ -214,6 +210,7 @@ class DashboardBody extends Component {
     }
 
     componentDidMount() {
+        this.fetchMentions();
         socket.on("mentions", () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
@@ -222,7 +219,6 @@ class DashboardBody extends Component {
             console.log("connection was lost, attempting to reconnect");
             socket.open();
         });
-        this.fetchMentions();
     }
 
     componentWillUnmount() {
