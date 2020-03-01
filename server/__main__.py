@@ -27,6 +27,7 @@ def disconnect():
         del connections_by_sid[request.sid]
 
 
+# Will ensure that if the user is logged in more than one location, that the toggles will update in those sessions as well
 @socketio.on("toggle")
 def toggle(index):
     print(index)

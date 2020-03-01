@@ -30,10 +30,10 @@ class DashboardSideBar extends Component {
 
     handleToggle = index => {
         const { toggles } = this.state;
-        let newToggles = toggles;
+        let newToggles = [...toggles];
         newToggles[index] = !toggles[index];
         let sites = JSON.parse(localStorage.getItem(SITES_TAG));
-        sites[PLATFORMS[index]] = toggles[index];
+        sites[PLATFORMS[index]] = !toggles[index];
         localStorage.setItem(SITES_TAG, JSON.stringify(sites));
         this.setState({ toggles: newToggles });
     };

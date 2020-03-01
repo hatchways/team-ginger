@@ -56,7 +56,6 @@ function SettingsBody(props) {
     const [email, setEmail] = useState(localStorage.getItem(EMAIL_TAG));
 
     const { enqueueSnackbar } = useSnackbar();
-
     // When a user adds a name
     const addName = name => {
         // Prevent duplicate and empty names
