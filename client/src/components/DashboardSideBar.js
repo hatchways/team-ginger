@@ -28,16 +28,6 @@ class DashboardSideBar extends Component {
         this.state = { toggles: [sites[REDDIT] === true, sites[TWITTER] === true] };
     }
 
-    handleToggle = index => {
-        const { toggles } = this.state;
-        let newToggles = [...toggles];
-        newToggles[index] = !toggles[index];
-        let sites = JSON.parse(localStorage.getItem(SITES_TAG));
-        sites[PLATFORMS[index]] = !toggles[index];
-        localStorage.setItem(SITES_TAG, JSON.stringify(sites));
-        this.setState({ toggles: newToggles });
-    };
-
     render() {
         const { classes, history } = this.props;
         const { toggles } = this.state;
@@ -49,15 +39,22 @@ class DashboardSideBar extends Component {
                 history={history}
                 isToggled={toggles[index]}
                 index={index}
-                toggle={() => this.handleToggle(index)}
             />
         ));
         return <div className={classes.platform_container}>{platformCards}</div>;
     }
 
     componentDidMount() {
-        socket.on(UPDATE_EVENT_TAG, crawler_toggle_index => {
-            this.handleToggle(crawler_toggle_index);
+        socket.on(UPDATE_EVENT_TAG, sites => {
+            localStorage.setItem(SITES_TAG, sites);
+            let parsed_sites = JSON.parse(sites);
+            const { toggles } = this.state;
+            let newToggles = [...toggles];
+            for (let i=0; i<PLATFORMS.length; ++i)
+            {
+                newToggles[i] = parsed_sites[PLATFORMS[i]];
+            }
+            this.setState({ toggles: newToggles });
         });
     }
 

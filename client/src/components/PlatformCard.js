@@ -9,7 +9,7 @@ import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
-import { RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL, TOGGLE_EVENT_TAG } from "../Constants";
+import {RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL, TOGGLE_EVENT_TAG, SITES_TAG} from "../Constants";
 import { useSnackbar } from "notistack";
 import {socket} from "../sockets";
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 
 function PlatformCard(props) {
     const classes = useStyles();
-    const { index, site_name, site_img, isToggled, toggle, history } = props;
+    const { site_name, site_img, isToggled, history } = props;
     const theme = useTheme();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -47,7 +47,9 @@ function PlatformCard(props) {
             method: "POST"
         }).then(res => {
             if (res.status === 200) {
-                socket.emit(TOGGLE_EVENT_TAG, index);
+                let sites = JSON.parse(localStorage.getItem(SITES_TAG));
+                sites[site_name] = !sites[site_name];
+                socket.emit(TOGGLE_EVENT_TAG, JSON.stringify(sites));
                 fetch(JOBS_ROUTE + site_name, {
                     method: "POST"
                 }).then(res => {
@@ -64,7 +66,8 @@ function PlatformCard(props) {
                         fetch(SITES_ROUTE + site_name, {
                             method: "POST"
                         }).then(res => {
-                            socket.emit(TOGGLE_EVENT_TAG, index);
+                            sites[site_name] = !sites[site_name];
+                            socket.emit(TOGGLE_EVENT_TAG, JSON.stringify(sites));
                             if (res.status === 200) {
                                 console.log("Database reverted...");
                             } else {

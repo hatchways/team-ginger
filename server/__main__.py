@@ -29,12 +29,10 @@ def disconnect():
 
 # Will ensure that if the user is logged in more than one location, that the toggles will update in those sessions as well
 @socketio.on("toggle")
-def toggle(index):
-    print(index)
+def toggle(sites):
     email = connections_by_sid.get(request.sid)
-    print(email)
     if email is not None:
-        emit("update", index, room=email)
+        emit("update", sites, room=email)
 
 
 @app.errorhandler(500)
