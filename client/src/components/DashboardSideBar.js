@@ -9,6 +9,7 @@ import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png";
 import { REDDIT, TWITTER, SITES_TAG } from "../Constants";
+import { socket } from "../sockets";
 
 const PLATFORMS = [REDDIT, TWITTER];
 const PLATFORM_IMAGES = [RedditImg, TwitterImg];
@@ -32,7 +33,7 @@ class DashboardSideBar extends Component {
         let newToggles = toggles;
         newToggles[index] = !toggles[index];
         let sites = JSON.parse(localStorage.getItem(SITES_TAG));
-        sites[PLATFORMS[index]] = !toggles[index];
+        sites[PLATFORMS[index]] = toggles[index];
         localStorage.setItem(SITES_TAG, JSON.stringify(sites));
         this.setState({ toggles: newToggles });
     };
@@ -47,6 +48,7 @@ class DashboardSideBar extends Component {
                 site_name={platform}
                 history={history}
                 isToggled={toggles[index]}
+                index={index}
                 toggle={() => this.handleToggle(index)}
             />
         ));
@@ -54,7 +56,13 @@ class DashboardSideBar extends Component {
     }
 
     componentDidMount() {
-        // Insert listener here
+        socket.on("update", (crawler_toggle_index) => {
+            this.handleToggle(crawler_toggle_index);
+        });
+    }
+
+    componentWillUnmount() {
+        socket.off("update");
     }
 }
 

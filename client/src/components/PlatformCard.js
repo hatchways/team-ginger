@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
 import { RESPONSE_TAG, SITES_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, REDDIT, LOGIN_URL } from "../Constants";
 import { useSnackbar } from "notistack";
+import {socket} from "../sockets";
 
 const CRAWLING_MESSAGE = (site, isEnabled) => `${site} crawling has been ${isEnabled ? "enabled" : "disabled"}`;
 
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 
 function PlatformCard(props) {
     const classes = useStyles();
-    const { site_name, site_img, isToggled, toggle, history } = props;
+    const { index, site_name, site_img, isToggled, toggle, history } = props;
     const theme = useTheme();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -46,6 +47,7 @@ function PlatformCard(props) {
             method: "POST"
         }).then(res => {
             if (res.status === 200) {
+                socket.emit("toggle", index);
                 toggle();
                 fetch(JOBS_ROUTE + site_name, {
                     method: "POST"
@@ -63,6 +65,7 @@ function PlatformCard(props) {
                         fetch(SITES_ROUTE + site_name, {
                             method: "POST"
                         }).then(res => {
+                            socket.emit("toggle", index);
                             toggle();
                             if (res.status === 200) {
                                 console.log("Database reverted...");

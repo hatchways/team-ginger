@@ -6,7 +6,7 @@ from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
 from server.sockets import socketio, connections_by_sid
-from flask_socketio import join_room, leave_room
+from flask_socketio import join_room, leave_room, emit
 import os
 
 app = Flask(__name__, instance_relative_config=True)
@@ -25,6 +25,15 @@ def disconnect():
     if email is not None:
         leave_room(email)
         del connections_by_sid[request.sid]
+
+
+@socketio.on("toggle")
+def toggle(index):
+    print(index)
+    email = connections_by_sid.get(request.sid)
+    print(email)
+    if email is not None:
+        emit("update", index, include_self=False, room=email)
 
 
 @app.errorhandler(500)
