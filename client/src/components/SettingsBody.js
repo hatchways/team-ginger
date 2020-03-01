@@ -10,8 +10,17 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
-import { COMPANY_NAMES_TAG, EMAIL_TAG, RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL } from "../Constants";
+import {
+    COMPANY_NAMES_TAG,
+    EMAIL_TAG,
+    RESPONSE_TAG,
+    GOOD_SNACKBAR,
+    BAD_SNACKBAR,
+    LOGIN_URL,
+    UPDATE_EVENT_TAG
+} from "../Constants";
 import { withSnackbar } from "notistack";
+import {socket} from "../sockets";
 
 const MAX_NAME_LIMIT = 5;
 const NO_NAME_MESSAGE = "Must have at least one name";
@@ -240,6 +249,16 @@ class SettingsBody extends Component {
                 </Button>
             </div>
         );
+    }
+
+    componentDidMount() {
+        socket.on(UPDATE_EVENT_TAG, () => {
+
+        });
+    }
+
+    componentWillUnmount() {
+        socket.off(UPDATE_EVENT_TAG);
     }
 }
 

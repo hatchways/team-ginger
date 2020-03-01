@@ -20,3 +20,7 @@ export const FACEBOOK = "Facebook";
 //Snackbar Variant Constants
 export const GOOD_SNACKBAR = { variant: "success" };
 export const BAD_SNACKBAR = { variant: "error" };
+
+//Socket Events
+export const UPDATE_EVENT_TAG = "update";
+export const TOGGLE_EVENT_TAG = "toggle";

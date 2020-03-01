@@ -4,12 +4,12 @@
    Just using Reddit for now
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
-import { RESPONSE_TAG, SITES_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, REDDIT, LOGIN_URL } from "../Constants";
+import { RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL, TOGGLE_EVENT_TAG } from "../Constants";
 import { useSnackbar } from "notistack";
 import {socket} from "../sockets";
 
@@ -47,8 +47,7 @@ function PlatformCard(props) {
             method: "POST"
         }).then(res => {
             if (res.status === 200) {
-                socket.emit("toggle", index);
-                toggle();
+                socket.emit(TOGGLE_EVENT_TAG, index);
                 fetch(JOBS_ROUTE + site_name, {
                     method: "POST"
                 }).then(res => {
@@ -65,8 +64,7 @@ function PlatformCard(props) {
                         fetch(SITES_ROUTE + site_name, {
                             method: "POST"
                         }).then(res => {
-                            socket.emit("toggle", index);
-                            toggle();
+                            socket.emit(TOGGLE_EVENT_TAG, index);
                             if (res.status === 200) {
                                 console.log("Database reverted...");
                             } else {

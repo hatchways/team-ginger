@@ -34,7 +34,7 @@ def toggle(index):
     email = connections_by_sid.get(request.sid)
     print(email)
     if email is not None:
-        emit("update", index, include_self=False, room=email)
+        emit("update", index, room=email)
 
 
 @app.errorhandler(500)

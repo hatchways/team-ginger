@@ -8,7 +8,7 @@ import { withStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png";
-import { REDDIT, TWITTER, SITES_TAG } from "../Constants";
+import { REDDIT, TWITTER, SITES_TAG, UPDATE_EVENT_TAG } from "../Constants";
 import { socket } from "../sockets";
 
 const PLATFORMS = [REDDIT, TWITTER];
@@ -56,13 +56,13 @@ class DashboardSideBar extends Component {
     }
 
     componentDidMount() {
-        socket.on("update", crawler_toggle_index => {
+        socket.on(UPDATE_EVENT_TAG, crawler_toggle_index => {
             this.handleToggle(crawler_toggle_index);
         });
     }
 
     componentWillUnmount() {
-        socket.off("update");
+        socket.off(UPDATE_EVENT_TAG);
     }
 }
 
