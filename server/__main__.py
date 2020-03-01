@@ -5,7 +5,8 @@ from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
-from server.sockets import socketio, connections, connections_by_sid
+from server.sockets import socketio, connections_by_sid
+from flask_socketio import join_room, leave_room
 import os
 
 app = Flask(__name__, instance_relative_config=True)
@@ -13,10 +14,7 @@ app = Flask(__name__, instance_relative_config=True)
 
 @socketio.on("login")
 def login(email: str):
-    if connections.get(email) is None:
-        connections[email] = {request.sid}
-    else:
-        connections[email].add(request.sid)
+    join_room(email)
     connections_by_sid[request.sid] = email
     print(email + " has logged in.")
 
@@ -25,8 +23,7 @@ def login(email: str):
 def disconnect():
     email = connections_by_sid.get(request.sid)
     if email is not None:
-        connections[email].discard(request.sid)
-        print(email + " has disconnected!")
+        leave_room(email)
         del connections_by_sid[request.sid]
 
 

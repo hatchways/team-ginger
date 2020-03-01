@@ -9,7 +9,7 @@ from ..models.site import SiteAssociation, Site
 from ..db import insert_rows
 from celery.result import AsyncResult
 from textblob import TextBlob
-from ...sockets import socketio, connections
+from ...sockets import socketio
 
 job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
@@ -75,9 +75,7 @@ def responses(user):
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
-                if connections.get(user.get(EMAIL_TAG)) is not None:
-                    for connection in connections[user.get(EMAIL_TAG)]:
-                        socketio.emit("mentions", room=connection)
+                socketio.emit("mentions", room=user.get(EMAIL_TAG))
                 return ok_response("Mentions added to database! And next crawl queued!")
         else:
             return bad_request_response("Missing fields!")
