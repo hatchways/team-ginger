@@ -31,7 +31,7 @@ def add():
         return result
 
     # Send welcome email
-    welcome_email(new_user.email)
+    # welcome_email(new_user.email, new_company.name)
 
     return created_response("Account successfully created!", new_user.email, [new_company.name],
                             new_user.id, get_sites())
