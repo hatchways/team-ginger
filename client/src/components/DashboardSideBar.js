@@ -56,9 +56,13 @@ class DashboardSideBar extends Component {
     }
 
     componentDidMount() {
-        socket.on("update", (crawler_toggle_index) => {
+        socket.on("update", crawler_toggle_index => {
             this.handleToggle(crawler_toggle_index);
         });
+    }
+
+    componentWillUnmount() {
+        socket.off("update");
     }
 }
 
