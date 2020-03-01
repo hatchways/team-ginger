@@ -3,28 +3,59 @@
    chosen platforms
 */
 
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { Component } from "react";
+import { withStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png";
-import { REDDIT, TWITTER } from "../Constants";
+import { REDDIT, TWITTER, SITES_TAG } from "../Constants";
 
-const useStyles = makeStyles(theme => ({
+const PLATFORMS = [REDDIT, TWITTER];
+const PLATFORM_IMAGES = [RedditImg, TwitterImg];
+
+const styles = theme => ({
     platform_container: {
         backgroundColor: "white",
         borderRight: "1px solid #ddd"
     }
-}));
+});
 
-function DashboardSideBar(props) {
-    const classes = useStyles();
-    return (
-        <div className={classes.platform_container}>
-            <PlatformCard site_img={RedditImg} site_name={REDDIT} history={props.history} />
-            <PlatformCard site_img={TwitterImg} site_name={TWITTER} history={props.history} />
-        </div>
-    );
+class DashboardSideBar extends Component {
+    constructor(props) {
+        super(props);
+        const sites = JSON.parse(localStorage.getItem(SITES_TAG));
+        this.state = { toggles: [sites[REDDIT] === true, sites[TWITTER] === true] };
+    }
+
+    handleToggle = index => {
+        const { toggles } = this.state;
+        let newToggles = toggles;
+        newToggles[index] = !toggles[index];
+        let sites = JSON.parse(localStorage.getItem(SITES_TAG));
+        sites[PLATFORMS[index]] = !toggles[index];
+        localStorage.setItem(SITES_TAG, JSON.stringify(sites));
+        this.setState({ toggles: newToggles });
+    };
+
+    render() {
+        const { classes, history } = this.props;
+        const { toggles } = this.state;
+        const platformCards = PLATFORMS.map((platform, index) => (
+            <PlatformCard
+                key={index}
+                site_img={PLATFORM_IMAGES[index]}
+                site_name={platform}
+                history={history}
+                isToggled={toggles[index]}
+                toggle={() => this.handleToggle(index)}
+            />
+        ));
+        return <div className={classes.platform_container}>{platformCards}</div>;
+    }
+
+    componentDidMount() {
+        // Insert listener here
+    }
 }
 
-export default DashboardSideBar;
+export default withStyles(styles)(DashboardSideBar);
