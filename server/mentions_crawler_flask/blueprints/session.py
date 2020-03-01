@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
-from ...json_constants import EMAIL_TAG, PASSWORD_TAG
+from ...constants import EMAIL_TAG, PASSWORD_TAG
 from ..models.user import MentionUser
 from ..models.company import Company
 from ..models.site import SiteAssociation, get_sites

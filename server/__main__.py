@@ -5,6 +5,7 @@ from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
+from server.constants import TOGGLE_EVENT_TAG, UPDATE_EVENT_TAG, LOGIN_EVENT_TAG, DISCONNECT_EVENT_TAG
 from server.sockets import socketio, connections_by_sid
 from flask_socketio import join_room, leave_room, emit
 import os
@@ -12,14 +13,14 @@ import os
 app = Flask(__name__, instance_relative_config=True)
 
 
-@socketio.on("login")
+@socketio.on(LOGIN_EVENT_TAG)
 def login(email: str):
     join_room(email)
     connections_by_sid[request.sid] = email
     print(email + " has logged in.")
 
 
-@socketio.on("disconnect")
+@socketio.on(DISCONNECT_EVENT_TAG)
 def disconnect():
     email = connections_by_sid.get(request.sid)
     if email is not None:
@@ -28,11 +29,11 @@ def disconnect():
 
 
 # Will ensure that if the user is logged in more than one location, that the toggles will update in those sessions as well
-@socketio.on("toggle")
+@socketio.on(TOGGLE_EVENT_TAG)
 def toggle(sites):
     email = connections_by_sid.get(request.sid)
     if email is not None:
-        emit("update", sites, room=email)
+        emit(UPDATE_EVENT_TAG, sites, room=email)
 
 
 @app.errorhandler(500)

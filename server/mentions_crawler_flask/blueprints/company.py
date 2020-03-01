@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ...json_constants import USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG, COMPANIES_TAG
+from ...constants import USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG, COMPANIES_TAG
 from ..models.company import Company
 from ..models.mention import Mention
 from ..db import insert_rows, delete_rows

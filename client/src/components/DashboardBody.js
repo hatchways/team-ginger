@@ -4,13 +4,12 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { MENTIONS_ROUTE } from "../Routes";
-import { RESPONSE_TAG, LOGIN_URL } from "../Constants";
+import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
 import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
-//import io from "socket.io-client"
 
 const LOADING_MESSAGE = "Loading Mentions";
 // Max character limit of mention title and snippet
@@ -211,18 +210,18 @@ class DashboardBody extends Component {
 
     componentDidMount() {
         this.fetchMentions();
-        socket.on("mentions", () => {
+        socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
         });
-        socket.on("disconnect", () => {
+        socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
             socket.open();
         });
     }
 
     componentWillUnmount() {
-        socket.off("mentions");
+        socket.off(MENTIONS_EVENT_TAG);
     }
 }
 export default withStyles(styles)(DashboardBody);

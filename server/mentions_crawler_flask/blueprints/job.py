@@ -1,11 +1,11 @@
 from flask import Blueprint, request, json
 from ..authentication.authenticate import authenticate, enforce_json
 from ...mentions_crawler_apis import enqueue
-from ...json_constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
-    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG
+from ...constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
+    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG, MENTIONS_EVENT_TAG
 from ..responses import bad_request_response, ok_response, error_response
 from ..models.mention import Mention
-from ..models.site import SiteAssociation, Site
+from ..models.site import SiteAssociation
 from ..db import insert_rows
 from celery.result import AsyncResult
 from textblob import TextBlob
@@ -75,7 +75,7 @@ def responses(user):
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
-                socketio.emit("mentions", room=user.get(EMAIL_TAG))
+                socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
                 return ok_response("Mentions added to database! And next crawl queued!")
         else:
             return bad_request_response("Missing fields!")

@@ -24,3 +24,7 @@ export const BAD_SNACKBAR = { variant: "error" };
 //Socket Events
 export const UPDATE_EVENT_TAG = "update";
 export const TOGGLE_EVENT_TAG = "toggle";
+export const LOGIN_EVENT_TAG = "login";
+export const DISCONNECT_EVENT_TAG = "disconnect";
+export const CONNECT_EVENT_TAG = "connect";
+export const MENTIONS_EVENT_TAG = "mentions";

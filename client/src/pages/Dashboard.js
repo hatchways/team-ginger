@@ -5,7 +5,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ServiceNavBar from "../components/ServiceNavBar";
 import DashboardSideBar from "../components/DashboardSideBar";
 import DashboardBody from "../components/DashboardBody";
-import { SETTINGS_URL, LOGIN_URL, COMPANY_NAMES_TAG, EMAIL_TAG, SITES_TAG } from "../Constants";
+import { SETTINGS_URL, LOGIN_URL, COMPANY_NAMES_TAG, EMAIL_TAG, SITES_TAG, LOGIN_EVENT_TAG, DISCONNECT_EVENT_TAG, CONNECT_EVENT_TAG } from "../Constants";
 import {socket} from "../sockets";
 
 const useStyles = makeStyles(theme => ({
@@ -21,13 +21,13 @@ function Dashboard(props) {
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
-        socket.on("connect", () => {
+        socket.on(CONNECT_EVENT_TAG, () => {
             console.log("connected")
         });
         if (socket.disconnected)
         {
             socket.open();
-            socket.emit("login", localStorage.getItem(EMAIL_TAG));
+            socket.emit(LOGIN_EVENT_TAG, localStorage.getItem(EMAIL_TAG));
         }
         return (
             <React.Fragment>
@@ -43,7 +43,7 @@ function Dashboard(props) {
     }
     if (socket.connected)
     {
-        socket.off("disconnect");
+        socket.off(DISCONNECT_EVENT_TAG);
         socket.close();
     }
 
