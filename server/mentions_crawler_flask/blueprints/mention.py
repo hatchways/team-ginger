@@ -1,7 +1,7 @@
 from flask import Blueprint
 from ...json_constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG
 from ..authentication.authenticate import authenticate
-from ..responses import data_response, no_content_response, not_found_response
+from ..responses import data_response, pagination_response, not_found_response
 from ..models.mention import Mention
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/")
@@ -14,8 +14,9 @@ ID_TAG = "id"
 @mention_bp.route("/mentions/<int:page>", methods=["GET"])
 @authenticate()
 def mention_response(user, page):
-    mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).limit(MENTIONS_PER_PAGE * page).all()
-    mentions_count = Mention.query.count()
+    all_mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG))
+    mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
+    mentions_count = all_mentions.count()
     output_mentions = []
     for mention in mentions:
         output_mention = {
@@ -28,11 +29,8 @@ def mention_response(user, page):
             SENTIMENT_TAG: mention.sentiment
         }
         output_mentions.append(output_mention)
-    print(mentions_count, len(output_mentions))
-    if len(output_mentions) == mentions_count:
-        # return no content status code
-        return no_content_response("Reached end of available mentions", output_mentions)
-    return data_response(output_mentions)
+    # Let the client know if they reached the end of the mentions
+    return pagination_response(output_mentions, len(output_mentions) == mentions_count)
 
 
 # Get details of a single mention
