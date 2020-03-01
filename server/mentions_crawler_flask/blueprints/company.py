@@ -9,6 +9,7 @@ from ..authentication.authenticate import authenticate, enforce_json
 company_bp = Blueprint("companies", __name__, url_prefix="/")
 
 
+# TODO update workers to crawl for updated names
 # TODO reimplement composite key to prevent users from having duplicate companies
 
 # Route for updating company names
@@ -16,37 +17,36 @@ company_bp = Blueprint("companies", __name__, url_prefix="/")
 @enforce_json()
 @authenticate()
 def update_companies(user):
-    names = request.get_json()
+    body = request.get_json()
+    if not body.get(COMPANIES_TAG):
+        return bad_request_response("Invalid fields")
+    names = body.get(COMPANIES_TAG) 
+    uid = user.get(USER_ID_TAG)  
     if len(names) == 0:
         return bad_request_response("Must have at least one company name")
-    old_companies = Company.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).all()
-    old_companies_map = {}
+    old_companies = Company.query.filter_by(mention_user_id=uid).all()
+    
+    old_names = []
+    scraped_companies = []
+    new_companies = []
     old_mentions = []
-    companies = []
 
-    count = 0
     for company in old_companies:
-        old_companies_map[company.name] = count
-        count = count + 1
-
+        if company.name not in names:
+            scraped_companies.append(company)
+            old_mentions.extend(Mention.query.filter_by(mention_user_id=uid, company=company.id).all())
+        old_names.append(company.name)
     for name in names:
-        if name in old_companies_map:  # Spare existing names from deletion
-            del old_companies[old_companies_map[name]]
-        company_count = Company.query.filter_by(mention_user_id=user.get(USER_ID_TAG), name=name).count()
-        if company_count == 0:  # ensure existing names don't try to get inserted
-            companies.append(Company(user.get(USER_ID_TAG), name))
-
-    for company in old_companies:  # Line up mentions for execution
-        old_mentions = old_mentions + Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG),
-                                                              company=company.id).all()
+        if name not in old_names:
+            new_companies.append(Company(uid, name))
 
     result = delete_rows(old_mentions)
     if result is not True:
         return result
-    result = delete_rows(old_companies)
+    result = delete_rows(scraped_companies)
     if result is not True:
         return result
-    result = insert_rows(companies)
+    result = insert_rows(new_companies)
     if result is not True:
         return result
     return ok_response("Company names updated!")

@@ -109,7 +109,6 @@ class SettingsBody extends Component {
             .catch(err => reject(err));
 
     handleNamesChange = (resolve, reject) => {
-        console.log(this.state.names);
         fetch(COMPANIES_ROUTE, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
