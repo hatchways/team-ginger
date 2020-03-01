@@ -60,10 +60,6 @@ class DashboardSideBar extends Component {
             this.handleToggle(crawler_toggle_index);
         });
     }
-
-    componentWillUnmount() {
-        socket.off("update");
-    }
 }
 
 export default withStyles(styles)(DashboardSideBar);
