@@ -7,6 +7,7 @@ from ..models.company import Company
 from ..models.site import get_sites
 from ..db import insert_row, commit
 from ..responses import bad_request_response, ok_response, created_response
+from ...email.send import welcome_email, weekly_email
 
 user_bp = Blueprint("users", __name__, url_prefix="/")
 
@@ -28,6 +29,11 @@ def add():
     result = insert_row(new_company)
     if result is not True:
         return result
+
+    # Send welcome email
+    welcome_email(new_user.email, new_company.name)
+    # Send weekly email
+    weekly_email(new_user.email)
 
     return created_response("Account successfully created!", new_user.email, [new_company.name],
                             new_user.id, get_sites())
