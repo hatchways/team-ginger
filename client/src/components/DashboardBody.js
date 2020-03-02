@@ -88,10 +88,10 @@ class DashboardBody extends Component {
         return result;
     };
 
-    fetchMentions = (incrementPage = true, sort) => {
+    fetchMentions = (incrementPage = true) => {
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
 
-        fetch(MENTIONS_ROUTE + sort +"/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
+        fetch(MENTIONS_ROUTE + this.state.sort +"/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
             res => {
                 if (res.status === 401) {
                     this.props.history.push(LOGIN_URL);
@@ -180,16 +180,14 @@ class DashboardBody extends Component {
                     click1={() => {
                         if (this.state.tabValue !== 0)
                         {
-                            this.setState({tabValue: 0, sort: BY_RECENT});
-                            this.fetchMentions(false, BY_RECENT);
+                            this.setState({tabValue: 0, page: 1, mentions: [], hasMore: true, sort: BY_RECENT}, () => this.fetchMentions(false));
                         }
 
                     }}
                     click2={() => {
                         if (this.state.tabValue !== 1)
                         {
-                            this.setState({tabValue: 1, sort: BY_POPULAR});
-                            this.fetchMentions(false, BY_POPULAR)
+                            this.setState({tabValue: 1, page: 1, mentions: [], hasMore: true, sort: BY_POPULAR}, () => this.fetchMentions(false));
                         }
 
                     }}
@@ -198,7 +196,7 @@ class DashboardBody extends Component {
                 <InfiniteScroll
                     className={classes.grid}
                     dataLength={renderMentions.length}
-                    next={(incrementPage) => this.fetchMentions(incrementPage, this.state.sort)}
+                    next={this.fetchMentions}
                     hasMore={hasMore}
                     height={"70vh"}
                     loader={
@@ -224,10 +222,10 @@ class DashboardBody extends Component {
     }
 
     componentDidMount() {
-        this.fetchMentions(false, this.state.sort);
+        this.fetchMentions(false);
         socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
-            this.fetchMentions(false, this.state.sort);
+            this.fetchMentions(false);
         });
         socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
