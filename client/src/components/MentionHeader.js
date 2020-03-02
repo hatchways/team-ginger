@@ -60,13 +60,11 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, noWrap, site, siteVariant } = props;
+    const { title, bold, titleVariant, site, siteVariant } = props;
     return (
         <Box className={classes.header}>
             <Box className={classes.title}>
-                <Typography variant={titleVariant} noWrap={noWrap}>
-                    {bold(title)}
-                </Typography>
+                <Typography variant={titleVariant}>{bold(title)}</Typography>
                 <Typography variant={siteVariant} color="textSecondary">
                     {site}
                 </Typography>

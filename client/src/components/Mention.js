@@ -8,7 +8,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import MentionContainer from "./MentionContainer";
 import MentionHeader from "./MentionHeader";
-import MentionInfo from "./MentionInfo";
 import MentionText from "./MentionText";
 import { DASHBOARD_URL } from "../Constants";
 
@@ -37,7 +36,6 @@ function Mention(props) {
                 <Box className={classes.text}>
                     <MentionHeader
                         titleVariant="body1"
-                        noWrap={false}
                         bold={bold}
                         title={title}
                         sentiment={sentiment}
