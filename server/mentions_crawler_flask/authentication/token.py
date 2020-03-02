@@ -1,5 +1,5 @@
 import jwt
-from ...json_constants import USER_ID_TAG, EMAIL_TAG
+from ...constants import USER_ID_TAG, EMAIL_TAG
 
 _ISSUER = "Evan & Ryan"
 

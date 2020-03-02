@@ -1,19 +1,19 @@
 from flask import Blueprint, request, json
 from ..authentication.authenticate import authenticate, enforce_json
 from ...mentions_crawler_apis import enqueue
-from ...json_constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
-    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG
+from ...constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
+    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG, MENTIONS_EVENT_TAG
 from ..responses import bad_request_response, ok_response, error_response
 from ..models.mention import Mention
-from ..models.site import SiteAssociation, Site
+from ..models.site import SiteAssociation
 from ..db import insert_rows
 from celery.result import AsyncResult
 from textblob import TextBlob
+from ...sockets import socketio
 
 job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
-# TODO add a return value to enqueue/stop_job to see if the task was successfully
-#      queued so we can return the appropriate response
+# TODO track connected sockets clients so we're not broadcasting to everyone who's connected
 
 tasks = {}
 
@@ -25,10 +25,8 @@ def get_tasks_id(site: str, user_id: int):
 @job_bp.route("/requests/<string:site_name>", methods=["POST"])
 @authenticate()
 def requests(user, site_name: str):
-    sites = Site.query.all()
     user_id = user.get(USER_ID_TAG)
     token = request.cookies.get(TOKEN_TAG)
-    print(sites)
     assoc = SiteAssociation.query.filter_by(mention_user_id=user_id, site_name=site_name).first()
     if assoc is None:
         if tasks.get(get_tasks_id(site_name, user_id)) is not None:
@@ -71,12 +69,14 @@ def responses(user):
 
             result = insert_rows(db_mentions)
             if result is not True:
+                result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), True)
                 return result
             result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), False)
             if tasks.get(get_tasks_id(site, user_id)) is not None:
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
+                socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
                 return ok_response("Mentions added to database! And next crawl queued!")
         else:
             return bad_request_response("Missing fields!")

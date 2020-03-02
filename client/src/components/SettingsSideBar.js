@@ -9,7 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import SettingsIcon from "@material-ui/icons/Settings";
 import SettingsTab from "./SettingsTab";
 import { LOGOUT_ROUTE } from "../Routes";
-import { LOGIN_URL } from "../Constants";
+import {EMAIL_TAG, LOGIN_URL} from "../Constants";
+import { socket } from "../sockets";
 
 const useStyles = makeStyles(theme => ({
     tab_container: {
@@ -50,7 +51,10 @@ function SettingsSideBar(props) {
         fetch(LOGOUT_ROUTE, {
             method: "POST"
         }).then(res => {
+            socket.emit("logout", localStorage.getItem(EMAIL_TAG));
             localStorage.clear();
+            socket.off("disconnect");  // prevents from trying to reconnect
+            socket.close();
             props.history.push(LOGIN_URL);
         });
     };

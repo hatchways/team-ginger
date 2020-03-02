@@ -35,7 +35,7 @@ function Settings(props) {
             </ServiceNavBar>
             <div className={classes.settings_layout}>
                 <SettingsSideBar history={props.history} />
-                <SettingsBody />
+                <SettingsBody history={props.history} />
             </div>
         </React.Fragment>
     );

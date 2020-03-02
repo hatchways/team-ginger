@@ -1,4 +1,4 @@
-from ..json_constants import TOKEN_TAG, COMPANIES_TAG
+from ..constants import TOKEN_TAG, COMPANIES_TAG
 from . import reddit
 from . import twitter
 from .constants import REDDIT, TWITTER, COMPANIES_URL

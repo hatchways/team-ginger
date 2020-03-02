@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from werkzeug.security import generate_password_hash
-from ...json_constants import EMAIL_TAG, PASSWORD_TAG, USER_ID_TAG, COMPANIES_TAG
+from ...constants import EMAIL_TAG, PASSWORD_TAG, USER_ID_TAG, COMPANIES_TAG
 from ..authentication.authenticate import enforce_json, authenticate
 from ..models.user import MentionUser
 from ..models.company import Company

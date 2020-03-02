@@ -4,7 +4,7 @@ import praw
 import requests
 from .Mention import Mention
 from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
-from ..json_constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
+from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 

@@ -1,5 +1,5 @@
 from flask import Blueprint
-from ...json_constants import USER_ID_TAG, EMAIL_TAG
+from ...constants import USER_ID_TAG, EMAIL_TAG
 from ..authentication.authenticate import authenticate
 from ..models.site import SiteAssociation
 from ..db import insert_row, delete_row
