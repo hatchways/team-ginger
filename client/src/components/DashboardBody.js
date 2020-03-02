@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import {BY_POPULAR, BY_RECENT, MENTIONS_ROUTE} from "../Routes";
+import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
@@ -53,10 +53,11 @@ class DashboardBody extends Component {
         };
     }
 
-    handleTabChange = (tabValue, sort) => {
-        // Insert sorting code here
-        this.setState({ tabValue: tabValue, sort: sort });
-        this.fetchMentions(false);
+    handleTabChange = tabValue => {
+        if (this.state.tabValue !== tabValue) {
+            const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
+            this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
+        }
     };
 
     // Find the company names using regex and bold them
@@ -91,32 +92,33 @@ class DashboardBody extends Component {
     fetchMentions = (incrementPage = true) => {
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
 
-        fetch(MENTIONS_ROUTE + this.state.sort +"/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
-            res => {
-                if (res.status === 401) {
-                    this.props.history.push(LOGIN_URL);
-                } else if (res.ok) {
-                    res.json().then(data => {
-                        console.log(data);
-                        // concatenate the new mentions
-                        let hasMore = !data.end;
-                        let mentions = data.mentions;
+        fetch(MENTIONS_ROUTE + this.state.sort + "/" + actualPage, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        }).then(res => {
+            if (res.status === 401) {
+                this.props.history.push(LOGIN_URL);
+            } else if (res.ok) {
+                res.json().then(data => {
+                    console.log(data);
+                    // concatenate the new mentions
+                    let hasMore = !data.end;
+                    let mentions = data.mentions;
 
-                        if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
-                            this.setState({
-                                mentions: mentions,
-                                page: actualPage + 1,
-                                fetched: true,
-                                hasMore: hasMore
-                            });
-                            return;
-                        }
-                        // there was no new mentions to fetch
-                        this.setState({ fetched: true, hasMore });
-                    });
-                }
+                    if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
+                        this.setState({
+                            mentions: mentions,
+                            page: actualPage + 1,
+                            fetched: true,
+                            hasMore: hasMore
+                        });
+                        return;
+                    }
+                    // there was no new mentions to fetch
+                    this.setState({ fetched: true, hasMore });
+                });
             }
-        );
+        });
     };
 
     normalizeSnippet = snippet => {
@@ -177,20 +179,8 @@ class DashboardBody extends Component {
             <div className={classes.container}>
                 <DashboardHead
                     tab={tabValue}
-                    click1={() => {
-                        if (this.state.tabValue !== 0)
-                        {
-                            this.setState({tabValue: 0, page: 1, mentions: [], hasMore: true, sort: BY_RECENT}, () => this.fetchMentions(false));
-                        }
-
-                    }}
-                    click2={() => {
-                        if (this.state.tabValue !== 1)
-                        {
-                            this.setState({tabValue: 1, page: 1, mentions: [], hasMore: true, sort: BY_POPULAR}, () => this.fetchMentions(false));
-                        }
-
-                    }}
+                    click1={() => this.handleTabChange(0)}
+                    click2={() => this.handleTabChange(1)}
                 />
 
                 <InfiniteScroll

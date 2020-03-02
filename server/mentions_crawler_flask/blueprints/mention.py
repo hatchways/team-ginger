@@ -8,8 +8,8 @@ mention_bp = Blueprint("mentions", __name__, url_prefix="/mentions")
 
 MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
-SORT_POPULAR_URL = "Popular"
-SORT_RECENT_URL = "Recent"
+SORT_POPULAR_URL = "popular"
+SORT_RECENT_URL = "recent"
 
 
 # Get a set of mentions specified by the page number given
