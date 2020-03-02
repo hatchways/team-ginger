@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { MENTIONS_ROUTE } from "../Routes";
+import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
@@ -41,9 +41,10 @@ class DashboardBody extends Component {
         // Get regex containing each of the company names as the whole word
         const expression = props.names.map(name => "\\b" + name + "\\b").join("|");
         this.state = {
-            tabValue: 1,
+            tabValue: 0,
             page: 1,
-            mentions: {},
+            sort: BY_RECENT,
+            mentions: [],
             hasMore: true,
             fetched: false,
             // g = global flag, i = ignorecase flag
@@ -53,8 +54,10 @@ class DashboardBody extends Component {
     }
 
     handleTabChange = tabValue => {
-        // Insert sorting code here
-        this.setState({ tabValue });
+        if (this.state.tabValue !== tabValue) {
+            const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
+            this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
+        }
     };
 
     // Find the company names using regex and bold them
@@ -89,33 +92,33 @@ class DashboardBody extends Component {
     fetchMentions = (incrementPage = true) => {
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
 
-        fetch(MENTIONS_ROUTE + "/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
-            res => {
-                if (res.status === 401) {
-                    this.props.history.push(LOGIN_URL);
-                } else if (res.ok) {
-                    res.json().then(data => {
-                        // concatenate the new mentions
-                        let hasMore = !data.end;
-                        let newMentions = {};
-                        let mentions = data.mentions;
+        fetch(MENTIONS_ROUTE + this.state.sort + "/" + actualPage, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        }).then(res => {
+            if (res.status === 401) {
+                this.props.history.push(LOGIN_URL);
+            } else if (res.ok) {
+                res.json().then(data => {
+                    console.log(data);
+                    // concatenate the new mentions
+                    let hasMore = !data.end;
+                    let mentions = data.mentions;
 
-                        if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
-                            mentions.forEach(mention => (newMentions[mention.id] = mention));
-                            this.setState({
-                                mentions: newMentions,
-                                page: actualPage + 1,
-                                fetched: true,
-                                hasMore: hasMore
-                            });
-                            return;
-                        }
-                        // there was no new mentions to fetch
-                        this.setState({ fetched: true, hasMore });
-                    });
-                }
+                    if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
+                        this.setState({
+                            mentions: mentions,
+                            page: actualPage + 1,
+                            fetched: true,
+                            hasMore: hasMore
+                        });
+                        return;
+                    }
+                    // there was no new mentions to fetch
+                    this.setState({ fetched: true, hasMore });
+                });
             }
-        );
+        });
     };
 
     normalizeSnippet = snippet => {
@@ -209,7 +212,7 @@ class DashboardBody extends Component {
     }
 
     componentDidMount() {
-        this.fetchMentions();
+        this.fetchMentions(false);
         socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
