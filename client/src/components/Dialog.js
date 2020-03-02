@@ -63,8 +63,7 @@ class Dialog extends Component {
                     <MentionContainer container={classes.container} img={mention.thumbnail} site={site}>
                         <Box className={classes.info}>
                             <MentionHeader
-                                variant="h4"
-                                noWrap={true}
+                                titleVariant="h5"
                                 bold={bold}
                                 title={mention.title}
                                 sentiment={mention.sentiment}

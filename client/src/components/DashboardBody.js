@@ -1,12 +1,9 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
-import Dialog from "./Dialog";
 import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
@@ -39,17 +36,12 @@ class DashboardBody extends Component {
     constructor(props) {
         super(props);
         // Get regex containing each of the company names as the whole word
-        const expression = props.names.map(name => "\\b" + name + "\\b").join("|");
         this.state = {
             tabValue: 0,
             page: 1,
             sort: BY_RECENT,
             mentions: [],
-            hasMore: true,
-            fetched: false,
-            // g = global flag, i = ignorecase flag
-            regex: new RegExp(expression, "i"),
-            globalRegex: new RegExp(expression, "gi")
+            hasMore: true
         };
     }
 
@@ -58,35 +50,6 @@ class DashboardBody extends Component {
             const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
             this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
         }
-    };
-
-    // Find the company names using regex and bold them
-    boldNames = text => {
-        const matches = text.matchAll(this.state.globalRegex);
-
-        // Collect the indices of the bold words
-        let Indices = [];
-        for (const match of matches) {
-            Indices.push(match.index);
-            Indices.push(match.index + match[0].length);
-        }
-
-        // Bold the words by wrapping a strong tag around them
-        let result = [];
-        let index = 0;
-        for (let i = 0; i < Indices.length; i += 2) {
-            // Push unbolded string
-            result.push(<React.Fragment key={i}>{text.substring(index, Indices[i])}</React.Fragment>);
-            // Push bolded name
-            result.push(
-                <Box component="strong" key={i + 1}>
-                    {text.substring(Indices[i], Indices[i + 1])}
-                </Box>
-            );
-            index = Indices[i + 1];
-        }
-        result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
-        return result;
     };
 
     fetchMentions = (incrementPage = true) => {
@@ -109,13 +72,12 @@ class DashboardBody extends Component {
                         this.setState({
                             mentions: mentions,
                             page: actualPage + 1,
-                            fetched: true,
                             hasMore: hasMore
                         });
                         return;
                     }
                     // there was no new mentions to fetch
-                    this.setState({ fetched: true, hasMore });
+                    this.setState({ hasMore });
                 });
             }
         });
@@ -152,7 +114,7 @@ class DashboardBody extends Component {
 
     render() {
         const { classes } = this.props;
-        const { tabValue, mentions, hasMore, fetched } = this.state;
+        const { tabValue, mentions, hasMore } = this.state;
 
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
@@ -170,7 +132,7 @@ class DashboardBody extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
-                        bold={this.boldNames}
+                        bold={this.props.bold}
                     />
                 );
             });
@@ -198,15 +160,6 @@ class DashboardBody extends Component {
                     {renderMentions}
                     {renderMentions.length !== 0 ? <hr></hr> : ""}
                 </InfiniteScroll>
-
-                {fetched && (
-                    <Route
-                        path={`/dashboard/mention/:id`}
-                        component={props => (
-                            <Dialog id={props.match.params.id} history={props.history} bold={this.boldNames} />
-                        )}
-                    />
-                )}
             </div>
         );
     }
