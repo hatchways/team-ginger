@@ -12,12 +12,13 @@ import { USERS_ROUTE, COMPANIES_ROUTE } from "../Routes";
 import CompanyNames from "./CompanyNames";
 import {
     COMPANY_NAMES_TAG,
+    SAVE_EVENT_TAG,
     EMAIL_TAG,
     RESPONSE_TAG,
     GOOD_SNACKBAR,
     BAD_SNACKBAR,
     LOGIN_URL,
-    UPDATE_EVENT_TAG
+    UPDATE_EVENT_TAG, SITES_TAG
 } from "../Constants";
 import { withSnackbar } from "notistack";
 import {socket} from "../sockets";
@@ -153,6 +154,7 @@ class SettingsBody extends Component {
                 if (emailResponse.status === 200) {
                     localStorage.setItem(EMAIL_TAG, email);
                     emailChanged = true;
+                    socket.emit(SAVE_EVENT_TAG, JSON.stringify({email: email}))
                 } else if (emailResponse.status === 401) {
                     localStorage.clear();
                     history.push(LOGIN_URL);
@@ -168,6 +170,8 @@ class SettingsBody extends Component {
                 if (namesResponse.status === 200) {
                     localStorage.setItem(COMPANY_NAMES_TAG, names);
                     namesChanged = true;
+                    console.log(localStorage.getItem(COMPANY_NAMES_TAG));
+                    socket.emit(SAVE_EVENT_TAG, JSON.stringify({companies: localStorage.getItem(COMPANY_NAMES_TAG)}))
                 } else if (namesResponse.status === 401) {
                     localStorage.clear();
                     history.push(LOGIN_URL);
@@ -252,8 +256,27 @@ class SettingsBody extends Component {
     }
 
     componentDidMount() {
-        socket.on(UPDATE_EVENT_TAG, () => {
+        socket.on(UPDATE_EVENT_TAG, (data) => {
+            let parsed_data = JSON.parse(data);
+            console.log(data);
+            console.log(parsed_data);
+            if(parsed_data[SITES_TAG])
+            {
+                localStorage.setItem(SITES_TAG, JSON.stringify(parsed_data[SITES_TAG]));
+            }
+            else if (parsed_data[COMPANY_NAMES_TAG])
+            {
+                let names = parsed_data[COMPANY_NAMES_TAG];
 
+                localStorage.setItem(COMPANY_NAMES_TAG, names);
+                this.setState({ names: names.split(",")});
+            }
+            else if (parsed_data[EMAIL_TAG])
+            {
+                let email = parsed_data[EMAIL_TAG];
+                localStorage.setItem(EMAIL_TAG, email);
+                this.setState( {email: email});
+            }
         });
     }
 

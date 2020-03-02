@@ -8,10 +8,9 @@ import { withStyles } from "@material-ui/core/styles";
 import PlatformCard from "./PlatformCard";
 import RedditImg from "../assets/reddit.png";
 import TwitterImg from "../assets/twitter.png";
-import { REDDIT, TWITTER, SITES_TAG, UPDATE_EVENT_TAG } from "../Constants";
+import {REDDIT, TWITTER, SITES_TAG, UPDATE_EVENT_TAG, PLATFORMS, COMPANY_NAMES_TAG, EMAIL_TAG} from "../Constants";
 import { socket } from "../sockets";
 
-const PLATFORMS = [REDDIT, TWITTER];
 const PLATFORM_IMAGES = [RedditImg, TwitterImg];
 
 const styles = theme => ({
@@ -45,16 +44,30 @@ class DashboardSideBar extends Component {
     }
 
     componentDidMount() {
-        socket.on(UPDATE_EVENT_TAG, sites => {
-            localStorage.setItem(SITES_TAG, sites);
-            let parsed_sites = JSON.parse(sites);
-            const { toggles } = this.state;
-            let newToggles = [...toggles];
-            for (let i=0; i<PLATFORMS.length; ++i)
+        socket.on(UPDATE_EVENT_TAG, data => {
+            let parsed_data = JSON.parse(data);
+            console.log(parsed_data);
+            if(parsed_data[SITES_TAG])
             {
-                newToggles[i] = parsed_sites[PLATFORMS[i]];
+                let parsed_sites = parsed_data[SITES_TAG];
+                localStorage.setItem(SITES_TAG, JSON.stringify(parsed_sites));
+                const { toggles } = this.state;
+                let newToggles = [...toggles];
+                for (let i=0; i<PLATFORMS.length; ++i)
+                {
+                    newToggles[i] = parsed_sites[PLATFORMS[i]];
+                }
+                this.setState({ toggles: newToggles });
             }
-            this.setState({ toggles: newToggles });
+            else if (parsed_data[COMPANY_NAMES_TAG])
+            {
+                localStorage.setItem(COMPANY_NAMES_TAG, parsed_data[COMPANY_NAMES_TAG]);
+            }
+            else if (parsed_data[EMAIL_TAG])
+            {
+                localStorage.setItem(EMAIL_TAG, parsed_data[EMAIL_TAG]);
+            }
+
         });
     }
 
