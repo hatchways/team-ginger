@@ -69,6 +69,7 @@ def responses(user):
 
             result = insert_rows(db_mentions)
             if result is not True:
+                result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), True)
                 return result
             result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), False)
             if tasks.get(get_tasks_id(site, user_id)) is not None:
