@@ -198,7 +198,7 @@ class DashboardBody extends Component {
                 <InfiniteScroll
                     className={classes.grid}
                     dataLength={renderMentions.length}
-                    next={this.fetchMentions}
+                    next={(incrementPage) => this.fetchMentions(incrementPage, this.state.sort)}
                     hasMore={hasMore}
                     height={"70vh"}
                     loader={
