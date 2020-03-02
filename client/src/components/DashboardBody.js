@@ -53,12 +53,6 @@ class DashboardBody extends Component {
         };
     }
 
-    handleTabChange = (tabValue, sort) => {
-        // Insert sorting code here
-        this.setState({ tabValue: tabValue, sort: sort });
-        this.fetchMentions(false);
-    };
-
     // Find the company names using regex and bold them
     boldNames = text => {
         const matches = text.matchAll(this.state.globalRegex);
