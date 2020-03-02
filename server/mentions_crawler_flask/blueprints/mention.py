@@ -1,20 +1,27 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG
 from ..authentication.authenticate import authenticate
-from ..responses import data_response, pagination_response, not_found_response
+from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
 
-mention_bp = Blueprint("mentions", __name__, url_prefix="/")
+mention_bp = Blueprint("mentions", __name__, url_prefix="/mentions")
 
 MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
+SORT_POPULAR_URL = "Popular"
+SORT_RECENT_URL = "Recent"
 
 
 # Get a set of mentions specified by the page number given
-@mention_bp.route("/mentions/<int:page>", methods=["GET"])
+@mention_bp.route("/<string:sort>/<int:page>", methods=["GET"])
 @authenticate()
-def mention_response(user, page):
-    all_mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG))
+def get_mentions(user, sort, page):
+    if sort == SORT_POPULAR_URL:
+        all_mentions = Mention.query.order_by(Mention.hits.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
+    elif sort == SORT_RECENT_URL:
+        all_mentions = Mention.query.order_by(Mention.date.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
+    else:
+        return bad_request_response("Invalid route given.")
     mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
     mentions_count = all_mentions.count()
     output_mentions = []
@@ -34,7 +41,7 @@ def mention_response(user, page):
 
 
 # Get details of a single mention
-@mention_bp.route("/mentions/mention/<int:mention_id>", methods=["GET"])
+@mention_bp.route("/mention/<int:mention_id>", methods=["GET"])
 @authenticate()
 def get_mention(user, mention_id):
     mention = Mention.query.filter_by(id=mention_id).first()
