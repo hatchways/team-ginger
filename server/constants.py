@@ -1,3 +1,4 @@
+# JSON Constants
 MENTIONS_TAG = "mentions"
 SECRET_HASH_TAG = "secret_hash"
 USER_ID_TAG = "user_id"
@@ -14,3 +15,11 @@ SENTIMENT_TAG = "sentiment"
 EMAIL_TAG = "email"
 PASSWORD_TAG = "password"
 TOKEN_TAG = "mentions_crawler_token"
+
+# Socket Event Constants
+UPDATE_EVENT_TAG = "update"
+TOGGLE_EVENT_TAG = "toggle"
+MENTIONS_EVENT_TAG = "mentions"
+LOGIN_EVENT_TAG = "login"
+DISCONNECT_EVENT_TAG = "disconnect"
+SAVE_EVENT_TAG = "save"

@@ -4,11 +4,12 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { MENTIONS_ROUTE } from "../Routes";
-import { RESPONSE_TAG, LOGIN_URL } from "../Constants";
+import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import Dialog from "./Dialog";
 import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { socket } from "../sockets";
 
 const LOADING_MESSAGE = "Loading Mentions";
 // Max character limit of mention title and snippet
@@ -41,7 +42,7 @@ class DashboardBody extends Component {
         const expression = props.names.map(name => "\\b" + name + "\\b").join("|");
         this.state = {
             tabValue: 1,
-            page: 0,
+            page: 1,
             mentions: {},
             hasMore: true,
             fetched: false,
@@ -85,28 +86,36 @@ class DashboardBody extends Component {
         return result;
     };
 
-    fetchMentions = () => {
-        const { page, mentions } = this.state;
-        fetch(MENTIONS_ROUTE + "/" + page, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => {
-            if (res.status === 204) {
-                // no more mentions to fetch
-                this.setState({ hasMore: false, fetched: true });
-            } else if (res.status === 401) {
-                this.props.history.push(LOGIN_URL);
-            } else {
-                res.json().then(data => {
-                    if (res.status === 200) {
+    fetchMentions = (incrementPage = true) => {
+        const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
+
+        fetch(MENTIONS_ROUTE + "/" + actualPage, { method: "GET", headers: { "Content-Type": "application/json" } }).then(
+            res => {
+                if (res.status === 401) {
+                    this.props.history.push(LOGIN_URL);
+                } else if (res.ok) {
+                    res.json().then(data => {
                         // concatenate the new mentions
-                        let newMentions = mentions;
-                        let numEntries = Object.entries(newMentions).length;
-                        data.forEach(mention => (newMentions[numEntries++] = mention));
-                        this.setState({ mentions: newMentions, page: page + 1, fetched: true });
-                    } else {
-                        console.log(res.status, data[RESPONSE_TAG]);
-                    }
-                });
+                        let hasMore = !data.end;
+                        let newMentions = {};
+                        let mentions = data.mentions;
+
+                        if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
+                            mentions.forEach(mention => (newMentions[mention.id] = mention));
+                            this.setState({
+                                mentions: newMentions,
+                                page: actualPage + 1,
+                                fetched: true,
+                                hasMore: hasMore
+                            });
+                            return;
+                        }
+                        // there was no new mentions to fetch
+                        this.setState({ fetched: true, hasMore });
+                    });
+                }
             }
-        });
+        );
     };
 
     normalizeSnippet = snippet => {
@@ -135,7 +144,8 @@ class DashboardBody extends Component {
         }
     };
 
-    normalizeTitle = title => (title > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title);
+    normalizeTitle = title =>
+        title.length > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title;
 
     render() {
         const { classes } = this.props;
@@ -150,7 +160,7 @@ class DashboardBody extends Component {
 
                 renderMentions.push(
                     <Mention
-                        key={mention.id}
+                        key={key}
                         id={mention.id}
                         img={mention.thumbnail}
                         title={title}
@@ -200,6 +210,18 @@ class DashboardBody extends Component {
 
     componentDidMount() {
         this.fetchMentions();
+        socket.on(MENTIONS_EVENT_TAG, () => {
+            console.log("fetching new mentions");
+            this.fetchMentions(false);
+        });
+        socket.on(DISCONNECT_EVENT_TAG, () => {
+            console.log("connection was lost, attempting to reconnect");
+            socket.open();
+        });
+    }
+
+    componentWillUnmount() {
+        socket.off(MENTIONS_EVENT_TAG);
     }
 }
 export default withStyles(styles)(DashboardBody);

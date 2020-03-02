@@ -36,7 +36,6 @@ class LoginForm extends Component {
 
         let email = this.email.current.value;
         let password = this.password.current.value;
-
         fetch(LOGIN_ROUTE, {
             method: "POST",
             headers: {
