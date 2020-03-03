@@ -87,37 +87,32 @@ class DashboardBody extends Component {
         });
     };
 
-    normalizeSnippet = snippet => {
-        if (snippet.length < MAX_SNIPPET_CHARACTERS) {
-            return snippet;
+    summarizeString = (string, limit) => {
+        if (string.length < limit) {
+            return string;
         }
-        const match = snippet.match(this.props.regex);
+        const match = string.match(this.props.regex);
 
         if (match) {
             // Index of first match
             const index = match.index;
-            // Index is in the first MSC characters
-            if (index < MAX_SNIPPET_CHARACTERS) {
-                return snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "...";
+            // Index is in the first limit characters
+            if (index < limit) {
+                return string.substring(0, limit) + "...";
             }
-            // Index is in the last MSC characters
-            else if (index > snippet.length - MAX_SNIPPET_CHARACTERS) {
-                return "..." + snippet.substring(snippet.length - MAX_SNIPPET_CHARACTERS);
+            // Index is in the last limit characters
+            else if (index > string.length - limit) {
+                return "..." + string.substring(string.length - limit);
             }
             // Index is somewhere in the middle
             else {
-                return (
-                    "..." + snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2) + "..."
-                );
+                return "..." + string.substring(index - limit / 2, index + limit / 2) + "...";
             }
         } else {
-            // Could not find company name so return first MSC characters
-            return snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "...";
+            // Could not find company name so return first limit characters
+            return string.substring(0, limit) + "...";
         }
     };
-
-    normalizeTitle = title =>
-        title.length > MAX_TITLE_CHARACTERS ? title.substring(0, MAX_TITLE_CHARACTERS) + "..." : title;
 
     render() {
         const { classes } = this.props;
@@ -126,9 +121,9 @@ class DashboardBody extends Component {
         const renderMentions = [];
         if (Object.entries(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
-                // trim long snippets and titles
-                let snippet = this.normalizeSnippet(mention.snippet);
-                let title = this.normalizeTitle(mention.title);
+                // summarize long snippets and titles
+                let snippet = this.summarizeString(mention.snippet, MAX_SNIPPET_CHARACTERS);
+                let title = this.summarizeString(mention.title, MAX_TITLE_CHARACTERS);
 
                 renderMentions.push(
                     <Mention

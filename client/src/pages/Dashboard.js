@@ -42,13 +42,15 @@ function Dashboard(props) {
             socket.emit(LOGIN_EVENT_TAG, localStorage.getItem(EMAIL_TAG));
         }
 
-        const expression = names.map(name => "\\b" + name + "\\b").join("|");
+        const keywords = searchString === "" ? names : names.concat([searchString]);
+
+        const expression = keywords.map(keyword => `\\b${keyword}\\b`).join("|");
         // g = global flag, i = ignorecase flag
-        const regex = new RegExp(expression, "i");
-        const globalRegex = new RegExp(expression, "gi");
+        const summaryRegex = new RegExp(searchString === "" ? expression : `\\b${searchString}\\b`, "i");
+        const boldRegex = new RegExp(expression, "gi");
 
         const boldNames = text => {
-            const matches = text.matchAll(globalRegex);
+            const matches = text.matchAll(boldRegex);
 
             // Collect the indices of the bold words
             let Indices = [];
@@ -82,7 +84,12 @@ function Dashboard(props) {
                 </ServiceNavBar>
                 <div className={classes.mentions_layout}>
                     <DashboardSideBar history={props.history} />
-                    <DashboardBody history={props.history} regex={regex} bold={boldNames} searchString={searchString} />
+                    <DashboardBody
+                        history={props.history}
+                        regex={summaryRegex}
+                        bold={boldNames}
+                        searchString={searchString}
+                    />
                     <Route
                         path={`/dashboard/mention/:id`}
                         component={props => <Dialog id={props.match.params.id} history={props.history} bold={boldNames} />}
