@@ -23,6 +23,7 @@ TEST_DATA_2 = {
     "mentions": []    
 }
 
+
 def welcome_email(email, company):
     message = {
         'personalizations': [
@@ -47,7 +48,8 @@ def welcome_email(email, company):
     sg = SendGridAPIClient(SENDGRID_API_KEY)
     sg.send(message)
 
-def weekly_email(email,  data = TEST_DATA_1, no_crawlers = False):
+
+def weekly_email(email,  data=TEST_DATA_1, no_crawlers=False):
     message = {
         'personalizations': [
             {
@@ -57,7 +59,7 @@ def weekly_email(email,  data = TEST_DATA_1, no_crawlers = False):
                     }
                 ],
                 'subject': 'Your Weekly Mentions',
-                'dynamic_template_data': TEST_DATA_1
+                'dynamic_template_data': data
             }
         ],
         'from': {

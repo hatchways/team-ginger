@@ -31,7 +31,6 @@ def disconnect():
 # Will ensure that if the user is logged in more than one location, that the toggles will update in those sessions as well
 @socketio.on(SAVE_EVENT_TAG)
 def save(data):
-    print(data)
     email = connections_by_sid.get(request.sid)
     if email is not None:
         emit(UPDATE_EVENT_TAG, data, room=email)
