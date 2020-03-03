@@ -3,7 +3,6 @@ export const LOGIN_ROUTE = "/login";
 export const LOGOUT_ROUTE = "/logout";
 export const COMPANIES_ROUTE = "/companies";
 export const MENTIONS_ROUTE = "/mentions";
-export const SEARCH_ROUTE = MENTIONS_ROUTE + "/search/";
 export const SEARCH_QUERY = "search";
 export const BY_RECENT = "/recent";
 export const BY_POPULAR = "/popular";

@@ -11,48 +11,19 @@ ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
 
-# Get a set if mentions specified by a search string and page number
-@mention_bp.route("/search/<string:sort>/<int:page>", methods=["GET"])
-@authenticate()
-def search_mentions(user, sort, page):
-    search = request.args.get("search")
-    if sort == SORT_POPULAR_URL:
-        all_mentions = Mention.query.order_by(Mention.hits.desc()) \
-        .filter_by(mention_user_id=user.get(USER_ID_TAG)) \
-        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
-    elif sort == SORT_RECENT_URL:
-        all_mentions = Mention.query.order_by(Mention.date.desc()) \
-        .filter_by(mention_user_id=user.get(USER_ID_TAG)) \
-        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
-    else:
-        return bad_request_response("Invalid route given.")
-    output_mentions = []
-    mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
-    mentions_count = all_mentions.count()
-    for mention in mentions:
-        output_mention = {
-            ID_TAG: mention.id,
-            URL_TAG: mention.url,
-            SITE_TAG: mention.site_id,
-            TITLE_TAG: mention.title,
-            SNIPPET_TAG: mention.snippet,
-            HITS_TAG: mention.hits,
-            SENTIMENT_TAG: mention.sentiment
-        }
-        output_mentions.append(output_mention)
-    return pagination_response(output_mentions, len(output_mentions) == mentions_count)
-
-
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/<string:sort>/<int:page>", methods=["GET"])
 @authenticate()
 def get_mentions(user, sort, page):
+    search = request.args.get("search")
     if sort == SORT_POPULAR_URL:
         all_mentions = Mention.query.order_by(Mention.hits.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     elif sort == SORT_RECENT_URL:
         all_mentions = Mention.query.order_by(Mention.date.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     else:
         return bad_request_response("Invalid route given.")
+    if search is not None and search != "":
+        all_mentions = all_mentions.filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
     mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
     mentions_count = all_mentions.count()
     output_mentions = []

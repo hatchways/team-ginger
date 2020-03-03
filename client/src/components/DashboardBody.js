@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_ROUTE, SEARCH_QUERY } from "../Routes";
+import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import DashboardHead from "./DashboardHead";
@@ -54,10 +54,7 @@ class DashboardBody extends Component {
 
     fetchMentions = (incrementPage = true) => {
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
-        const url =
-            this.props.searchString !== ""
-                ? `${SEARCH_ROUTE + this.state.sort}/${this.state.page}?${SEARCH_QUERY}=${this.props.searchString}`
-                : `${MENTIONS_ROUTE + this.state.sort}/${actualPage}`;
+        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${this.props.searchString}`;
 
         fetch(url, {
             method: "GET",
