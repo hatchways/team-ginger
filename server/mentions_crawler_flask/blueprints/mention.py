@@ -11,17 +11,19 @@ ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
 
-
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/<string:sort>/<int:page>", methods=["GET"])
 @authenticate()
 def get_mentions(user, sort, page):
+    search = request.args.get("search")
     if sort == SORT_POPULAR_URL:
         all_mentions = Mention.query.order_by(Mention.hits.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     elif sort == SORT_RECENT_URL:
         all_mentions = Mention.query.order_by(Mention.date.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     else:
         return bad_request_response("Invalid route given.")
+    if search is not None and search != "":
+        all_mentions = all_mentions.filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
     mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
     mentions_count = all_mentions.count()
     output_mentions = []
