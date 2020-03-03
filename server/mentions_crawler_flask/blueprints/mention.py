@@ -19,15 +19,16 @@ def search_mentions(user, sort, page):
     if sort == SORT_POPULAR_URL:
         all_mentions = Mention.query.order_by(Mention.hits.desc()) \
         .filter_by(mention_user_id=user.get(USER_ID_TAG)) \
-        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%"))).all()
+        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
     elif sort == SORT_RECENT_URL:
         all_mentions = Mention.query.order_by(Mention.date.desc()) \
         .filter_by(mention_user_id=user.get(USER_ID_TAG)) \
-        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%"))).all()
+        .filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
     else:
         return bad_request_response("Invalid route given.")
     output_mentions = []
     mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
+    mentions_count = all_mentions.count()
     for mention in mentions:
         output_mention = {
             ID_TAG: mention.id,
@@ -39,7 +40,7 @@ def search_mentions(user, sort, page):
             SENTIMENT_TAG: mention.sentiment
         }
         output_mentions.append(output_mention)
-    return pagination_response(output_mentions, True)
+    return pagination_response(output_mentions, len(output_mentions) == mentions_count)
 
 
 # Get a set of mentions specified by the page number given

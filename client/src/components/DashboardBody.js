@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE } from "../Routes";
+import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_ROUTE, SEARCH_QUERY } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import DashboardHead from "./DashboardHead";
@@ -35,13 +35,13 @@ const styles = theme => ({
 class DashboardBody extends Component {
     constructor(props) {
         super(props);
-        // Get regex containing each of the company names as the whole word
         this.state = {
             tabValue: 0,
             page: 1,
             sort: BY_RECENT,
             mentions: [],
-            hasMore: true
+            hasMore: true,
+            regex: props.regex
         };
     }
 
@@ -54,8 +54,12 @@ class DashboardBody extends Component {
 
     fetchMentions = (incrementPage = true) => {
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
+        const url =
+            this.props.searchString !== ""
+                ? `${SEARCH_ROUTE + this.state.sort}/${this.state.page}?${SEARCH_QUERY}=${this.props.searchString}`
+                : `${MENTIONS_ROUTE + this.state.sort}/${actualPage}`;
 
-        fetch(MENTIONS_ROUTE + this.state.sort + "/" + actualPage, {
+        fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         }).then(res => {
@@ -87,25 +91,28 @@ class DashboardBody extends Component {
         if (snippet.length < MAX_SNIPPET_CHARACTERS) {
             return snippet;
         }
-        const match = snippet.match(this.state.regex);
+        const match = snippet.match(this.props.regex);
+
         if (match) {
             // Index of first match
             const index = match.index;
             // Index is in the first MSC characters
             if (index < MAX_SNIPPET_CHARACTERS) {
-                return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+                return snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "...";
             }
             // Index is in the last MSC characters
             else if (index > snippet.length - MAX_SNIPPET_CHARACTERS) {
-                return snippet.substring(snippet.length - MAX_SNIPPET_CHARACTERS);
+                return "..." + snippet.substring(snippet.length - MAX_SNIPPET_CHARACTERS);
             }
             // Index is somewhere in the middle
             else {
-                return snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2);
+                return (
+                    "..." + snippet.substring(index - MAX_SNIPPET_CHARACTERS / 2, index + MAX_SNIPPET_CHARACTERS / 2) + "..."
+                );
             }
         } else {
             // Could not find company name so return first MSC characters
-            return snippet.substring(0, MAX_SNIPPET_CHARACTERS);
+            return snippet.substring(0, MAX_SNIPPET_CHARACTERS) + "...";
         }
     };
 
@@ -158,7 +165,6 @@ class DashboardBody extends Component {
                     }
                 >
                     {renderMentions}
-                    {renderMentions.length !== 0 ? <hr></hr> : ""}
                 </InfiniteScroll>
             </div>
         );
@@ -174,6 +180,12 @@ class DashboardBody extends Component {
             console.log("connection was lost, attempting to reconnect");
             socket.open();
         });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.searchString !== this.props.searchString) {
+            this.setState({ page: 1, mentions: [], hasMore: true }, () => this.fetchMentions(false));
+        }
     }
 
     componentWillUnmount() {

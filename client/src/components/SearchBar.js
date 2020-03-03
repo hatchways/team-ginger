@@ -45,22 +45,20 @@ class SearchBar extends Component {
     };
 
     callTimer(noDelay = false) {
-        if (this.state.value !== "") {
-            if (noDelay) {
-                // Only send request if we need to
-                if (this.hasChanged) {
-                    // Make sure we don't send the request again if they click twice
-                    this.hasChanged = false;
+        if (noDelay) {
+            // Only send request if we need to
+            if (this.hasChanged) {
+                // Make sure we don't send the request again if they click twice
+                this.hasChanged = false;
 
-                    clearTimeout(this.delayTimer);
-                    this.props.search(this.state.value);
-                }
-            } else {
-                this.delayTimer = setTimeout(() => {
-                    this.props.search(this.state.value);
-                    this.hasChanged = false;
-                }, DELAY);
+                clearTimeout(this.delayTimer);
+                this.props.search(this.state.value);
             }
+        } else {
+            this.delayTimer = setTimeout(() => {
+                this.props.search(this.state.value);
+                this.hasChanged = false;
+            }, DELAY);
         }
     }
 

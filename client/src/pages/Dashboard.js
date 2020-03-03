@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
     const classes = useStyles();
 
-    const search = val => console.log(val);
+    const [searchString, setSearch] = useState("");
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
@@ -77,12 +77,12 @@ function Dashboard(props) {
 
         return (
             <React.Fragment>
-                <ServiceNavBar link={SETTINGS_URL} search={search} searchbar={true}>
+                <ServiceNavBar link={SETTINGS_URL} search={setSearch} searchbar={true}>
                     <SettingsIcon fontSize="large" />
                 </ServiceNavBar>
                 <div className={classes.mentions_layout}>
                     <DashboardSideBar history={props.history} />
-                    <DashboardBody history={props.history} regex={regex} bold={boldNames} />
+                    <DashboardBody history={props.history} regex={regex} bold={boldNames} searchString={searchString} />
                     <Route
                         path={`/dashboard/mention/:id`}
                         component={props => <Dialog id={props.match.params.id} history={props.history} bold={boldNames} />}
