@@ -2,28 +2,28 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
+import BuildRoundedIcon from "@material-ui/icons/BuildRounded";
+import FilteringDialog from "./FilteringDialog";
 
 // Debouncing timer
-const DELAY = 3000;
+const DELAY = 2000;
 
 const styles = theme => ({
     search_container: {
-        position: "relative"
-    },
-    search_bar: {
+        display: "flex",
+        alignItems: "center",
+        width: 400,
         color: "black",
         backgroundColor: "white",
-        width: 400,
         borderRadius: "20px",
         padding: "5px 20px"
     },
-    search_icon: {
+    search_bar: {
+        flexGrow: 1
+    },
+    icon: {
         cursor: "pointer",
-        position: "absolute",
-        right: 0,
-        top: "50%",
         color: theme.primary,
-        transform: "translateY(-50%)",
         marginRight: theme.spacing(1)
     }
 });
@@ -31,7 +31,7 @@ const styles = theme => ({
 class SearchBar extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: "" };
+        this.state = { value: "", open: false };
         this.delayTimer = null;
         this.hasChanged = false;
         this.callTimer = this.callTimer.bind(this);
@@ -75,9 +75,13 @@ class SearchBar extends Component {
                         value={this.state.value}
                         onChange={this.handleChange}
                     />
-                    <div className={classes.search_icon}>
+                    <div className={classes.icon}>
+                        <BuildRoundedIcon onClick={() => this.setState({ open: true })} fontSize="small" />
+                    </div>
+                    <div className={classes.icon}>
                         <SearchIcon onClick={() => this.callTimer(true)} />
                     </div>
+                    <FilteringDialog open={this.state.open} onClose={() => this.setState({ open: false })} />
                 </div>
             </React.Fragment>
         );
