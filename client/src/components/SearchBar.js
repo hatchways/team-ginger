@@ -33,18 +33,34 @@ class SearchBar extends Component {
         super(props);
         this.state = { value: "" };
         this.delayTimer = null;
+        this.hasChanged = false;
         this.callTimer = this.callTimer.bind(this);
     }
 
     handleChange = e => {
+        this.hasChanged = true;
         clearTimeout(this.delayTimer);
         const value = e.target.value;
         this.setState({ value }, this.callTimer);
     };
 
-    callTimer() {
+    callTimer(noDelay = false) {
         if (this.state.value !== "") {
-            this.delayTimer = setTimeout(() => this.props.search(this.state.value), DELAY);
+            if (noDelay) {
+                // Only send request if we need to
+                if (this.hasChanged) {
+                    // Make sure we don't send the request again if they click twice
+                    this.hasChanged = false;
+
+                    clearTimeout(this.delayTimer);
+                    this.props.search(this.state.value);
+                }
+            } else {
+                this.delayTimer = setTimeout(() => {
+                    this.props.search(this.state.value);
+                    this.hasChanged = false;
+                }, DELAY);
+            }
         }
     }
 
@@ -62,7 +78,7 @@ class SearchBar extends Component {
                         onChange={this.handleChange}
                     />
                     <div className={classes.search_icon}>
-                        <SearchIcon />
+                        <SearchIcon onClick={() => this.callTimer(true)} />
                     </div>
                 </div>
             </React.Fragment>
