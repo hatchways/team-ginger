@@ -2,19 +2,16 @@ from __future__ import absolute_import, unicode_literals
 import json
 import praw
 import requests
-from .Mention import Mention
+import os
+from server.mentions_crawler_apis.models.Mention import Mention
 from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 
-_CLIENT_ID = "auo7pZGyIVaJhw"
-_CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
-_USER_AGENT = "mentions_crawler:redditpart:madebyevanandryan"
-
-_reddit = praw.Reddit(client_id=_CLIENT_ID,
-                      client_secret=_CLIENT_SECRET,
-                      user_agent=_USER_AGENT)
+_reddit = praw.Reddit(client_id=os.environ["REDDIT_CLIENT_ID"],
+                      client_secret=os.environ["REDDIT_CLIENT_SECRET"],
+                      user_agent=os.environ["REDDIT_USER_AGENT"])
 
 
 @app.task(name="reddit.search")

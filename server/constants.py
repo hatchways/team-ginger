@@ -25,5 +25,4 @@ DISCONNECT_EVENT_TAG = "disconnect"
 SAVE_EVENT_TAG = "save"
 
 # Will be used to authenticate requests on the scheduled tasks that can't receive a token
-SCHEDULER_KEY = "r%z2?os7z!IFN-T:GYT@vs^=t9SMSRfS{zH]9c^p@d]*^8G%v5{Cn0*1RtJvHz+"
 SECRET_KEY_TAG = "secret"

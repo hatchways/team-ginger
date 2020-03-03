@@ -1,8 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 import json
 import requests
+import os
 from requests_oauthlib import OAuth1
-from .Mention import Mention
+from server.mentions_crawler_apis.models.Mention import Mention
 from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
@@ -77,14 +78,8 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     #  get all company names associated with a user
     api_url = "https://api.twitter.com/1.1/search/tweets.json"
 
-    api_key = "cvk7jHmbc3Y08jLhrMnelgAeL"
-    api_secret_key = "PQ4WXZmBBd6f9SyspCaCn1Q2xpdawTY2YnwqF7YfpdYni5jlg7"
-
-    access_token = "125311068-VrV3rhIY01mWzFXLy6Xa0UvPFAhHZ4oC6rnf2Y5A"
-    access_token_secret = "62lyn41C46GZ16RmHcEgI4f5VH3n4pdlQjKH790qh3khi"
-
-    auth = OAuth1(api_key, api_secret_key,
-                  access_token, access_token_secret)
+    auth = OAuth1(os.environ["TWITTER_API_KEY"], os.environ["TWITTER_API_SECRET_KEY"],
+                  os.environ["TWITTER_ACCESS_TOKEN"], os.environ["TWITTER_ACCESS_TOKEN_SECRET"])
     mentions = []  # initialize mentions as a list
     for company in companies:
         company_name = '"' + company[COMPANY_NAME_TAG] + '"'
@@ -105,7 +100,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
             else:
                 favourites = 0
             mention = Mention(company[COMPANY_ID_TAG], url,
-                              text, favourites, tweet_date_unix_time)
+                              text, favourites, int(tweet_date_unix_time))
             mentions.append(json.dumps(mention.__dict__))
     payload = {USER_ID_TAG: user_id, SITE_TAG: TWITTER, MENTIONS_TAG: mentions}
     requests.post(RESPONSE_URL, json=payload, cookies=cookies)

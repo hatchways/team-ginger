@@ -7,7 +7,7 @@ from ..models.company import Company
 from ..models.site import get_sites
 from ..db import insert_row, commit
 from ..responses import bad_request_response, ok_response, created_response
-from server.mentions_crawler_apis.send import welcome_email, weekly_email
+from server.mentions_crawler_apis.email import welcome_email, weekly_email
 
 user_bp = Blueprint("users", __name__, url_prefix="/")
 

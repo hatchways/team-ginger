@@ -1,10 +1,12 @@
 from sendgrid import SendGridAPIClient
+import os
 
-SENDGRID_API_KEY = "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"
-FROM_EMAIL = "ryannarine97@gmail.com"
+SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
+FROM_EMAIL = os.environ["FROM_EMAIL"]
 WELCOME_SUBJECT = "Welcome to mentionscrawler"
 WELCOME_TEMPLATE_ID = "d-335f9dca0ced402aabcc72e3a352c265"
 WEEKLY_TEMPLATE_ID = "d-2f796ef4ab8541dbb30dc80d62a1fd86"
+
 TEST_DATA_1 = {
     "warn": True,
     "month": "Oct",

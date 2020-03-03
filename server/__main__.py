@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-
+from dotenv import load_dotenv
 from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
@@ -42,6 +42,7 @@ def unknown_error(e):
 
 
 if __name__ == "__main__":
+    load_dotenv()
     directory_name = os.path.dirname(__file__)
     configfile = "./config.py"
     config_path = os.path.join(directory_name, configfile)
