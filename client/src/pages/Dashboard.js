@@ -30,6 +30,8 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
     const classes = useStyles();
 
+    const search = val => console.log(val);
+
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
         socket.on(CONNECT_EVENT_TAG, () => {
@@ -75,7 +77,7 @@ function Dashboard(props) {
 
         return (
             <React.Fragment>
-                <ServiceNavBar link={SETTINGS_URL}>
+                <ServiceNavBar link={SETTINGS_URL} search={search} searchbar={true}>
                     <SettingsIcon fontSize="large" />
                 </ServiceNavBar>
                 <div className={classes.mentions_layout}>

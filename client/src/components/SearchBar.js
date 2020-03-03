@@ -1,13 +1,19 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { Component } from "react";
+import { withStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 
-const useStyles = makeStyles(theme => ({
+// Debouncing timer
+const DELAY = 3000;
+
+const styles = theme => ({
     search_container: {
         position: "relative"
     },
     search_bar: {
+        color: "black",
+        backgroundColor: "white",
+        width: 400,
         borderRadius: "20px",
         padding: "5px 20px"
     },
@@ -20,24 +26,52 @@ const useStyles = makeStyles(theme => ({
         transform: "translateY(-50%)",
         marginRight: theme.spacing(1)
     }
-}));
+});
 
-function SearchBar(props) {
-    const classes = useStyles();
-    return (
-        <React.Fragment>
-            <div className={classes.search_container}>
-                <InputBase
-                    placeholder="Search…"
-                    className={`${props.className} ${classes.search_bar}`}
-                    inputProps={{ "aria-label": "search" }}
-                />
-                <div className={classes.search_icon}>
-                    <SearchIcon />
+class SearchBar extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: "" };
+        this.delayTimer = null;
+        this.callTimer = this.callTimer.bind(this);
+    }
+
+    handleChange = e => {
+        clearTimeout(this.delayTimer);
+        const value = e.target.value;
+        this.setState({ value }, this.callTimer);
+    };
+
+    callTimer() {
+        if (this.state.value !== "") {
+            this.delayTimer = setTimeout(() => this.props.search(this.state.value), DELAY);
+        }
+    }
+
+    render() {
+        const { classes } = this.props;
+
+        return (
+            <React.Fragment>
+                <div className={classes.search_container}>
+                    <InputBase
+                        placeholder="Search…"
+                        className={`${classes.className} ${classes.search_bar}`}
+                        inputProps={{ "aria-label": "search" }}
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                    />
+                    <div className={classes.search_icon}>
+                        <SearchIcon />
+                    </div>
                 </div>
-            </div>
-        </React.Fragment>
-    );
+            </React.Fragment>
+        );
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.delayTimer);
+    }
 }
 
-export default SearchBar;
+export default withStyles(styles)(SearchBar);

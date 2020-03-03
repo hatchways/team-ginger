@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-from sqlalchemy import or_
 from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
@@ -28,7 +27,8 @@ def search_mentions(user, sort, page):
     else:
         return bad_request_response("Invalid route given.")
     output_mentions = []
-    for mention in all_mentions:
+    mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()
+    for mention in mentions:
         output_mention = {
             ID_TAG: mention.id,
             URL_TAG: mention.url,

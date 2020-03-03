@@ -11,11 +11,6 @@ const useStyles = makeStyles(theme => ({
     search_bar_container: {
         margin: "auto"
     },
-    search_bar: {
-        color: "black",
-        backgroundColor: "white",
-        width: 400
-    },
     link: {
         textDecoration: "none",
         color: "inherit"
@@ -25,16 +20,14 @@ const useStyles = makeStyles(theme => ({
 function ServiceNavBar(props) {
     const classes = useStyles();
 
-    const noSearch = props.noSearch ? props.noSearch : false;
+    const { searchbar, children, search } = props;
 
     return (
         <Navbar flexGrow="initial">
-            <Box className={classes.search_bar_container}>
-                {noSearch ? "" : <SearchBar className={classes.search_bar} />}
-            </Box>
+            <Box className={classes.search_bar_container}>{searchbar && <SearchBar search={search} />}</Box>
 
             <Link to={props.link} className={classes.link}>
-                {props.children}
+                {children}
             </Link>
         </Navbar>
     );
