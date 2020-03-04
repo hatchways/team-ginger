@@ -62,6 +62,12 @@ class SearchBar extends Component {
         }
     }
 
+    // When a user applies filters
+    handleFilters = filters => {
+        this.setState({ open: false });
+        this.props.filter(filters);
+    };
+
     render() {
         const { classes } = this.props;
 
@@ -81,7 +87,11 @@ class SearchBar extends Component {
                     <div className={classes.icon}>
                         <SearchIcon onClick={() => this.callTimer(true)} />
                     </div>
-                    <FilteringDialog open={this.state.open} onClose={() => this.setState({ open: false })} />
+                    <FilteringDialog
+                        open={this.state.open}
+                        onClose={() => this.setState({ open: false })}
+                        filter={this.handleFilters}
+                    />
                 </div>
             </React.Fragment>
         );

@@ -24,7 +24,9 @@ function ServiceNavBar(props) {
 
     return (
         <Navbar flexGrow="initial">
-            <Box className={classes.search_bar_container}>{searchbar && <SearchBar search={search} />}</Box>
+            <Box className={classes.search_bar_container}>
+                {searchbar && <SearchBar search={search} filter={props.filter} />}
+            </Box>
 
             <Link to={props.link} className={classes.link}>
                 {children}

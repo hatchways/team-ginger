@@ -9,6 +9,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
 
 const LOADING_MESSAGE = "Loading Mentions";
+const NO_MENTION_MESSAGE = "There's nothing here! Make sure you have at least one platform tracked";
 // Max character limit of mention title and snippet
 const MAX_TITLE_CHARACTERS = 100;
 const MAX_SNIPPET_CHARACTERS = 280;
@@ -18,7 +19,6 @@ const styles = theme => ({
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
     },
-
     grid: {
         width: "100%",
         boxSizing: "border-box",
@@ -29,6 +29,10 @@ const styles = theme => ({
         justifyItems: "center",
         gridGap: theme.spacing(2),
         height: "70vh"
+    },
+    empty_msg: {
+        alignSelf: "center",
+        marginBottom: theme.spacing(10)
     }
 });
 
@@ -53,15 +57,19 @@ class DashboardBody extends Component {
     };
 
     fetchMentions = (incrementPage = true) => {
+        const { searchString, filters, history } = this.props;
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
-        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${this.props.searchString}`;
+        const platfromFilters = Object.entries(filters)
+            .map(([k, v]) => `${k}=${v}`)
+            .join("&");
+        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${platfromFilters}`;
 
         fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         }).then(res => {
             if (res.status === 401) {
-                this.props.history.push(LOGIN_URL);
+                history.push(LOGIN_URL);
             } else if (res.ok) {
                 res.json().then(data => {
                     console.log(data);
@@ -135,6 +143,12 @@ class DashboardBody extends Component {
                     />
                 );
             });
+        } else {
+            return (
+                <Typography variant="h5" align="center" color="textSecondary" className={classes.empty_msg}>
+                    {NO_MENTION_MESSAGE}
+                </Typography>
+            );
         }
         return (
             <div className={classes.container}>
@@ -175,7 +189,7 @@ class DashboardBody extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.searchString !== this.props.searchString) {
+        if (prevProps.searchString !== this.props.searchString || prevProps.filters !== this.props.filters) {
             this.setState({ page: 1, mentions: [], hasMore: true }, () => this.fetchMentions(false));
         }
     }

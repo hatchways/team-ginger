@@ -10,11 +10,25 @@ MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
-
+SITES = ["Reddit", "Twitter"]
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/<string:sort>/<int:page>", methods=["GET"])
 @authenticate()
 def get_mentions(user, sort, page):
+    site_filter = []
+    has_site_filters = False
+    for site in SITES:
+        filter = request.args.get(site)
+        if request.args.get(site) is None:
+            return bad_request_response("Invalid site parameters.")    
+        if filter == 'false':
+            has_site_filters = True
+        elif filter == 'true':
+            # Gather the sites we want
+            site_filter.append(site)
+        else:
+            return bad_request_response("Invalid site parameter value.")    
+
     search = request.args.get("search")
     if sort == SORT_POPULAR_URL:
         all_mentions = Mention.query.order_by(Mention.hits.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
@@ -22,6 +36,8 @@ def get_mentions(user, sort, page):
         all_mentions = Mention.query.order_by(Mention.date.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     else:
         return bad_request_response("Invalid route given.")
+    if has_site_filters is True:
+        all_mentions = all_mentions.filter(Mention.site_id.in_(site_filter))
     if search is not None and search != "":
         all_mentions = all_mentions.filter((Mention.title.ilike(f"%{search}%")) | (Mention.snippet.ilike(f"%{search}%")))
     mentions = all_mentions.limit(MENTIONS_PER_PAGE * page).all()

@@ -7,9 +7,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import { SITE_TO_IMG } from "../Constants";
-import { Typography, FormControlLabel } from "@material-ui/core";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Typography from "@material-ui/core/Typography";
 import Checkbox from "@material-ui/core/Checkbox";
+import { SITE_TO_IMG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -51,9 +52,11 @@ function FilteringDialog(props) {
     let initial = {};
 
     Object.keys(SITE_TO_IMG).forEach(platform => (initial[platform] = true));
-    const [state, setState] = useState(initial);
+    const [filters, setFilters] = useState(initial);
 
-    const handleChange = platform => e => setState({ ...state, [platform]: e.target.checked });
+    const handleChange = platform => e => setFilters({ ...filters, [platform]: e.target.checked });
+
+    const handleApply = () => props.filter(filters);
 
     Object.entries(SITE_TO_IMG).forEach(([platform, logo]) => {
         platforms.push(
@@ -65,7 +68,7 @@ function FilteringDialog(props) {
                         <Checkbox
                             color="default"
                             className={classes.checkbox}
-                            checked={state[platform]}
+                            checked={filters[platform]}
                             onChange={handleChange(platform)}
                             inputProps={{ "aria-label": `${platform} checkbox` }}
                         />
@@ -83,7 +86,7 @@ function FilteringDialog(props) {
                     Filter Search Results
                 </Typography>
                 <div className={classes.platforms}>{platforms}</div>
-                <Button type="submit" className={classes.submit_btn}>
+                <Button type="submit" className={classes.submit_btn} onClick={handleApply}>
                     Apply
                 </Button>
             </Paper>

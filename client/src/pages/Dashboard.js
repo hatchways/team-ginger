@@ -15,7 +15,8 @@ import {
     SITES_TAG,
     LOGIN_EVENT_TAG,
     DISCONNECT_EVENT_TAG,
-    CONNECT_EVENT_TAG
+    CONNECT_EVENT_TAG,
+    PLATFORMS
 } from "../Constants";
 import { socket } from "../sockets";
 
@@ -31,6 +32,10 @@ function Dashboard(props) {
     const classes = useStyles();
 
     const [searchString, setSearch] = useState("");
+
+    let initial = {};
+    PLATFORMS.forEach(platform => (initial[platform] = true));
+    const [filters, setFilters] = useState(initial);
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
         const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
@@ -79,7 +84,7 @@ function Dashboard(props) {
 
         return (
             <React.Fragment>
-                <ServiceNavBar link={SETTINGS_URL} search={setSearch} searchbar={true}>
+                <ServiceNavBar link={SETTINGS_URL} search={setSearch} searchbar={true} filter={setFilters}>
                     <SettingsIcon fontSize="large" />
                 </ServiceNavBar>
                 <div className={classes.mentions_layout}>
@@ -89,6 +94,7 @@ function Dashboard(props) {
                         regex={summaryRegex}
                         bold={boldNames}
                         searchString={searchString}
+                        filters={filters}
                     />
                     <Route
                         path={`/dashboard/mention/:id`}
