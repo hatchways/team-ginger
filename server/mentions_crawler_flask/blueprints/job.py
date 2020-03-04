@@ -13,8 +13,6 @@ from ...sockets import socketio
 
 job_bp = Blueprint("jobs", __name__, url_prefix="/jobs")
 
-# TODO track connected sockets clients so we're not broadcasting to everyone who's connected
-
 tasks = {}
 
 
