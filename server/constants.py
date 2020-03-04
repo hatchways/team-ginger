@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 # JSON Constants
 MENTIONS_TAG = "mentions"
 SECRET_HASH_TAG = "secret_hash"
@@ -26,3 +28,7 @@ SAVE_EVENT_TAG = "save"
 
 # Will be used to authenticate requests on the scheduled tasks that can't receive a token
 SECRET_KEY_TAG = "secret"
+
+MONTH_IN_SECONDS = 2592000
+WEEK_IN_SECONDS = 604800
+EPOCH = datetime(1970, 1, 1).replace(tzinfo=timezone.utc)

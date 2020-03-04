@@ -1,20 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 from celery import Celery
-from requests import post
-from .constants import DB_CLEAN_URL, _ISSUER
-from ..config import SECRET_KEY
-import jwt
+import os
 
-
-app = Celery("server.mentions_crawler_apis", broker="", include=["server.mentions_crawler_apis.reddit",
-                                                                         "server.mentions_crawler_apis.twitter",
-                                                                         "server.mentions_crawler_apis.db",
-                                                                         "server.mentions_crawler_apis.email"])
-
-
-@app.task()
-def email_report(token: str):
-    pass
+app = Celery("server.mentions_crawler_apis", broker=os.environ["REDIS_URL"],
+             include=["server.mentions_crawler_apis.reddit",
+                      "server.mentions_crawler_apis.twitter",
+                      "server.mentions_crawler_apis.db",
+                      "server.mentions_crawler_apis.email"])
 
 
 if __name__ == "__main__":

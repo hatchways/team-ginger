@@ -1,4 +1,6 @@
 from sendgrid import SendGridAPIClient
+from .celery import app
+from requests import get
 import os
 
 SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
@@ -72,3 +74,8 @@ def weekly_email(email,  data=TEST_DATA_1, no_crawlers=False):
     }
     sg = SendGridAPIClient(SENDGRID_API_KEY)
     sg.send(message)
+
+
+@app.task(name="email.generate")
+def generate_emails(token: str):
+    pass

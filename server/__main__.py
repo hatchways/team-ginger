@@ -42,7 +42,6 @@ def unknown_error(e):
 
 
 if __name__ == "__main__":
-    load_dotenv()
     directory_name = os.path.dirname(__file__)
     configfile = "./config.py"
     config_path = os.path.join(directory_name, configfile)

@@ -16,6 +16,10 @@ class Mention(db.Model):
     date = db.Column(db.Integer, nullable=False)
     sentiment = db.Column(db.Float, nullable=False)
 
+    def email_json(self):
+        return {"company_id": self.company_id,
+                "url": self.url, "snippet": self.snippet, "hits": self.hits, "title": self.title}
+
     def __init__(self, mention_user_id: int, company: int, site_id: str, url: str, snippet: str,
                  hits: int, date: int, sentiment: float, title: str = ""):
         self.mention_user_id = mention_user_id
