@@ -24,15 +24,13 @@ def get_email_mentions():
         current_time = (datetime.now().replace(tzinfo=timezone.utc) - EPOCH).total_seconds()
         for user in users:
             assoc = SiteAssociation.query.filter_by(mention_user_id=user.id).all()
-            if assoc is None:
-                output[user.email] = {WARN_TAG: True, MENTIONS_TAG: Mention.query.order_by(Mention.hits.desc()).
-                                      filter_by(mention_user_id=user.id).
-                                      filter(Mention.date < current_time-WEEK_IN_SECONDS).limit(7).all()}
-            else:
-                output[user.email] = {WARN_TAG: False, MENTIONS_TAG: Mention.query.order_by(Mention.hits.desc()).
-                                      filter_by(mention_user_id=user.id).
-                                      filter(Mention.date < current_time - WEEK_IN_SECONDS).limit(7).all()}
-        print(output)
+            mentions = Mention.query.order_by(Mention.hits.desc()). \
+                filter_by(mention_user_id=user.id). \
+                filter(Mention.date < current_time - WEEK_IN_SECONDS).limit(7).all()
+            if mentions is not None:
+                if assoc is None:
+                    output[user.email] = {WARN_TAG: True, MENTIONS_TAG: mentions}
+                else:
+                    output[user.email] = {WARN_TAG: False, MENTIONS_TAG: mentions}
         return data_response(output)
     return unauthorized_response("No token provided!")
-
