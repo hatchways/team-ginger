@@ -1,7 +1,7 @@
 from sendgrid import SendGridAPIClient
 from .celery import app
 from .constants import EMAIL_URL
-from ..constants import TOKEN_TAG, MENTIONS_TAG, SNIPPET_TAG, URL_TAG, TITLE_TAG, EMAIL_TAG, WARN_TAG
+from ..constants import TOKEN_TAG, MENTIONS_TAG, WARN_TAG
 from requests import get
 from datetime import date
 from .utils import month_to_num
