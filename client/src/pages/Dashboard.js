@@ -3,7 +3,7 @@ import { Redirect, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import SettingsIcon from "@material-ui/icons/Settings";
-import ServiceNavBar from "../components/ServiceNavBar";
+import DashboardNavBar from "../components/DashboardNavBar";
 import DashboardSideBar from "../components/DashboardSideBar";
 import DashboardBody from "../components/DashboardBody";
 import Dialog from "../components/Dialog";
@@ -84,9 +84,9 @@ function Dashboard(props) {
 
         return (
             <React.Fragment>
-                <ServiceNavBar link={SETTINGS_URL} search={setSearch} searchbar={true} filter={setFilters}>
+                <DashboardNavBar link={SETTINGS_URL} search={setSearch} searchbar={true} filter={setFilters}>
                     <SettingsIcon fontSize="large" />
-                </ServiceNavBar>
+                </DashboardNavBar>
                 <div className={classes.mentions_layout}>
                     <DashboardSideBar history={props.history} />
                     <DashboardBody

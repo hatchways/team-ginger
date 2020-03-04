@@ -59,10 +59,10 @@ class DashboardBody extends Component {
     fetchMentions = (incrementPage = true) => {
         const { searchString, filters, history } = this.props;
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
-        const platfromFilters = Object.entries(filters)
+        const platformFilters = Object.entries(filters)
             .map(([k, v]) => `${k}=${v}`)
             .join("&");
-        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${platfromFilters}`;
+        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${platformFilters}`;
 
         fetch(url, {
             method: "GET",
