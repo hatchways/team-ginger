@@ -26,7 +26,7 @@ def get_email_mentions():
             assoc = SiteAssociation.query.filter_by(mention_user_id=user.id).all()
             mentions = Mention.query.order_by(Mention.hits.desc()). \
                 filter_by(mention_user_id=user.id). \
-                filter(Mention.date < current_time - WEEK_IN_SECONDS).limit(7).all()
+                filter(Mention.date > current_time - WEEK_IN_SECONDS).limit(7).all()
             if mentions is not None:
                 if assoc is None:
                     output[user.email] = {WARN_TAG: True, MENTIONS_TAG: mentions, EMPTY_TAG: False}
