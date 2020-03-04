@@ -20,6 +20,7 @@ EMAIL_TAG = "email"
 PASSWORD_TAG = "password"
 TOKEN_TAG = "mentions_crawler_token"
 WARN_TAG = "warn"
+EMPTY_TAG = "empty"
 
 # Socket Event Constants
 UPDATE_EVENT_TAG = "update"

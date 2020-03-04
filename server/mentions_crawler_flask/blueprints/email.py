@@ -4,7 +4,7 @@ from ..models.mention import Mention
 from ..models.user import MentionUser
 from ..models.site import SiteAssociation
 from ..responses import data_response, unauthorized_response
-from ...constants import TOKEN_TAG, EPOCH, WEEK_IN_SECONDS, WARN_TAG, MENTIONS_TAG
+from ...constants import TOKEN_TAG, EPOCH, WEEK_IN_SECONDS, WARN_TAG, MENTIONS_TAG, EMPTY_TAG
 from jwt.exceptions import InvalidTokenError
 import jwt
 
@@ -29,8 +29,13 @@ def get_email_mentions():
                 filter(Mention.date < current_time - WEEK_IN_SECONDS).limit(7).all()
             if mentions is not None:
                 if assoc is None:
-                    output[user.email] = {WARN_TAG: True, MENTIONS_TAG: mentions}
+                    output[user.email] = {WARN_TAG: True, MENTIONS_TAG: mentions, EMPTY_TAG: False}
                 else:
-                    output[user.email] = {WARN_TAG: False, MENTIONS_TAG: mentions}
+                    output[user.email] = {WARN_TAG: False, MENTIONS_TAG: mentions, EMPTY_TAG: False}
+            else:
+                if assoc is None:
+                    output[user.email] = {WARN_TAG: True, EMPTY_TAG: True}
+                else:
+                    output[user.email] = {WARN_TAG: False, EMPTY_TAG: True}
         return data_response(output)
     return unauthorized_response("No token provided!")

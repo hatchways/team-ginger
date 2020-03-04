@@ -1,7 +1,7 @@
 from sendgrid import SendGridAPIClient
 from .celery import app
 from .constants import EMAIL_URL
-from ..constants import TOKEN_TAG, MENTIONS_TAG, WARN_TAG
+from ..constants import TOKEN_TAG, MENTIONS_TAG, WARN_TAG, EMPTY_TAG
 from requests import get
 from datetime import date
 from .utils import month_to_num
@@ -92,12 +92,17 @@ def generate_emails(token: str):
     month = date.today().month
     if data is not None:
         for email in data:
+            mentions = []
+            empty = data[email][EMPTY_TAG]
+            if data[email].get(MENTIONS_TAG) is not None:
+                mentions = data[email].get(MENTIONS_TAG)
             template = {
                 WARN_TAG: data[email][WARN_TAG],
+                EMPTY_TAG: empty,
                 MONTH_TAG: month_to_num(month),
                 DAY_START_TAG: day - 6,
                 DAY_END_TAG: day,
-                MENTIONS_TAG: data[email][MENTIONS_TAG]
+                MENTIONS_TAG: mentions
             }
             weekly_email(email, template)
 
