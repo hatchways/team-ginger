@@ -2,9 +2,11 @@ from datetime import datetime, timezone
 
 # JSON Constants
 MENTIONS_TAG = "mentions"
+USERS_TAG = "users"
 SECRET_HASH_TAG = "secret_hash"
 USER_ID_TAG = "user_id"
 SITE_TAG = "site"
+ID_TAG = "id"
 COMPANY_ID_TAG = "company_id"
 COMPANY_NAME_TAG = "company_name"
 COMPANIES_TAG = "companies"

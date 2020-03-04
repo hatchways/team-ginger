@@ -16,7 +16,7 @@ class Mention(db.Model):
     date = db.Column(db.Integer, nullable=False)
     sentiment = db.Column(db.Float, nullable=False)
 
-    def email_json(self):
+    def __repr__(self):
         return {"company_id": self.company_id,
                 "url": self.url, "snippet": self.snippet, "hits": self.hits, "title": self.title}
 
