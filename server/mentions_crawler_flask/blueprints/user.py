@@ -19,7 +19,7 @@ def add():
     if EMAIL_TAG in body and COMPANIES_TAG in body and PASSWORD_TAG in body:
         if len(body.get(PASSWORD_TAG)) < 7:
             return bad_request_response("Password too short! Must be greater than 6 characters!")
-        new_user = MentionUser(body.get(EMAIL_TAG), generate_password_hash(body.get(PASSWORD_TAG)))
+        new_user = MentionUser(body.get(EMAIL_TAG).lower(), generate_password_hash(body.get(PASSWORD_TAG)))
         result = insert_row(new_user)
         if result is not True:
             return result
