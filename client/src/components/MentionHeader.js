@@ -47,7 +47,8 @@ function SentimentToIcon(sentiment) {
 
 const useStyles = makeStyles(theme => ({
     header: {
-        display: "flex"
+        display: "flex",
+        marginBottom: theme.spacing(1)
     },
     title: {
         flexGrow: 1,
