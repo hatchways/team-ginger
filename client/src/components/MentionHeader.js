@@ -11,6 +11,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAlt"
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import SentimentVerySatisfiedOutlinedIcon from "@material-ui/icons/SentimentVerySatisfiedOutlined";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import { GET_DATE_STRING } from "../Constants";
 
 // Given a sentiment value in [-1, 1] return an appropriate Icon
 function SentimentToIcon(sentiment) {
@@ -46,7 +47,8 @@ function SentimentToIcon(sentiment) {
 
 const useStyles = makeStyles(theme => ({
     header: {
-        display: "flex"
+        display: "flex",
+        marginBottom: theme.spacing(1)
     },
     title: {
         flexGrow: 1,
@@ -60,13 +62,18 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, site, siteVariant } = props;
+    const { title, bold, titleVariant, site, siteVariant, dateVariant } = props;
+    const date = props.date && GET_DATE_STRING(new Date(props.date * 1000));
+
     return (
         <Box className={classes.header}>
             <Box className={classes.title}>
                 <Typography variant={titleVariant}>{bold(title)}</Typography>
                 <Typography variant={siteVariant} color="textSecondary">
                     {site}
+                </Typography>
+                <Typography variant={dateVariant} color="textSecondary">
+                    {date}
                 </Typography>
             </Box>
 

@@ -1,24 +1,40 @@
-/* Component for rendering the details of a mention such as the # of hits and url */
+/* Component for rendering the all the mention information except for the title and snippet
+   on the dialog
+*/
 import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
+import Box from "@material-ui/core/Box";
 import CallMadeIcon from "@material-ui/icons/CallMade";
+import { GET_DATE_STRING } from "../Constants";
+
+const useStyles = makeStyles(theme => ({
+    container: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(50%, 300px))"
+    }
+}));
 
 function MentionInfo(props) {
-    const { hits, hitsVariant, url, urlVariant } = props;
+    const classes = useStyles();
+    const { site, siteVariant, hits, hitsVariant, url, urlVariant, dateVariant } = props;
+    const date = GET_DATE_STRING(new Date(props.date * 1000));
     return (
-        <React.Fragment>
-            {hits != null && (
-                <Typography variant={hitsVariant} color="textSecondary">
-                    Hits: {hits}
-                </Typography>
-            )}
-            {url && (
-                <Link href={url} variant={urlVariant} target="_blank">
-                    Source <CallMadeIcon />
-                </Link>
-            )}
-        </React.Fragment>
+        <Box className={classes.container}>
+            <Typography variant={siteVariant} color="textSecondary">
+                {site}
+            </Typography>
+            <Typography variant={hitsVariant} color="textSecondary">
+                Hits: {hits}
+            </Typography>
+            <Typography variant={dateVariant} color="textSecondary">
+                {date}
+            </Typography>
+            <Link href={url} variant={urlVariant} target="_blank">
+                Source <CallMadeIcon />
+            </Link>
+        </Box>
     );
 }
 
