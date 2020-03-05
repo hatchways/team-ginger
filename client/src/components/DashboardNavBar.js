@@ -20,12 +20,11 @@ const useStyles = makeStyles(theme => ({
 function DashboardNavBar(props) {
     const classes = useStyles();
 
-    const { children, search, filter, link } = props;
-
+    const { children, search, link, open } = props;
     return (
         <Navbar flexGrow="initial">
             <Box className={classes.search_bar_container}>
-                <SearchBar search={search} filter={filter} />
+                <SearchBar search={search} open={open} />
             </Box>
 
             <Link to={link} className={classes.link}>

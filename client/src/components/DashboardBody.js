@@ -57,12 +57,19 @@ class DashboardBody extends Component {
     };
 
     fetchMentions = (incrementPage = true) => {
-        const { searchString, filters, history } = this.props;
+        const { searchString, platformFilters, nameFilters, history } = this.props;
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
-        const platformFilters = Object.entries(filters)
-            .map(([k, v]) => `${k}=${v}`)
+        let filters = Object.entries(platformFilters)
+            .map(([platform, filter]) => `${platform}=${filter}`)
             .join("&");
-        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${platformFilters}`;
+        let bilters =
+            filters +
+            "&" +
+            Object.entries(nameFilters)
+                .map(([name, filter]) => `${name}=${filter}`)
+                .join("&");
+        console.log(bilters);
+        const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${filters}`;
 
         fetch(url, {
             method: "GET",
@@ -189,7 +196,11 @@ class DashboardBody extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.searchString !== this.props.searchString || prevProps.filters !== this.props.filters) {
+        if (
+            prevProps.searchString !== this.props.searchString ||
+            prevProps.platformFilters !== this.props.platformFilters ||
+            prevProps.nameFilters !== this.props.nameFilters
+        ) {
             this.setState({ page: 1, mentions: [], hasMore: true }, () => this.fetchMentions(false));
         }
     }

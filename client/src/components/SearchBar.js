@@ -3,7 +3,6 @@ import { withStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import BuildRoundedIcon from "@material-ui/icons/BuildRounded";
-import FilteringDialog from "./FilteringDialog";
 
 // Debouncing timer
 const DELAY = 2000;
@@ -62,14 +61,8 @@ class SearchBar extends Component {
         }
     }
 
-    // When a user applies filters
-    handleFilters = filters => {
-        this.setState({ open: false });
-        this.props.filter(filters);
-    };
-
     render() {
-        const { classes } = this.props;
+        const { classes, open } = this.props;
 
         return (
             <React.Fragment>
@@ -82,16 +75,11 @@ class SearchBar extends Component {
                         onChange={this.handleChange}
                     />
                     <div className={classes.icon}>
-                        <BuildRoundedIcon onClick={() => this.setState({ open: true })} fontSize="small" />
+                        <BuildRoundedIcon onClick={open} fontSize="small" />
                     </div>
                     <div className={classes.icon}>
                         <SearchIcon onClick={() => this.callTimer(true)} />
                     </div>
-                    <FilteringDialog
-                        open={this.state.open}
-                        onClose={() => this.setState({ open: false })}
-                        filter={this.handleFilters}
-                    />
                 </div>
             </React.Fragment>
         );
