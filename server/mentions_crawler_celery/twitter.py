@@ -5,7 +5,7 @@ import os
 from requests_oauthlib import OAuth1
 from server.mentions_crawler_celery.models.Mention import Mention
 from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME, CRAWLER_QUEUE_NAME
-from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
+from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG, RUN_ONCE_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 from datetime import datetime, timezone
@@ -40,7 +40,7 @@ def parse_twitter_date(tweet_date: str):
 
 
 @app.task(name="twitter.search")
-def search(user_id: int, companies: list, cookies: dict, first_run: bool):
+def search(user_id: int, companies: list, cookies: dict, first_run: bool, run_once: bool):
     #  get all company names associated with a user
     api_url = "https://api.twitter.com/1.1/search/tweets.json"
 
@@ -68,16 +68,16 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
             mention = Mention(company[COMPANY_ID_TAG], url,
                               text, favourites, int(tweet_date_unix_time))
             mentions.append(json.dumps(mention.__dict__))
-    payload = {USER_ID_TAG: user_id, SITE_TAG: TWITTER, MENTIONS_TAG: mentions}
+    payload = {USER_ID_TAG: user_id, SITE_TAG: TWITTER, MENTIONS_TAG: mentions, RUN_ONCE_TAG: run_once}
     requests.post(RESPONSE_URL, json=payload, cookies=cookies)
 
 
-def enqueue(user_id: int, companies: list, cookies: dict, first_run):
+def enqueue(user_id: int, companies: list, cookies: dict, first_run: bool, run_once: bool):
     try:
         if first_run is True:
-            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
+            result = search.apply_async((user_id, companies, cookies, first_run, run_once), queue=CRAWLER_QUEUE_NAME)
         else:
-            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME,
+            result = search.apply_async((user_id, companies, cookies, first_run, run_once), queue=CRAWLER_QUEUE_NAME,
                                         countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working

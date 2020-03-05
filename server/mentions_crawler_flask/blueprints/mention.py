@@ -4,6 +4,8 @@ from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
 from ..models.company import Company
+from ..db import commit
+from ..responses import ok_response
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/mentions")
 
@@ -11,6 +13,7 @@ MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
+SORT_FAVOURITE_URL = "favourite"
 
 SITES = ["Reddit", "Twitter"]
 
@@ -51,6 +54,8 @@ def get_mentions(user, sort, page):
         all_mentions = Mention.query.order_by(Mention.hits.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
     elif sort == SORT_RECENT_URL:
         all_mentions = Mention.query.order_by(Mention.date.desc()).filter_by(mention_user_id=user.get(USER_ID_TAG))
+    elif sort == SORT_FAVOURITE_URL:
+        all_mentions = Mention.query.filter_by(mention_user_id=user.get(USER_ID_TAG), favourite=True)
     else:
         return bad_request_response("Invalid search parameter value.")
 
@@ -84,7 +89,7 @@ def get_mentions(user, sort, page):
 # Get details of a single mention
 @mention_bp.route("/mention/<int:mention_id>", methods=["GET"])
 @authenticate()
-def get_mention(user, mention_id):
+def get_mention(user, mention_id: int):
     mention = Mention.query.filter_by(id=mention_id).first()
     if mention is None:
         return not_found_response("There is no mention with that ID")
@@ -97,3 +102,19 @@ def get_mention(user, mention_id):
         SENTIMENT_TAG: mention.sentiment
     }
     return data_response(output_mention)
+
+
+@mention_bp.route("favourite/<int:mention_id>", methods=["PATCH"])
+@authenticate()
+def favourite_mention(user, mention_id: int):
+    mention = Mention.query.filter_by(id=mention_id).first()
+    mention.favourite = not mention.favourite
+    result = commit()
+    if result is not True:
+        return result
+    if mention.favourite is True:
+        return ok_response("Mention favourited!")
+    return ok_response("Mention removed from favourites!")
+
+
+

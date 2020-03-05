@@ -6,6 +6,7 @@ export const MENTIONS_ROUTE = "/mentions";
 export const SEARCH_QUERY = "search";
 export const BY_RECENT = "/recent";
 export const BY_POPULAR = "/popular";
+export const BY_FAVOURITE = "/favourite";
 export const DIALOG_ROUTE = MENTIONS_ROUTE + "/mention/";
 export const JOBS_ROUTE = "/jobs/requests/";
 export const SITES_ROUTE = "/settings/site/";
