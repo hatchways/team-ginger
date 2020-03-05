@@ -13,3 +13,8 @@ CRAWLER_QUEUE_NAME = "crawlers"
 
 _SCHEDULE_TIME = 1  # time between crawls in minutes
 SCHEDULE_TIME = _SCHEDULE_TIME * 60  # time between crawls converted to seconds
+
+WELCOME_SUBJECT = "Welcome to mentionscrawler"
+MONTH_TAG = "month"
+DAY_START_TAG = "dayStart"
+DAY_END_TAG = "dayEnd"
