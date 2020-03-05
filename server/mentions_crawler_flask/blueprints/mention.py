@@ -4,7 +4,7 @@ from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
 from ..models.company import Company
-from ..db import commit
+from ..db import commit, delete_row
 from ..responses import ok_response
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/mentions")
@@ -108,12 +108,21 @@ def get_mention(user, mention_id: int):
 @authenticate()
 def favourite_mention(user, mention_id: int):
     mention = Mention.query.filter_by(id=mention_id).first()
+    company = Company.query.filter_by(id=mention.company).first()
     mention.favourite = not mention.favourite
-    result = commit()
+    if company is not None:
+        result = commit()
+        deleted = False
+    else:
+        # if the company doesn't exist, then the mention will already have been favourited
+        result = delete_row(mention)
+        deleted = True
     if result is not True:
         return result
     if mention.favourite is True:
         return ok_response("Mention favourited!")
+    if deleted:
+        return ok_response("deleted")
     return ok_response("Mention removed from favourites!")
 
 

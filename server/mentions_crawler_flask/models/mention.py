@@ -6,7 +6,7 @@ class Mention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mention_user_id = db.Column(db.Integer, db.ForeignKey("mention_user.id"), nullable=False, index=True)
     site_id = db.Column(db.String(50), db.ForeignKey("site.name"), nullable=False)
-    company = db.Column(db.Integer, db.ForeignKey("company.id"), nullable=False)
+    company = db.Column(db.Integer, nullable=False)
     url = db.Column(db.Text, nullable=False)
     # Not every mention will have an article title, such as facebook or twitter, I think?
     title = db.Column(db.Text, nullable=False)
