@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     names: {
         display: "grid",
         gridGap: theme.spacing(3),
-        gridTemplateColumns: `repeat(auto-fit, minmax(${200}px, 1fr))`,
+        gridTemplateColumns: `repeat(auto-fit, minmax(${100}px, 1fr))`,
         margin: `${theme.spacing(3)}px auto`
     },
     platform_container: {

@@ -50,9 +50,7 @@ function Dashboard(props) {
     };
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
-        socket.on(CONNECT_EVENT_TAG, () => {
-            console.log("connected");
-        });
+        socket.on(CONNECT_EVENT_TAG, () => {});
         if (socket.disconnected) {
             socket.open();
             socket.emit(LOGIN_EVENT_TAG, localStorage.getItem(EMAIL_TAG));
@@ -93,7 +91,6 @@ function Dashboard(props) {
             result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
             return result;
         };
-        console.log(platformFilters, nameFilters);
         return (
             <React.Fragment>
                 <DashboardNavBar link={SETTINGS_URL} search={setSearch} open={() => setOpen(true)}>

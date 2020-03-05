@@ -1,6 +1,5 @@
 from sendgrid import SendGridAPIClient
 
-SENDGRID_API_KEY = "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"
 FROM_EMAIL = "ryannarine97@gmail.com"
 WELCOME_SUBJECT = "Welcome to mentionscrawler"
 WELCOME_TEMPLATE_ID = "d-335f9dca0ced402aabcc72e3a352c265"

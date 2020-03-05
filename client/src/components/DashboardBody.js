@@ -62,13 +62,11 @@ class DashboardBody extends Component {
         let filters = Object.entries(platformFilters)
             .map(([platform, filter]) => `${platform}=${filter}`)
             .join("&");
-        let bilters =
-            filters +
+        filters +=
             "&" +
             Object.entries(nameFilters)
                 .map(([name, filter]) => `${name}=${filter}`)
                 .join("&");
-        console.log(bilters);
         const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${filters}`;
 
         fetch(url, {
@@ -79,7 +77,6 @@ class DashboardBody extends Component {
                 history.push(LOGIN_URL);
             } else if (res.ok) {
                 res.json().then(data => {
-                    console.log(data);
                     // concatenate the new mentions
                     let hasMore = !data.end;
                     let mentions = data.mentions;
@@ -95,6 +92,8 @@ class DashboardBody extends Component {
                     // there was no new mentions to fetch
                     this.setState({ hasMore });
                 });
+            } else {
+                res.json().then(data => console.log(data));
             }
         });
     };
