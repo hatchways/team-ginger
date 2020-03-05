@@ -34,21 +34,25 @@ def update_companies(user):
     for company in old_companies:
         if company.name not in names:
             scraped_companies.append(company)
-            old_mentions.extend(Mention.query.filter_by(mention_user_id=user_id, company=company.id).all())
+            old_mentions.extend(Mention.query.filter_by(mention_user_id=user_id,
+                                                        company=company.id, favourite=False).all())
         old_names.append(company.name)
     for name in names:
         if name not in old_names:
             new_companies.append(Company(user_id, name))
 
-    result = delete_rows(old_mentions)
-    if result is not True:
-        return result
-    result = delete_rows(scraped_companies)
-    if result is not True:
-        return result
-    result = insert_rows(new_companies)
-    if result is not True:
-        return result
+    if len(old_mentions) > 0:
+        result = delete_rows(old_mentions)
+        if result is not True:
+            return result
+    if len(scraped_companies) > 0:
+        result = delete_rows(scraped_companies)
+        if result is not True:
+            return result
+    if len(new_companies) > 0:
+        result = insert_rows(new_companies)
+        if result is not True:
+            return result
     associations = SiteAssociation.query.filter_by(mention_user_id=user_id).all()
     for assoc in associations:
         enqueue(assoc.site_name, user_id, token, run_once=True)
