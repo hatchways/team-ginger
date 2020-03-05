@@ -11,7 +11,10 @@ MENTIONS_PER_PAGE = 20
 ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
+
 SITES = ["Reddit", "Twitter"]
+
+
 # Get a set of mentions specified by the page number given
 @mention_bp.route("/<string:sort>/<int:page>", methods=["GET"])
 @authenticate()

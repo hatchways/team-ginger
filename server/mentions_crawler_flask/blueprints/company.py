@@ -9,9 +9,6 @@ from ..authentication.authenticate import authenticate, enforce_json
 company_bp = Blueprint("companies", __name__, url_prefix="/")
 
 
-# TODO update workers to crawl for updated names
-# TODO reimplement composite key to prevent users from having duplicate companies
-
 # Route for updating company names
 @company_bp.route("/companies", methods=["PUT"])
 @enforce_json()

@@ -2,19 +2,16 @@ from __future__ import absolute_import, unicode_literals
 import json
 import praw
 import requests
-from .Mention import Mention
-from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
+import os
+from server.mentions_crawler_celery.models.Mention import Mention
+from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME, CRAWLER_QUEUE_NAME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
 
-_CLIENT_ID = "auo7pZGyIVaJhw"
-_CLIENT_SECRET = "thAk1F93RSQC2uA_6d0xKYNntD8"
-_USER_AGENT = "mentions_crawler:redditpart:madebyevanandryan"
-
-_reddit = praw.Reddit(client_id=_CLIENT_ID,
-                      client_secret=_CLIENT_SECRET,
-                      user_agent=_USER_AGENT)
+_reddit = praw.Reddit(client_id=os.environ["REDDIT_CLIENT_ID"],
+                      client_secret=os.environ["REDDIT_CLIENT_SECRET"],
+                      user_agent=os.environ["REDDIT_USER_AGENT"])
 
 
 @app.task(name="reddit.search")
@@ -23,7 +20,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="month")
+            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="week")
         else:
             submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="hour")
         for submission in submissions:
@@ -39,9 +36,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
 def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
         if first_run is True:
-            result = search.apply_async((user_id, companies, cookies, first_run))
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
         else:
-            result = search.apply_async((user_id, companies, cookies, first_run),
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME,
                                         countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working

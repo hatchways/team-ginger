@@ -1,4 +1,5 @@
 from ..db import db
+from ...constants import EMAIL_TAG, ID_TAG
 
 
 class MentionUser(db.Model):
@@ -11,4 +12,4 @@ class MentionUser(db.Model):
         self.password = password
 
     def __repr__(self):
-        return "id: {}, email: {}".format(self.id, self.email)
+        return {ID_TAG: self.id, EMAIL_TAG: self.email}

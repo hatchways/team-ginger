@@ -1,10 +1,11 @@
 from flask import Flask, request
 from flask_cors import CORS
-
 from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
+from server.mentions_crawler_flask.models.site import SiteAssociation
+from server.mentions_crawler_flask.models.user import MentionUser
 from server.constants import SAVE_EVENT_TAG, UPDATE_EVENT_TAG, LOGIN_EVENT_TAG, DISCONNECT_EVENT_TAG
 from server.sockets import socketio, connections_by_sid
 from flask_socketio import join_room, leave_room, emit
@@ -31,7 +32,6 @@ def disconnect():
 # Will ensure that if the user is logged in more than one location, that the toggles will update in those sessions as well
 @socketio.on(SAVE_EVENT_TAG)
 def save(data):
-    print(data)
     email = connections_by_sid.get(request.sid)
     if email is not None:
         emit(UPDATE_EVENT_TAG, data, room=email)

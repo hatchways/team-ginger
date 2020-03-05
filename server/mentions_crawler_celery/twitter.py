@@ -1,13 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 import json
 import requests
+import os
 from requests_oauthlib import OAuth1
-from .Mention import Mention
-from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME
+from server.mentions_crawler_celery.models.Mention import Mention
+from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME, CRAWLER_QUEUE_NAME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, timezone
+from .utils import month_to_num, one_week_ago, one_day_ago
 
 QUERY_TAG = "q"
 UNTIL_TAG = "until"
@@ -26,43 +28,8 @@ TWEET_MODE_TAG = "tweet_mode"
 EXTENDED_TAG = "extended"
 
 
-def one_week_ago():
-    return str(date.today() - timedelta(days=7))
-
-
-def one_day_ago():
-    return str(date.today() - timedelta(days=1))
-
-
 def build_tweet_url(user_name: str, tweet_id: str):
     return TWITTER_URL+user_name+"/status/"+tweet_id
-
-
-def month_to_num(month):
-    if month == "Jan":
-        return 1
-    elif month == "Feb":
-        return 2
-    elif month == "Mar":
-        return 3
-    elif month == "Apr":
-        return 4
-    elif month == "May":
-        return 5
-    elif month == "Jun":
-        return 6
-    elif month == "Jul":
-        return 7
-    elif month == "Aug":
-        return 8
-    elif month == "Sep":
-        return 9
-    elif month == "Oct":
-        return 10
-    elif month == "Nov":
-        return 11
-    elif month == "Dec":
-        return 12
 
 
 def parse_twitter_date(tweet_date: str):
@@ -77,14 +44,8 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     #  get all company names associated with a user
     api_url = "https://api.twitter.com/1.1/search/tweets.json"
 
-    api_key = "cvk7jHmbc3Y08jLhrMnelgAeL"
-    api_secret_key = "PQ4WXZmBBd6f9SyspCaCn1Q2xpdawTY2YnwqF7YfpdYni5jlg7"
-
-    access_token = "125311068-VrV3rhIY01mWzFXLy6Xa0UvPFAhHZ4oC6rnf2Y5A"
-    access_token_secret = "62lyn41C46GZ16RmHcEgI4f5VH3n4pdlQjKH790qh3khi"
-
-    auth = OAuth1(api_key, api_secret_key,
-                  access_token, access_token_secret)
+    auth = OAuth1(os.environ["TWITTER_API_KEY"], os.environ["TWITTER_API_SECRET_KEY"],
+                  os.environ["TWITTER_ACCESS_TOKEN"], os.environ["TWITTER_ACCESS_TOKEN_SECRET"])
     mentions = []  # initialize mentions as a list
     for company in companies:
         company_name = '"' + company[COMPANY_NAME_TAG] + '"'
@@ -105,7 +66,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
             else:
                 favourites = 0
             mention = Mention(company[COMPANY_ID_TAG], url,
-                              text, favourites, tweet_date_unix_time)
+                              text, favourites, int(tweet_date_unix_time))
             mentions.append(json.dumps(mention.__dict__))
     payload = {USER_ID_TAG: user_id, SITE_TAG: TWITTER, MENTIONS_TAG: mentions}
     requests.post(RESPONSE_URL, json=payload, cookies=cookies)
@@ -114,9 +75,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
 def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
         if first_run is True:
-            result = search.apply_async((user_id, companies, cookies, first_run))
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
         else:
-            result = search.apply_async((user_id, companies, cookies, first_run),
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME,
                                         countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working

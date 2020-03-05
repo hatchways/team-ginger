@@ -1,4 +1,5 @@
 from ..db import db
+from ...constants import SNIPPET_TAG, URL_TAG, TITLE_TAG, SITE_TAG
 
 
 class Mention(db.Model):
@@ -14,6 +15,9 @@ class Mention(db.Model):
     # using integer for now because the reddit api returns things in unix time
     date = db.Column(db.Integer, nullable=False)
     sentiment = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return {URL_TAG: self.url, SITE_TAG: self.site_id, SNIPPET_TAG: self.snippet, TITLE_TAG: self.title}
 
     def __init__(self, mention_user_id: int, company: int, site_id: str, url: str, snippet: str,
                  hits: int, date: int, sentiment: float, title: str = ""):

@@ -20,6 +20,7 @@ def data_response(data):
     response = make_response(jsonify(data), 200)
     return response
 
+
 # For pagination of mentions
 def pagination_response(data, end):
     response = make_response(jsonify({"mentions": data, "end": end}), 200)
@@ -49,6 +50,7 @@ def created_response(message, email: str, companies: list, user_id: int, sites: 
                                       _SITES_TAG: sites}), 201)
     response.set_cookie(TOKEN_TAG, generate_token(current_app.secret_key, email, user_id), httponly=True)
     return response
+
 
 def bad_request_response(message):
     response = make_response(jsonify({_RESPONSE_TAG: message}), 400)

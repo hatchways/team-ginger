@@ -15,7 +15,8 @@ session_bp = Blueprint("session", __name__, url_prefix="/")
 def login():
     body = request.get_json()
     if body.get(EMAIL_TAG) and body.get(PASSWORD_TAG):
-        user = MentionUser.query.filter_by(email=body.get(EMAIL_TAG)).first()
+        email = body.get(EMAIL_TAG).lower()  # ensures email login is type insensitive
+        user = MentionUser.query.filter_by(email=email).first()
         if user is not None:
             if check_password_hash(user.password, body.get(PASSWORD_TAG)):
 
