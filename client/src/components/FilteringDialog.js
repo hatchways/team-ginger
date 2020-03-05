@@ -69,7 +69,10 @@ function FilteringDialog(props) {
     const handlePlatformChange = platform => e => setPlatforms({ ...platformFilters, [platform]: e.target.checked });
     const handleNameChange = name => e => setNames({ ...nameFilters, [name]: e.target.checked });
 
-    const handleApply = () => filter(platformFilters, nameFilters);
+    const handleApply = () => {
+        onClose();
+        filter(platformFilters, nameFilters);
+    };
 
     // List of platforms and companies to render on dialog
     let platforms = [];
