@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component, Fragment} from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY } from "../Routes";
@@ -7,7 +7,8 @@ import Mention from "./Mention";
 import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
-
+import { withSnackbar } from "notistack";
+import Button from "@material-ui/core/Button";
 const LOADING_MESSAGE = "Loading Mentions";
 const NO_MENTION_MESSAGE = "There's nothing here! Make sure you have at least one platform tracked";
 // Max character limit of mention title and snippet
@@ -59,6 +60,14 @@ class DashboardBody extends Component {
     fetchMentions = (incrementPage = true) => {
         const { searchString, platformFilters, nameFilters, history } = this.props;
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
+        const { enqueueSnackbar } = this.props;
+        const action = () => (
+            <Fragment>
+                <Button onClick={() => this.handleTabChange(0)}>
+                    "See new Mentions"
+                </Button>
+            </Fragment>
+        );
         let filters = Object.entries(platformFilters)
             .map(([platform, filter]) => `${platform}=${filter}`)
             .join("&");
@@ -187,6 +196,16 @@ class DashboardBody extends Component {
         socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
+            enqueueSnackbar("New mentions!",
+                                {
+                                    variant: "info",
+                                    anchorOrigin: {
+                                        vertical: 'top',
+                                        horizontal: 'center',
+                                    },
+                                    autoHideDuration: 4000,
+                                    action
+                             });
         });
         socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
@@ -208,4 +227,4 @@ class DashboardBody extends Component {
         socket.off(MENTIONS_EVENT_TAG);
     }
 }
-export default withStyles(styles)(DashboardBody);
+export default withSnackbar(withStyles(styles)(DashboardBody));
