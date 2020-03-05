@@ -1,6 +1,6 @@
 from flask import Blueprint, request, json
 from ..authentication.authenticate import authenticate, enforce_json
-from ...mentions_crawler_apis import enqueue
+from ...mentions_crawler_celery import enqueue
 from ...constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
     URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG, MENTIONS_EVENT_TAG
 from ..responses import bad_request_response, ok_response, error_response

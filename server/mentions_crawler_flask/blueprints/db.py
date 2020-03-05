@@ -12,6 +12,7 @@ db_bp = Blueprint("database", __name__, url_prefix="/db")
 
 @db_bp.route("/clean", methods=["POST"])
 def clean_db():
+    print("entered clean db method")
     token = request.cookies.get(TOKEN_TAG)
     if token is not None:
         try:

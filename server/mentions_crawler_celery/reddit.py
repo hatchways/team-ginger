@@ -3,8 +3,8 @@ import json
 import praw
 import requests
 import os
-from server.mentions_crawler_apis.models.Mention import Mention
-from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME
+from server.mentions_crawler_celery.models.Mention import Mention
+from .constants import REDDIT, RESPONSE_URL, SCHEDULE_TIME, CRAWLER_QUEUE_NAME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
@@ -20,7 +20,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="month")
+            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="week")
         else:
             submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="hour")
         for submission in submissions:
@@ -36,9 +36,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
 def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
         if first_run is True:
-            result = search.apply_async((user_id, companies, cookies, first_run))
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
         else:
-            result = search.apply_async((user_id, companies, cookies, first_run),
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME,
                                         countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working

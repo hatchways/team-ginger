@@ -13,6 +13,7 @@ email_bp = Blueprint("email", __name__, url_prefix="/")
 
 @email_bp.route("/email")
 def get_email_mentions():
+    print("entered email task")
     token = request.cookies.get(TOKEN_TAG)
     if token is not None:
         try:

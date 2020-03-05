@@ -3,8 +3,8 @@ import json
 import requests
 import os
 from requests_oauthlib import OAuth1
-from server.mentions_crawler_apis.models.Mention import Mention
-from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME
+from server.mentions_crawler_celery.models.Mention import Mention
+from .constants import TWITTER, RESPONSE_URL, SCHEDULE_TIME, CRAWLER_QUEUE_NAME
 from ..constants import MENTIONS_TAG, SITE_TAG, USER_ID_TAG, COMPANY_ID_TAG, COMPANY_NAME_TAG
 from .celery import app
 from celery.exceptions import CeleryError
@@ -75,9 +75,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
 def enqueue(user_id: int, companies: list, cookies: dict, first_run):
     try:
         if first_run is True:
-            result = search.apply_async((user_id, companies, cookies, first_run))
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
         else:
-            result = search.apply_async((user_id, companies, cookies, first_run),
+            result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME,
                                         countdown=SCHEDULE_TIME)
 
     except CeleryError as e:  # might look into more specific errors later, but for now I just need to get this working
