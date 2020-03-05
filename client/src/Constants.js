@@ -28,6 +28,19 @@ export const PLATFORMS = [REDDIT, TWITTER];
 //Platform images map
 export const SITE_TO_IMG = { Reddit, Twitter };
 
+//Date Constants
+const INDEX_TO_MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+export const GET_DATE_STRING = date => {
+    const month = INDEX_TO_MONTH[date.getMonth()];
+    const day = date.getDay();
+    let hour = date.getHours();
+    const meridian = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12;
+    let minute = date.getMinutes();
+    minute = minute < 10 ? `0${minute}` : minute;
+    return `${month} ${day} ${hour}:${minute} ${meridian}`;
+};
+
 //Socket Events
 export const SAVE_EVENT_TAG = "save";
 export const UPDATE_EVENT_TAG = "update";

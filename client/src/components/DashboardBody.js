@@ -145,6 +145,7 @@ class DashboardBody extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
+                        date={mention.date}
                         bold={this.props.bold}
                     />
                 );
