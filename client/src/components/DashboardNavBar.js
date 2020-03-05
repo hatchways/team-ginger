@@ -1,4 +1,4 @@
-/* Component for rendering the nav bar on the dashboard/settings page */
+/* Component for rendering the navbar on the dashboard page */
 
 import React from "react";
 import { Link } from "react-router-dom";
@@ -17,20 +17,21 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function ServiceNavBar(props) {
+function DashboardNavBar(props) {
     const classes = useStyles();
 
-    const { searchbar, children, search } = props;
-
+    const { children, search, link, open } = props;
     return (
         <Navbar flexGrow="initial">
-            <Box className={classes.search_bar_container}>{searchbar && <SearchBar search={search} />}</Box>
+            <Box className={classes.search_bar_container}>
+                <SearchBar search={search} open={open} />
+            </Box>
 
-            <Link to={props.link} className={classes.link}>
+            <Link to={link} className={classes.link}>
                 {children}
             </Link>
         </Navbar>
     );
 }
 
-export default ServiceNavBar;
+export default DashboardNavBar;

@@ -2,10 +2,7 @@
 import React from "react";
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Reddit from "../assets/reddit.png";
-import Twitter from "../assets/twitter.png";
-
-const SITE_TO_IMG = { Reddit, Twitter };
+import { SITE_TO_IMG } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
     image: {

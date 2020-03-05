@@ -27,7 +27,7 @@ function AccountNavBar(props) {
     const classes = useStyles();
 
     return (
-        <Navbar>
+        <Navbar flexGrow={1}>
             <Typography variant="subtitle1" className={classes.account_msg}>
                 {props.accountMsg}
             </Typography>
