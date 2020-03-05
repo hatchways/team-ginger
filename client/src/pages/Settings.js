@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import ViewListIcon from "@material-ui/icons/ViewList";
-import ServiceNavBar from "../components/ServiceNavBar";
+import SettingsNavBar from "../components/SettingsNavBar";
 import SettingsBody from "../components/SettingsBody";
 import SettingsSideBar from "../components/SettingsSideBar";
 import { DASHBOARD_URL, LOGIN_URL, COMPANY_NAMES_TAG, SITES_TAG, EMAIL_TAG } from "../Constants";
@@ -30,9 +30,9 @@ function Settings(props) {
 
     return (
         <React.Fragment>
-            <ServiceNavBar link={DASHBOARD_URL}>
+            <SettingsNavBar link={DASHBOARD_URL}>
                 <ViewListIcon fontSize="large" />
-            </ServiceNavBar>
+            </SettingsNavBar>
             <div className={classes.settings_layout}>
                 <SettingsSideBar history={props.history} />
                 <SettingsBody history={props.history} />

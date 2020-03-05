@@ -3,10 +3,11 @@ import { Redirect, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import SettingsIcon from "@material-ui/icons/Settings";
-import ServiceNavBar from "../components/ServiceNavBar";
+import DashboardNavBar from "../components/DashboardNavBar";
 import DashboardSideBar from "../components/DashboardSideBar";
 import DashboardBody from "../components/DashboardBody";
 import Dialog from "../components/Dialog";
+import FilteringDialog from "../components/FilteringDialog";
 import {
     SETTINGS_URL,
     LOGIN_URL,
@@ -15,7 +16,8 @@ import {
     SITES_TAG,
     LOGIN_EVENT_TAG,
     DISCONNECT_EVENT_TAG,
-    CONNECT_EVENT_TAG
+    CONNECT_EVENT_TAG,
+    PLATFORMS
 } from "../Constants";
 import { socket } from "../sockets";
 
@@ -30,18 +32,31 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
     const classes = useStyles();
 
+    let initialPlatforms = {};
+    let initialNames = {};
+
+    if (localStorage.getItem(COMPANY_NAMES_TAG)) {
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
+        PLATFORMS.forEach(platform => (initialPlatforms[platform] = true));
+        names.forEach(name => (initialNames[name] = true));
+    }
     const [searchString, setSearch] = useState("");
+    const [open, setOpen] = useState(false);
+    const [platformFilters, setPlatforms] = useState(initialPlatforms);
+    const [nameFilters, setNames] = useState(initialNames);
+    const setFilters = (platforms, names) => {
+        setPlatforms(platforms);
+        setNames(names);
+    };
 
     if (localStorage.getItem(COMPANY_NAMES_TAG) && localStorage.getItem(EMAIL_TAG) && localStorage.getItem(SITES_TAG)) {
-        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
-        socket.on(CONNECT_EVENT_TAG, () => {
-            console.log("connected");
-        });
+        socket.on(CONNECT_EVENT_TAG, () => {});
         if (socket.disconnected) {
             socket.open();
             socket.emit(LOGIN_EVENT_TAG, localStorage.getItem(EMAIL_TAG));
         }
 
+        const names = localStorage.getItem(COMPANY_NAMES_TAG).split(",");
         const keywords = searchString === "" ? names : names.concat([searchString]);
 
         const expression = keywords.map(keyword => `\\b${keyword}\\b`).join("|");
@@ -76,12 +91,18 @@ function Dashboard(props) {
             result.push(<React.Fragment key={-1}>{text.substring(index)}</React.Fragment>);
             return result;
         };
-
         return (
             <React.Fragment>
-                <ServiceNavBar link={SETTINGS_URL} search={setSearch} searchbar={true}>
+                <DashboardNavBar link={SETTINGS_URL} search={setSearch} open={() => setOpen(true)}>
                     <SettingsIcon fontSize="large" />
-                </ServiceNavBar>
+                </DashboardNavBar>
+                <FilteringDialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    filter={setFilters}
+                    pFilters={platformFilters}
+                    nFilters={nameFilters}
+                />
                 <div className={classes.mentions_layout}>
                     <DashboardSideBar history={props.history} />
                     <DashboardBody
@@ -89,6 +110,8 @@ function Dashboard(props) {
                         regex={summaryRegex}
                         bold={boldNames}
                         searchString={searchString}
+                        platformFilters={platformFilters}
+                        nameFilters={nameFilters}
                     />
                     <Route
                         path={`/dashboard/mention/:id`}

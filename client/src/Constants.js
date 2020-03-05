@@ -1,4 +1,6 @@
 /* Store constant values here */
+import Reddit from "./assets/reddit.png";
+import Twitter from "./assets/twitter.png";
 
 // Client URL Constants
 export const DASHBOARD_URL = "/dashboard";
@@ -23,6 +25,8 @@ export const BAD_SNACKBAR = { variant: "error" };
 
 //Crawler platforms
 export const PLATFORMS = [REDDIT, TWITTER];
+//Platform images map
+export const SITE_TO_IMG = { Reddit, Twitter };
 
 //Socket Events
 export const SAVE_EVENT_TAG = "save";
