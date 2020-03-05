@@ -51,7 +51,7 @@ function Mention(props) {
                         date={date}
                         dateVariant="body2"
                     />
-                    <MentionText variant="caption" color="textSecondary" bold={bold} text={snippet} />
+                    <MentionText variant="caption" bold={bold} text={snippet} />
                 </Box>
             </MentionContainer>
         </Link>
