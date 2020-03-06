@@ -26,7 +26,7 @@ const styles = theme => ({
         maxWidth: 800,
         margin: "auto",
         paddingRight: theme.spacing(10),
-        height: "70vh"
+        height: "70vh",
         scrollBehavior: "smooth"
     },
     empty_msg: {
