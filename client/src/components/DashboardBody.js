@@ -51,23 +51,13 @@ class DashboardBody extends Component {
     }
 
     handleTabChange = tabValue => {
-        if (this.state.tabValue !== tabValue) {
-            const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
-            this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
-        }
+        const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
+        this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
     };
 
     fetchMentions = (incrementPage = true) => {
         const { searchString, platformFilters, nameFilters, history } = this.props;
         const actualPage = Math.max(this.state.page - (incrementPage ? 0 : 1), 1);
-        const { enqueueSnackbar } = this.props;
-        const action = () => (
-            <Fragment>
-                <Button onClick={() => this.handleTabChange(0)}>
-                    "See new Mentions"
-                </Button>
-            </Fragment>
-        );
         let filters = Object.entries(platformFilters)
             .map(([platform, filter]) => `${platform}=${filter}`)
             .join("&");
@@ -192,12 +182,20 @@ class DashboardBody extends Component {
         );
     }
 
-    componentDidMount() {
-        this.fetchMentions(false);
-        socket.on(MENTIONS_EVENT_TAG, () => {
-            console.log("fetching new mentions");
-            this.fetchMentions(false);
-            enqueueSnackbar("New mentions!",
+    new_mentions_alert() {
+        const { enqueueSnackbar, closeSnackbar } = this.props;
+
+        const action = key => (
+            <Fragment>
+                <Button onClick={() => {
+                    this.handleTabChange(0);
+                    closeSnackbar(key);
+                }}>
+                    View
+                </Button>
+            </Fragment>
+        );
+        enqueueSnackbar("New mentions!",
                                 {
                                     variant: "info",
                                     anchorOrigin: {
@@ -207,6 +205,14 @@ class DashboardBody extends Component {
                                     autoHideDuration: 4000,
                                     action
                              });
+    }
+
+    componentDidMount() {
+        this.fetchMentions(false);
+        socket.on(MENTIONS_EVENT_TAG, () => {
+            console.log("fetching new mentions");
+            this.fetchMentions(false);
+            this.new_mentions_alert();
         });
         socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
