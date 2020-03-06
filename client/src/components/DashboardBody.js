@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from "react";
+import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY } from "../Routes";
@@ -20,7 +20,7 @@ const styles = theme => ({
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
     },
-    grid: {
+    infinite_scroller: {
         width: "100%",
         boxSizing: "border-box",
         maxWidth: 800,
@@ -29,11 +29,20 @@ const styles = theme => ({
         display: "grid",
         justifyItems: "center",
         gridGap: theme.spacing(2),
-        height: "70vh"
+        height: "70vh",
+        scrollBehavior: "smooth"
     },
     empty_msg: {
         alignSelf: "center",
         marginBottom: theme.spacing(10)
+    },
+    snackbar_btn: {
+        backgroundColor: "transparent",
+        textTransform: "none",
+        "&:hover": {
+            backgroundColor: "white",
+            color: "#2979ff"
+        }
     }
 });
 
@@ -51,8 +60,10 @@ class DashboardBody extends Component {
     }
 
     handleTabChange = tabValue => {
-        const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
-        this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
+        if (this.state.tabValue !== tabValue) {
+            const sort = tabValue === 0 ? BY_RECENT : BY_POPULAR;
+            this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
+        }
     };
 
     fetchMentions = (incrementPage = true) => {
@@ -165,7 +176,7 @@ class DashboardBody extends Component {
                 />
 
                 <InfiniteScroll
-                    className={classes.grid}
+                    className={classes.infinite_scroller}
                     dataLength={renderMentions.length}
                     next={this.fetchMentions}
                     hasMore={hasMore}
@@ -182,29 +193,35 @@ class DashboardBody extends Component {
         );
     }
 
-    new_mentions_alert() {
-        const { enqueueSnackbar, closeSnackbar } = this.props;
+    notifyNewMentions() {
+        const { enqueueSnackbar, closeSnackbar, classes } = this.props;
 
         const action = key => (
             <Fragment>
-                <Button onClick={() => {
-                    this.handleTabChange(0);
-                    closeSnackbar(key);
-                }}>
+                <Button
+                    className={classes.snackbar_btn}
+                    onClick={() => {
+                        if (this.state.tabValue == 0) {
+                            document.querySelector(`.${classes.infinite_scroller}`).scrollTo(0, 0);
+                        } else {
+                            this.handleTabChange(0);
+                        }
+                        closeSnackbar(key);
+                    }}
+                >
                     View
                 </Button>
             </Fragment>
         );
-        enqueueSnackbar("New mentions!",
-                                {
-                                    variant: "info",
-                                    anchorOrigin: {
-                                        vertical: 'top',
-                                        horizontal: 'center',
-                                    },
-                                    autoHideDuration: 4000,
-                                    action
-                             });
+        enqueueSnackbar("New mentions!", {
+            variant: "info",
+            anchorOrigin: {
+                vertical: "top",
+                horizontal: "center"
+            },
+            autoHideDuration: 4000,
+            action
+        });
     }
 
     componentDidMount() {
@@ -212,7 +229,7 @@ class DashboardBody extends Component {
         socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
-            this.new_mentions_alert();
+            this.notifyNewMentions();
         });
         socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
