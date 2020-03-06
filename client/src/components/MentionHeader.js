@@ -11,6 +11,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAlt"
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import SentimentVerySatisfiedOutlinedIcon from "@material-ui/icons/SentimentVerySatisfiedOutlined";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import FavouriteIcon from "./FavouriteIcon";
 import { GET_DATE_STRING } from "../Constants";
 
 // Given a sentiment value in [-1, 1] return an appropriate Icon
@@ -54,7 +55,7 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         marginRight: theme.spacing(1)
     },
-    icon: {
+    sentiment: {
         color: theme.primary
     }
 }));
@@ -62,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, site, siteVariant, dateVariant } = props;
+    const { title, bold, titleVariant, site, siteVariant, dateVariant, favourite, id, history } = props;
     const date = props.date && GET_DATE_STRING(new Date(props.date * 1000));
 
     return (
@@ -76,8 +77,13 @@ function MentionHeader(props) {
                     {date}
                 </Typography>
             </Box>
-
-            <Tooltip title={`Score: ${sentiment}`} placement="top" aria-label="Sentiment score" className={classes.icon}>
+            <FavouriteIcon className={classes.favourite_icon} favourite={favourite} id={id} history={history} />
+            <Tooltip
+                title={`Score: ${sentiment}`}
+                placement="top"
+                aria-label="Sentiment score"
+                className={classes.sentiment}
+            >
                 {SentimentToIcon(props.sentiment)}
             </Tooltip>
         </Box>

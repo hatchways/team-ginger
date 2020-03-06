@@ -63,7 +63,7 @@ def responses(user):
                     sentiment = TextBlob(json_mention[SNIPPET_TAG]).sentiment.polarity
                     db_mentions.append(Mention(user_id, json_mention[COMPANY_ID_TAG], site,
                                                json_mention[URL_TAG], json_mention[SNIPPET_TAG], json_mention[HITS_TAG],
-                                               json_mention[DATE_TAG], sentiment, json_mention[TITLE_TAG]))
+                                               json_mention[DATE_TAG], sentiment, False, json_mention[TITLE_TAG]))
 
             result = insert_rows(db_mentions)
             if result is not True:

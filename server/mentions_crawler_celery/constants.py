@@ -15,6 +15,21 @@ _SCHEDULE_TIME = 1  # time between crawls in minutes
 SCHEDULE_TIME = _SCHEDULE_TIME * 60  # time between crawls converted to seconds
 
 WELCOME_SUBJECT = "Welcome to mentionscrawler"
-MONTH_TAG = "month"
+START_MONTH_TAG = "start_month"
+END_MONTH_TAG = "end_month"
 DAY_START_TAG = "dayStart"
 DAY_END_TAG = "dayEnd"
+
+
+JANUARY = "Jan"
+FEBRUARY = "Feb"
+MARCH = "Mar"
+APRIL = "Apr"
+MAY = "May"
+JUNE = "Jun"
+JULY = "July"
+AUGUST = "Aug"
+SEPTEMBER = "Sep"
+OCTOBER = "Oct"
+NOVEMBER = "Nov"
+DECEMBER = "Dec"
