@@ -77,7 +77,7 @@ function MentionHeader(props) {
                     {date}
                 </Typography>
             </Box>
-            <FavouriteIcon favourite={favourite} id={id} history={history} />
+            <FavouriteIcon className={classes.favourite_icon} favourite={favourite} id={id} history={history} />
             <Tooltip
                 title={`Score: ${sentiment}`}
                 placement="top"

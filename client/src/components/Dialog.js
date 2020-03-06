@@ -50,7 +50,7 @@ class Dialog extends Component {
         this.props.history.push(DASHBOARD_URL);
     };
     render() {
-        const { classes, bold, history } = this.props;
+        const { classes, bold, history, id } = this.props;
         const { mention, message } = this.state;
 
         if (mention) {
@@ -62,7 +62,14 @@ class Dialog extends Component {
                 <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
                     <MentionContainer container={classes.container} img={mention.thumbnail} site={site}>
                         <Box className={classes.info}>
-                            <MentionHeader titleVariant="h5" bold={bold} title={title} id={this.props.id} sentiment={sentiment} />
+                            <MentionHeader
+                                titleVariant="h5"
+                                bold={bold}
+                                title={title}
+                                id={id}
+                                sentiment={sentiment}
+                                favourite={mention.favourite}
+                            />
                             <MentionInfo
                                 site={site}
                                 favourite={mention.favourite}

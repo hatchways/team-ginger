@@ -9,11 +9,13 @@ import { LOGIN_URL } from "../Constants";
 const useStyles = makeStyles(theme => ({
     favourited: {
         color: "#FD6095",
-        marginRight: theme.spacing(1)
+        marginRight: theme.spacing(1),
+        cursor: "pointer"
     },
     favourite: {
         color: "#FFDFEA",
-        marginRight: theme.spacing(1)
+        marginRight: theme.spacing(1),
+        cursor: "pointer"
     }
 }));
 
@@ -24,7 +26,6 @@ function FavouriteIcon(props) {
 
     const handleClick = e => {
         e.preventDefault();
-        console.log(id);
         fetch(`${FAVOURITE_ROUTE}${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" }
