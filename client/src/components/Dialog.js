@@ -50,7 +50,7 @@ class Dialog extends Component {
         this.props.history.push(DASHBOARD_URL);
     };
     render() {
-        const { classes, bold } = this.props;
+        const { classes, bold, history } = this.props;
         const { mention, message } = this.state;
 
         if (mention) {
@@ -69,6 +69,8 @@ class Dialog extends Component {
                                 sentiment={mention.sentiment}
                                 siteVariant="h5"
                                 site={site}
+                                favourite={mention.favourite}
+                                history={history}
                             />
                             <MentionInfo hitsVariant="h5" hits={hits} url={url} urlVariant="h5" />
                         </Box>

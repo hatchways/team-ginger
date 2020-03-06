@@ -23,7 +23,8 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         padding: theme.spacing(2),
         width: "100%",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        marginBottom: theme.spacing(2)
     },
 
     text: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 function Mention(props) {
     const classes = useStyles();
-    const { id, img, title, site, snippet, bold, sentiment, favourite } = props;
+    const { id, img, title, site, snippet, bold, sentiment, favourite, history } = props;
 
     return (
         <Link to={`${DASHBOARD_URL}/mention/${id}`} className={classes.link}>
@@ -49,6 +50,8 @@ function Mention(props) {
                         site={site}
                         siteVariant="body1"
                         favourite={favourite}
+                        id={id}
+                        history={history}
                     />
                     <MentionText variant="caption" color="textSecondary" bold={bold} text={snippet} />
                 </Box>

@@ -1,11 +1,10 @@
 from flask import Blueprint, request
-from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, FAVOURITE_TAG
+from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, FAVOURITE_TAG, MESSAGE_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
 from ..models.company import Company
 from ..db import commit, delete_row
-from ..responses import ok_response
 
 mention_bp = Blueprint("mentions", __name__, url_prefix="/mentions")
 
@@ -44,10 +43,13 @@ def get_mentions(user, sort, page):
             # Gather the companies we want
             name_filter.append(company.id)
         elif filter != 'false':
-            return bad_request_response("Invalid site parameter value.")    
+            return bad_request_response("Invalid name parameter value.")    
     
     # User has filtered out all names
     if len(name_filter) == 0:
+        return pagination_response([], True)
+    # User has filtered out all sites
+    if len(site_filter) == 0:
         return pagination_response([], True)
     
     if sort == SORT_POPULAR_URL:
@@ -59,10 +61,11 @@ def get_mentions(user, sort, page):
     else:
         return bad_request_response("Invalid search parameter value.")
 
-    # Filter by name
-    all_mentions = all_mentions.filter(Mention.company.in_(name_filter))
+    # Check if we need to filter by names
+    if len(name_filter) != len(companies):
+        all_mentions = all_mentions.filter(Mention.company.in_(name_filter))
     # Check if we need to filter by sites
-    if len(site_filter) != 0:
+    if len(site_filter) != len(SITES):
         all_mentions = all_mentions.filter(Mention.site_id.in_(site_filter))
     # Check if we need to filter by search
     if search is not None and search != "":
@@ -122,10 +125,10 @@ def favourite_mention(user, mention_id: int):
     if result is not True:
         return result
     if mention.favourite is True:
-        return ok_response("Mention favourited!")
+        return data_response({MESSAGE_TAG: "Mention favourited!", FAVOURITE_TAG: mention.favourite})
     if deleted:
-        return ok_response("deleted")
-    return ok_response("Mention removed from favourites!")
+        return data_response({MESSAGE_TAG: "Mention deleted", FAVOURITE_TAG: mention.favourite})
+    return data_response({MESSAGE_TAG: "Mention removed from favourites!", FAVOURITE_TAG: mention.favourite})
 
 
 

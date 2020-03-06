@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 # JSON Constants
+MESSAGE_TAG = "message"
 MENTIONS_TAG = "mentions"
 USERS_TAG = "users"
 SECRET_HASH_TAG = "secret_hash"

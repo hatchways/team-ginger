@@ -61,7 +61,8 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, site, siteVariant, favourite } = props;
+    const { title, bold, titleVariant, site, siteVariant, favourite, id, history } = props;
+
     return (
         <Box className={classes.header}>
             <Box className={classes.title}>
@@ -70,7 +71,7 @@ function MentionHeader(props) {
                     {site}
                 </Typography>
             </Box>
-            <FavouriteIcon favourite={favourite} />
+            <FavouriteIcon favourite={favourite} id={id} history={history} />
             <Tooltip
                 title={`Score: ${sentiment}`}
                 placement="top"

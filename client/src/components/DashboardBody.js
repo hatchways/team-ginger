@@ -25,9 +25,6 @@ const styles = theme => ({
         maxWidth: 800,
         margin: "auto",
         paddingRight: theme.spacing(10),
-        display: "grid",
-        justifyItems: "center",
-        gridGap: theme.spacing(2),
         height: "70vh"
     },
     empty_msg: {
@@ -140,7 +137,7 @@ class DashboardBody extends Component {
     };
 
     render() {
-        const { classes } = this.props;
+        const { classes, history, bold } = this.props;
         const { tabValue, mentions, hasMore } = this.state;
 
         const renderMentions = [];
@@ -158,8 +155,9 @@ class DashboardBody extends Component {
                         snippet={snippet}
                         site={mention.site}
                         sentiment={mention.sentiment}
-                        bold={this.props.bold}
+                        bold={bold}
                         favourite={mention.favourite}
+                        history={history}
                     />
                 );
             });
