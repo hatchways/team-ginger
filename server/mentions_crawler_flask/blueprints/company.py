@@ -58,7 +58,7 @@ def update_companies(user):
             return result
     associations = SiteAssociation.query.filter_by(mention_user_id=user_id).all()
     for assoc in associations:
-        result = enqueue(assoc.site_name, user_id, token)
+        result = enqueue(assoc.site_name, user_id, token, True)
         if tasks.get(get_tasks_id(assoc.site_name, user_id)) is not None:
             del tasks[get_tasks_id(assoc.site_name, user_id)]
         if isinstance(result, AsyncResult):
