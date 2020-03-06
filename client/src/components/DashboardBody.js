@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY } from "../Routes";
@@ -7,7 +7,8 @@ import Mention from "./Mention";
 import DashboardHead from "./DashboardHead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
-
+import { withSnackbar } from "notistack";
+import Button from "@material-ui/core/Button";
 const LOADING_MESSAGE = "Loading Mentions";
 const NO_MENTION_MESSAGE = "There's nothing here! Make sure you have at least one platform tracked";
 // Max character limit of mention title and snippet
@@ -19,7 +20,7 @@ const styles = theme => ({
         width: "90%",
         margin: `${theme.spacing(4)}px auto`
     },
-    grid: {
+    infinite_scroller: {
         width: "100%",
         boxSizing: "border-box",
         maxWidth: 800,
@@ -28,11 +29,20 @@ const styles = theme => ({
         display: "grid",
         justifyItems: "center",
         gridGap: theme.spacing(2),
-        height: "70vh"
+        height: "70vh",
+        scrollBehavior: "smooth"
     },
     empty_msg: {
         alignSelf: "center",
         marginBottom: theme.spacing(10)
+    },
+    snackbar_btn: {
+        backgroundColor: "transparent",
+        textTransform: "none",
+        "&:hover": {
+            backgroundColor: "white",
+            color: "#2979ff"
+        }
     }
 });
 
@@ -166,7 +176,7 @@ class DashboardBody extends Component {
                 />
 
                 <InfiniteScroll
-                    className={classes.grid}
+                    className={classes.infinite_scroller}
                     dataLength={renderMentions.length}
                     next={this.fetchMentions}
                     hasMore={hasMore}
@@ -183,11 +193,43 @@ class DashboardBody extends Component {
         );
     }
 
+    notifyNewMentions() {
+        const { enqueueSnackbar, closeSnackbar, classes } = this.props;
+
+        const action = key => (
+            <Fragment>
+                <Button
+                    className={classes.snackbar_btn}
+                    onClick={() => {
+                        if (this.state.tabValue === 0) {
+                            document.querySelector(`.${classes.infinite_scroller}`).scrollTo(0, 0);
+                        } else {
+                            this.handleTabChange(0);
+                        }
+                        closeSnackbar(key);
+                    }}
+                >
+                    View
+                </Button>
+            </Fragment>
+        );
+        enqueueSnackbar("New mentions!", {
+            variant: "info",
+            anchorOrigin: {
+                vertical: "top",
+                horizontal: "center"
+            },
+            autoHideDuration: 4000,
+            action
+        });
+    }
+
     componentDidMount() {
         this.fetchMentions(false);
         socket.on(MENTIONS_EVENT_TAG, () => {
             console.log("fetching new mentions");
             this.fetchMentions(false);
+            this.notifyNewMentions();
         });
         socket.on(DISCONNECT_EVENT_TAG, () => {
             console.log("connection was lost, attempting to reconnect");
@@ -209,4 +251,4 @@ class DashboardBody extends Component {
         socket.off(MENTIONS_EVENT_TAG);
     }
 }
-export default withStyles(styles)(DashboardBody);
+export default withSnackbar(withStyles(styles)(DashboardBody));

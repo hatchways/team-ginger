@@ -74,7 +74,9 @@ def responses(user):
                 del tasks[get_tasks_id(site, user_id)]
             if isinstance(result, AsyncResult):
                 tasks[get_tasks_id(site, user_id)] = result
-                socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
-                return ok_response("Mentions added to database! And next crawl queued!")
+                if len(db_mentions) > 0:
+                    socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
+                    return ok_response("Mentions added to database! And next crawl queued!")
+                return ok_response("No new mentions found, queued the next crawl!")
         else:
             return bad_request_response("Missing fields!")
