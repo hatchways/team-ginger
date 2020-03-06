@@ -20,9 +20,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="week")
+            submissions = _reddit.subreddit("all").search('"' + company[COMPANY_NAME_TAG] + '"', time_filter="week")
         else:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="hour")
+            submissions = _reddit.subreddit("all").search('"' + company[COMPANY_NAME_TAG] + '"', time_filter="hour")
         for submission in submissions:
             if submission.is_self and submission.over_18 is not True:
                 mention = Mention(company[COMPANY_ID_TAG], submission.url,
@@ -33,7 +33,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     requests.post(RESPONSE_URL, json=payload, cookies=cookies)
 
 
-def enqueue(user_id: int, companies: list, cookies: dict, first_run):
+def enqueue(user_id: int, companies: list, cookies: dict, first_run: bool):
     try:
         if first_run is True:
             result = search.apply_async((user_id, companies, cookies, first_run), queue=CRAWLER_QUEUE_NAME)
@@ -45,18 +45,3 @@ def enqueue(user_id: int, companies: list, cookies: dict, first_run):
         print(e)
         return e
     return result
-
-
-'''
-def enqueue_at(user_id: int, companies: list, key: str):
-    job_id = str(user_id)+":"+REDDIT
-    job = Job.create(search, (user_id, companies, key), False, id=job_id)
-    scheduled_time = datetime.now() + timedelta(0, SCHEDULE_TIME * 60)
-    reddit_queue.enqueue_at(scheduled_time, job)
-
-
-def stop_job(user_id: int):
-    job_id = str(user_id)+":"+REDDIT
-    reddit_queue.remove(job_id)
-'''
-

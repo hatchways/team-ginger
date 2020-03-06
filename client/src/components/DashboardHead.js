@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 function DashboardHead(props) {
     const classes = useStyles();
-    const { tab, click1, click2 } = props;
+    const { tab, click1, click2, click3 } = props;
 
     return (
         <div className={classes.top_section}>
@@ -52,6 +52,11 @@ function DashboardHead(props) {
                     label="Most Popular"
                     className={`${classes.mention_tab} ${tab === 1 ? classes.tab_active : classes.tab_inactive}`}
                     onClick={click2}
+                />
+                <Tab
+                    label="Favourites"
+                    className={`${classes.mention_tab} ${tab === 2 ? classes.tab_active : classes.tab_inactive}`}
+                    onClick={click3}
                 />
             </div>
         </div>

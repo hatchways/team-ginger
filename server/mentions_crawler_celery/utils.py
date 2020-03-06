@@ -1,8 +1,13 @@
 from datetime import date, timedelta
-
+from .constants import JANUARY, FEBRUARY, MARCH, APRIL, MAY,\
+    JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
 
 def one_week_ago():
     return str(date.today() - timedelta(days=7))
+
+
+def six_days_ago():
+    return date.today() - timedelta(days=6)
 
 
 def one_day_ago():
@@ -10,27 +15,54 @@ def one_day_ago():
 
 
 def month_to_num(month):
-    if month == "Jan":
+    if month == JANUARY:
         return 1
-    elif month == "Feb":
+    elif month == FEBRUARY:
         return 2
-    elif month == "Mar":
+    elif month == MARCH:
         return 3
-    elif month == "Apr":
+    elif month == APRIL:
         return 4
-    elif month == "May":
+    elif month == MAY:
         return 5
-    elif month == "Jun":
+    elif month == JUNE:
         return 6
-    elif month == "Jul":
+    elif month == JULY:
         return 7
-    elif month == "Aug":
+    elif month == AUGUST:
         return 8
-    elif month == "Sep":
+    elif month == SEPTEMBER:
         return 9
-    elif month == "Oct":
+    elif month == OCTOBER:
         return 10
-    elif month == "Nov":
+    elif month == NOVEMBER:
         return 11
-    elif month == "Dec":
+    elif month == DECEMBER:
         return 12
+
+
+def num_to_month(month):
+    if month == 1:
+        return JANUARY
+    elif month == 2:
+        return FEBRUARY
+    elif month == 3:
+        return MARCH
+    elif month == 4:
+        return APRIL
+    elif month == 5:
+        return MAY
+    elif month == 6:
+        return JUNE
+    elif month == 7:
+        return JULY
+    elif month == 8:
+        return  AUGUST
+    elif month == 9:
+        return SEPTEMBER
+    elif month == 10:
+        return OCTOBER
+    elif month == 11:
+        return NOVEMBER
+    elif month == 12:
+        return DECEMBER

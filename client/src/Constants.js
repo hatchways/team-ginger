@@ -32,7 +32,7 @@ export const SITE_TO_IMG = { Reddit, Twitter };
 const INDEX_TO_MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 export const GET_DATE_STRING = date => {
     const month = INDEX_TO_MONTH[date.getMonth()];
-    const day = date.getDay();
+    const day = date.getDate();
     let hour = date.getHours();
     const meridian = hour >= 12 ? "PM" : "AM";
     hour = hour % 12;
