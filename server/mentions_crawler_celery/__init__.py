@@ -14,7 +14,6 @@ def enqueue(site: str, user_id: int, token: str, first_run=True):
     try:
         request = requests.get(COMPANIES_URL, cookies=cookies)
         if request.status_code == 200:
-            print("Entered enqueue")
             try:
                 companies = request.json().get(COMPANIES_TAG)
             except ValueError as e:

@@ -60,10 +60,6 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
         for tweet in tweets_json[STATUSES_TAG]:
             tweet_date = parse_twitter_date(tweet[CREATED_AT_TAG])
             tweet_date_unix_time = tweet_date.replace(tzinfo=timezone.utc).timestamp()
-            fo = open("dates.txt", "a")
-            fo.write("Original: "+tweet[CREATED_AT_TAG]+"\n")
-            fo.write("Datetime format: "+tweet_date.strftime("%d/%m/%Y, %H:%M:%S")+"\n")
-            fo.write("Unix Time: "+str(tweet_date_unix_time)+"\n")
             url = build_tweet_url(tweet[USER_TAG][SCREEN_NAME_TAG], tweet[ID_STRING_TAG])
             text = tweet[FULL_TEXT_TAG]
             if tweet.get(FAVOURITE_COUNT_TAG) is not None:
