@@ -3,7 +3,6 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { Checkbox } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import SentimentVeryDissatisfiedOutlinedIcon from "@material-ui/icons/SentimentVeryDissatisfiedOutlined";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
@@ -12,6 +11,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAlt"
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import SentimentVerySatisfiedOutlinedIcon from "@material-ui/icons/SentimentVerySatisfiedOutlined";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import FavouriteIcon from "./FavouriteIcon";
 
 // Given a sentiment value in [-1, 1] return an appropriate Icon
 function SentimentToIcon(sentiment) {
@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         marginRight: theme.spacing(1)
     },
-    icon: {
+    sentiment: {
         color: theme.primary
     }
 }));
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, site, siteVariant } = props;
+    const { title, bold, titleVariant, site, siteVariant, favourite } = props;
     return (
         <Box className={classes.header}>
             <Box className={classes.title}>
@@ -70,8 +70,13 @@ function MentionHeader(props) {
                     {site}
                 </Typography>
             </Box>
-            <Checkbox/>
-            <Tooltip title={`Score: ${sentiment}`} placement="top" aria-label="Sentiment score" className={classes.icon}>
+            <FavouriteIcon favourite={favourite} />
+            <Tooltip
+                title={`Score: ${sentiment}`}
+                placement="top"
+                aria-label="Sentiment score"
+                className={classes.sentiment}
+            >
                 {SentimentToIcon(props.sentiment)}
             </Tooltip>
         </Box>

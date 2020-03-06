@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG
+from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, FAVOURITE_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
@@ -79,7 +79,8 @@ def get_mentions(user, sort, page):
             TITLE_TAG: mention.title,
             SNIPPET_TAG: mention.snippet,
             HITS_TAG: mention.hits,
-            SENTIMENT_TAG: mention.sentiment
+            SENTIMENT_TAG: mention.sentiment,
+            FAVOURITE_TAG: mention.favourite
         }
         output_mentions.append(output_mention)
     # Let the client know if they reached the end of the mentions
@@ -99,7 +100,8 @@ def get_mention(user, mention_id: int):
         TITLE_TAG: mention.title,
         SNIPPET_TAG: mention.snippet,
         HITS_TAG: mention.hits,
-        SENTIMENT_TAG: mention.sentiment
+        SENTIMENT_TAG: mention.sentiment,
+        FAVOURITE_TAG: mention.favourite
     }
     return data_response(output_mention)
 

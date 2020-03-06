@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 function Mention(props) {
     const classes = useStyles();
-    const { id, img, title, site, snippet, bold, sentiment } = props;
+    const { id, img, title, site, snippet, bold, sentiment, favourite } = props;
 
     return (
         <Link to={`${DASHBOARD_URL}/mention/${id}`} className={classes.link}>
@@ -48,6 +48,7 @@ function Mention(props) {
                         sentiment={sentiment}
                         site={site}
                         siteVariant="body1"
+                        favourite={favourite}
                     />
                     <MentionText variant="caption" color="textSecondary" bold={bold} text={snippet} />
                 </Box>

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import {BY_FAVOURITE, BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY} from "../Routes";
+import { BY_FAVOURITE, BY_POPULAR, BY_RECENT, MENTIONS_ROUTE, SEARCH_QUERY } from "../Routes";
 import { LOGIN_URL, DISCONNECT_EVENT_TAG, MENTIONS_EVENT_TAG } from "../Constants";
 import Mention from "./Mention";
 import DashboardHead from "./DashboardHead";
@@ -61,6 +61,9 @@ class DashboardBody extends Component {
                     break;
                 case 2:
                     sort = BY_FAVOURITE;
+                    break;
+                default:
+                    sort = BY_RECENT;
                     break;
             }
             this.setState({ tabValue, page: 1, mentions: [], hasMore: true, sort }, () => this.fetchMentions(false));
@@ -146,7 +149,6 @@ class DashboardBody extends Component {
                 // summarize long snippets and titles
                 let snippet = this.summarizeString(mention.snippet, MAX_SNIPPET_CHARACTERS);
                 let title = this.summarizeString(mention.title, MAX_TITLE_CHARACTERS);
-
                 renderMentions.push(
                     <Mention
                         key={key}
@@ -157,14 +159,23 @@ class DashboardBody extends Component {
                         site={mention.site}
                         sentiment={mention.sentiment}
                         bold={this.props.bold}
+                        favourite={mention.favourite}
                     />
                 );
             });
         } else {
             return (
-                <Typography variant="h5" align="center" color="textSecondary" className={classes.empty_msg}>
-                    {NO_MENTION_MESSAGE}
-                </Typography>
+                <div className={classes.container}>
+                    <DashboardHead
+                        tab={tabValue}
+                        click1={() => this.handleTabChange(0)}
+                        click2={() => this.handleTabChange(1)}
+                        click3={() => this.handleTabChange(2)}
+                    />
+                    <Typography variant="h5" align="center" color="textSecondary" className={classes.empty_msg}>
+                        {NO_MENTION_MESSAGE}
+                    </Typography>
+                </div>
             );
         }
         return (
