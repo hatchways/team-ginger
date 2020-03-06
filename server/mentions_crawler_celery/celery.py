@@ -57,5 +57,5 @@ def generate_emails(token: str):
 def setup_periodic_tasks(sender, **kwargs):
     token = jwt.encode({"iss": _ISSUER, SECRET_KEY_TAG: os.environ["SCHEDULER_KEY"]}, SECRET_KEY, algorithm="HS256")\
         .decode("utf-8")
-    sender.add_periodic_task(60, generate_emails.s(token))
+    sender.add_periodic_task(crontab(hour=0, minute=0, day_of_week=1), generate_emails.s(token))
     sender.add_periodic_task(crontab(hour=0, minute=0, day_of_month=1), clean_db.s(token))

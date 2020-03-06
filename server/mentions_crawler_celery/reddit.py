@@ -20,9 +20,9 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
     mentions = []  # initialize mentions as a list
     for company in companies:
         if first_run:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="week")
+            submissions = _reddit.subreddit("all").search('"' + company[COMPANY_NAME_TAG] + '"', time_filter="week")
         else:
-            submissions = _reddit.subreddit("all").search(company[COMPANY_NAME_TAG], sort="new", time_filter="hour")
+            submissions = _reddit.subreddit("all").search('"' + company[COMPANY_NAME_TAG] + '"', time_filter="hour")
         for submission in submissions:
             if submission.is_self and submission.over_18 is not True:
                 mention = Mention(company[COMPANY_ID_TAG], submission.url,

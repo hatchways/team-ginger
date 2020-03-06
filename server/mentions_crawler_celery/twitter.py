@@ -10,6 +10,7 @@ from .celery import app
 from celery.exceptions import CeleryError
 from datetime import datetime, timezone
 from .utils import month_to_num, one_week_ago, one_day_ago
+from urllib.parse import quote
 
 QUERY_TAG = "q"
 UNTIL_TAG = "until"
@@ -48,7 +49,7 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
                   os.environ["TWITTER_ACCESS_TOKEN"], os.environ["TWITTER_ACCESS_TOKEN_SECRET"])
     mentions = []  # initialize mentions as a list
     for company in companies:
-        company_name = '"' + company[COMPANY_NAME_TAG] + '"'
+        company_name = quote('"' + company[COMPANY_NAME_TAG] + '"')
         if first_run:
             params = {QUERY_TAG: company_name, TWEET_MODE_TAG: EXTENDED_TAG, UNTIL_TAG: one_week_ago()}
         else:
@@ -59,6 +60,10 @@ def search(user_id: int, companies: list, cookies: dict, first_run: bool):
         for tweet in tweets_json[STATUSES_TAG]:
             tweet_date = parse_twitter_date(tweet[CREATED_AT_TAG])
             tweet_date_unix_time = tweet_date.replace(tzinfo=timezone.utc).timestamp()
+            fo = open("dates.txt", "a")
+            fo.write("Original: "+tweet[CREATED_AT_TAG]+"\n")
+            fo.write("Datetime format: "+tweet_date.strftime("%d/%m/%Y, %H:%M:%S")+"\n")
+            fo.write("Unix Time: "+str(tweet_date_unix_time)+"\n")
             url = build_tweet_url(tweet[USER_TAG][SCREEN_NAME_TAG], tweet[ID_STRING_TAG])
             text = tweet[FULL_TEXT_TAG]
             if tweet.get(FAVOURITE_COUNT_TAG) is not None:
