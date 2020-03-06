@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, FAVOURITE_TAG, MESSAGE_TAG
+from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, DATE_TAG, FAVOURITE_TAG, MESSAGE_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
@@ -83,6 +83,7 @@ def get_mentions(user, sort, page):
             SNIPPET_TAG: mention.snippet,
             HITS_TAG: mention.hits,
             SENTIMENT_TAG: mention.sentiment,
+            DATE_TAG: mention.date,
             FAVOURITE_TAG: mention.favourite
         }
         output_mentions.append(output_mention)
@@ -104,6 +105,7 @@ def get_mention(user, mention_id: int):
         SNIPPET_TAG: mention.snippet,
         HITS_TAG: mention.hits,
         SENTIMENT_TAG: mention.sentiment,
+        DATE_TAG: mention.date,
         FAVOURITE_TAG: mention.favourite
     }
     return data_response(output_mention)

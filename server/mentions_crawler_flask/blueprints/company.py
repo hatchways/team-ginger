@@ -37,6 +37,7 @@ def update_companies(user):
             old_mentions.extend(Mention.query.filter_by(mention_user_id=user_id,
                                                         company=company.id, favourite=False).all())
         old_names.append(company.name)
+        
     for name in names:
         if name not in old_names:
             new_companies.append(Company(user_id, name))

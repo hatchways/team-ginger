@@ -56,23 +56,25 @@ class Dialog extends Component {
         if (mention) {
             const snippet = mention.snippet.length !== 0 ? mention.snippet : NO_SNIPPET_MESSAGE;
             const snippetColor = mention.snippet.length !== 0 ? "initial" : "textSecondary";
-            const { site, hits, url } = mention;
+            const { site, hits, url, title, sentiment, date } = mention;
 
             return (
                 <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
                     <MentionContainer container={classes.container} img={mention.thumbnail} site={site}>
                         <Box className={classes.info}>
-                            <MentionHeader
-                                titleVariant="h5"
-                                bold={bold}
-                                title={mention.title}
-                                sentiment={mention.sentiment}
-                                siteVariant="h5"
+                            <MentionHeader titleVariant="h5" bold={bold} title={title} sentiment={sentiment} />
+                            <MentionInfo
                                 site={site}
                                 favourite={mention.favourite}
                                 history={history}
+                                siteVariant="h5"
+                                hitsVariant="h5"
+                                hits={hits}
+                                url={url}
+                                urlVariant="h5"
+                                date={date}
+                                dateVariant="h5"
                             />
-                            <MentionInfo hitsVariant="h5" hits={hits} url={url} urlVariant="h5" />
                         </Box>
 
                         <Box className={classes.snippet}>
