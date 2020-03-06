@@ -22,10 +22,10 @@ def get_email_mentions():
         except InvalidTokenError:
             return unauthorized_response("You're not authorized to clean the database!")
         users = MentionUser.query.all()
-        output_mentions = []
         output = {}
         current_time = (datetime.now().replace(tzinfo=timezone.utc) - EPOCH).total_seconds()
         for user in users:
+            output_mentions = []
             assoc = SiteAssociation.query.filter_by(mention_user_id=user.id).all()
             mentions = Mention.query.order_by(Mention.hits.desc()). \
                 filter_by(mention_user_id=user.id). \
