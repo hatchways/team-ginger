@@ -78,5 +78,7 @@ def responses(user):
                     socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
                     return ok_response("Mentions added to database! And next crawl queued!")
                 return ok_response("No new mentions found, queued the next crawl!")
+            else:
+                return result
         else:
             return bad_request_response("Missing fields!")
