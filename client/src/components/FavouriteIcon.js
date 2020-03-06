@@ -24,6 +24,7 @@ function FavouriteIcon(props) {
 
     const handleClick = e => {
         e.preventDefault();
+        console.log(id);
         fetch(`${FAVOURITE_ROUTE}${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" }

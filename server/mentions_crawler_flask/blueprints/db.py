@@ -20,7 +20,7 @@ def clean_db():
         except InvalidTokenError:
             return unauthorized_response("You're not authorized to clean the database!")
         current_time = (datetime.now().replace(tzinfo=timezone.utc) - EPOCH).total_seconds()
-        mentions = Mention.query.filter(Mention.date < current_time-MONTH_IN_SECONDS & Mention.favourite=False).all()
+        mentions = Mention.query.filter(Mention.date < current_time-MONTH_IN_SECONDS & Mention.favourite is False).all()
         result = delete_rows(mentions)
         if result is True:
             return ok_response("Cleaned the DB Successfully!")

@@ -9,7 +9,7 @@ import requests
 enqueue_dict = {REDDIT: reddit.enqueue, TWITTER: twitter.enqueue}
 
 
-def enqueue(site: str, user_id: int, token: str, first_run=True, run_once=False):
+def enqueue(site: str, user_id: int, token: str, first_run=True):
     cookies = {TOKEN_TAG: token}
     try:
         request = requests.get(COMPANIES_URL, cookies=cookies)
@@ -21,7 +21,7 @@ def enqueue(site: str, user_id: int, token: str, first_run=True, run_once=False)
                 print(e)
                 return False
 
-            return enqueue_dict[site](user_id, companies, cookies, first_run, run_once)
+            return enqueue_dict[site](user_id, companies, cookies, first_run)
         else:
             print(request.text)
     except requests.RequestException as e:

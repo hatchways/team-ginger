@@ -7,6 +7,8 @@ from ..db import insert_rows, delete_rows
 from ..responses import ok_response, bad_request_response, data_response
 from ..authentication.authenticate import authenticate, enforce_json
 from ...mentions_crawler_celery import enqueue
+from .job import tasks, get_tasks_id
+from celery.result import AsyncResult
 
 company_bp = Blueprint("companies", __name__, url_prefix="/")
 
@@ -56,7 +58,11 @@ def update_companies(user):
             return result
     associations = SiteAssociation.query.filter_by(mention_user_id=user_id).all()
     for assoc in associations:
-        enqueue(assoc.site_name, user_id, token, run_once=True)
+        result = enqueue(assoc.site_name, user_id, token)
+        if tasks.get(get_tasks_id(assoc.site_name, user_id)) is not None:
+            del tasks[get_tasks_id(assoc.site_name, user_id)]
+        if isinstance(result, AsyncResult):
+            tasks[get_tasks_id(assoc.site_name, user_id)] = result
     return ok_response("Company names updated!")
 
 

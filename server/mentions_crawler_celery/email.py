@@ -4,8 +4,8 @@ import os
 SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
 FROM_EMAIL = os.environ["FROM_EMAIL"]
 WELCOME_SUBJECT = "Welcome to mentionscrawler"
-WELCOME_TEMPLATE_ID = "d-335f9dca0ced402aabcc72e3a352c265"
-WEEKLY_TEMPLATE_ID = "d-2f796ef4ab8541dbb30dc80d62a1fd86"
+WELCOME_TEMPLATE_ID = "d-13389ba4840944b48790d192e1f57da9"
+WEEKLY_TEMPLATE_ID = "d-eae8dfe9140f4239b843e60a5dc3cd6e"
 
 
 def welcome_email(email, company):

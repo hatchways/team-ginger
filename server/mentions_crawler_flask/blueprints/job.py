@@ -2,7 +2,7 @@ from flask import Blueprint, request, json
 from ..authentication.authenticate import authenticate, enforce_json
 from ...mentions_crawler_celery import enqueue
 from ...constants import MENTIONS_TAG, USER_ID_TAG, SITE_TAG, SNIPPET_TAG,\
-    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG, MENTIONS_EVENT_TAG, RUN_ONCE_TAG
+    URL_TAG, HITS_TAG, TITLE_TAG, COMPANY_ID_TAG, DATE_TAG, TOKEN_TAG, EMAIL_TAG, MENTIONS_EVENT_TAG
 from ..responses import bad_request_response, ok_response, error_response
 from ..models.mention import Mention
 from ..models.site import SiteAssociation
@@ -69,14 +69,13 @@ def responses(user):
             if result is not True:
                 result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), True)
                 return result
-            if body.get(RUN_ONCE_TAG) is False:
-                result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), False)
-                if tasks.get(get_tasks_id(site, user_id)) is not None:
-                    del tasks[get_tasks_id(site, user_id)]
-                if isinstance(result, AsyncResult):
-                    tasks[get_tasks_id(site, user_id)] = result
-                    socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
-                    return ok_response("Mentions added to database! And next crawl queued!")
+            result = enqueue(site, user.get(USER_ID_TAG), request.cookies.get(TOKEN_TAG), False)
+            if tasks.get(get_tasks_id(site, user_id)) is not None:
+                del tasks[get_tasks_id(site, user_id)]
+            if isinstance(result, AsyncResult):
+                tasks[get_tasks_id(site, user_id)] = result
+                socketio.emit(MENTIONS_EVENT_TAG, room=user.get(EMAIL_TAG))
+                return ok_response("Mentions added to database! And next crawl queued!")
             return ok_response("Mentions added to database!")
         else:
             return bad_request_response("Missing fields!")

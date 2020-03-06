@@ -32,12 +32,22 @@ def get_email_mentions():
                 filter(Mention.date > current_time - WEEK_IN_SECONDS).limit(7).all()
             if mentions is not None:
                 for mention in mentions:
-                    output_mention = {
-                        URL_TAG: mention.url,
-                        SITE_TAG: mention.site_id,
-                        TITLE_TAG: mention.title,
-                        SNIPPET_TAG: mention.snippet,
-                    }
+                    if mention.site_id == "Reddit":
+                        output_mention = {
+                            URL_TAG: mention.url,
+                            SITE_TAG: mention.site_id,
+                            TITLE_TAG: mention.title,
+                            SNIPPET_TAG: mention.snippet,
+                            "Reddit": True
+                        }
+                    elif mention.site_id == "Twitter":
+                        output_mention = {
+                            URL_TAG: mention.url,
+                            SITE_TAG: mention.site_id,
+                            TITLE_TAG: mention.title,
+                            SNIPPET_TAG: mention.snippet,
+                            "Twitter": True
+                        }
                     output_mentions.append(output_mention)
                 if assoc is None:
                     output[user.email] = {WARN_TAG: True, MENTIONS_TAG: output_mentions, EMPTY_TAG: False}

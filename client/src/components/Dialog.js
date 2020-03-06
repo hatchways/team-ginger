@@ -62,7 +62,7 @@ class Dialog extends Component {
                 <Modal open={true} onClose={this.handleClose} maxWidth="xl" scroll="paper">
                     <MentionContainer container={classes.container} img={mention.thumbnail} site={site}>
                         <Box className={classes.info}>
-                            <MentionHeader titleVariant="h5" bold={bold} title={title} sentiment={sentiment} />
+                            <MentionHeader titleVariant="h5" bold={bold} title={title} id={this.props.id} sentiment={sentiment} />
                             <MentionInfo
                                 site={site}
                                 favourite={mention.favourite}
