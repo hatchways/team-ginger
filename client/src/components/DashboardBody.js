@@ -201,7 +201,7 @@ class DashboardBody extends Component {
                 <Button
                     className={classes.snackbar_btn}
                     onClick={() => {
-                        if (this.state.tabValue == 0) {
+                        if (this.state.tabValue === 0) {
                             document.querySelector(`.${classes.infinite_scroller}`).scrollTo(0, 0);
                         } else {
                             this.handleTabChange(0);
