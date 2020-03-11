@@ -43,15 +43,18 @@ class DashboardSideBar extends Component {
         return <div className={classes.platform_container}>{platformCards}</div>;
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.toggles !== this.state.toggles;
+    }
+
     componentDidMount() {
         socket.on(UPDATE_EVENT_TAG, data => {
-            let parsed_data = JSON.parse(data);
-            console.log(parsed_data);
+            const parsed_data = JSON.parse(data);
             if (parsed_data[SITES_TAG]) {
-                let parsed_sites = parsed_data[SITES_TAG];
+                const parsed_sites = parsed_data[SITES_TAG];
                 localStorage.setItem(SITES_TAG, JSON.stringify(parsed_sites));
                 const { toggles } = this.state;
-                let newToggles = [...toggles];
+                const newToggles = [...toggles];
                 for (let i = 0; i < PLATFORMS.length; ++i) {
                     newToggles[i] = parsed_sites[PLATFORMS[i]];
                 }
