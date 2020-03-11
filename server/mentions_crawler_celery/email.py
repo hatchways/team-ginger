@@ -9,7 +9,7 @@ WEEKLY_TEMPLATE_ID = "d-eae8dfe9140f4239b843e60a5dc3cd6e"
 
 
 def welcome_email(email, company):
-    message = {
+    """message = {
         'personalizations': [
             {
                 'to': [
@@ -30,11 +30,13 @@ def welcome_email(email, company):
         ,
     }
     sg = SendGridAPIClient(SENDGRID_API_KEY)
-    sg.send(message)
+    sg.send(message)"""
+    return 0
 
 
 def weekly_email(email,  data):
-    message = {
+    return 0
+    """message = {
         'personalizations': [
             {
                 'to': [
@@ -53,6 +55,6 @@ def weekly_email(email,  data):
         ,
     }
     sg = SendGridAPIClient(SENDGRID_API_KEY)
-    sg.send(message)
+    sg.send(message)"""
 
 

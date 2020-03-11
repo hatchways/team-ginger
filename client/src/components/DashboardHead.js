@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 function DashboardHead(props) {
     const classes = useStyles();
     const { tab, click1, click2, click3 } = props;
-
     return (
         <div className={classes.top_section}>
             <Typography variant="h4" className={classes.mention_header}>
@@ -63,4 +62,4 @@ function DashboardHead(props) {
     );
 }
 
-export default DashboardHead;
+export default React.memo(DashboardHead, (prev, next) => prev.tab === next.tab);
