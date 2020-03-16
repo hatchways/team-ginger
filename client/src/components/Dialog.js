@@ -49,6 +49,11 @@ class Dialog extends Component {
     handleClose = () => {
         this.props.history.push(DASHBOARD_URL);
     };
+
+    shouldComponentUpdate() {
+        return !this.state.mention;
+    }
+
     render() {
         const { classes, bold, history, id } = this.props;
         const { mention, message } = this.state;

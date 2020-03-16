@@ -62,4 +62,4 @@ function Mention(props) {
     );
 }
 
-export default Mention;
+export default React.memo(Mention, (prev, next) => prev.id === next.id);
