@@ -79,6 +79,7 @@ function PlatformCard(props) {
                     }
                 });
             } else if (res.status === 401) {
+                localStorage.clear();
                 history.push(LOGIN_URL);
             }
         });

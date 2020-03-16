@@ -35,6 +35,7 @@ function FavouriteIcon(props) {
             headers: { "Content-Type": "application/json" }
         }).then(res => {
             if (res.status === 401) {
+                localStorage.clear();
                 history.push(LOGIN_URL);
             } else if (res.ok) {
                 res.json().then(data => {
