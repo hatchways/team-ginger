@@ -7,15 +7,19 @@ import { FAVOURITE_ROUTE } from "../Routes";
 import { LOGIN_URL } from "../Constants";
 
 const useStyles = makeStyles(theme => ({
-    favourited: {
-        color: "#FD6095",
+    icon: {
         marginRight: theme.spacing(1),
-        cursor: "pointer"
+        cursor: "pointer",
+        transition: "transform 0.5s ease-in-out",
+        "&:hover": {
+            transform: "scale(1.2)"
+        }
+    },
+    favourited: {
+        color: "#FD6095"
     },
     favourite: {
-        color: "#FFDFEA",
-        marginRight: theme.spacing(1),
-        cursor: "pointer"
+        color: "#FFDFEA"
     }
 }));
 
@@ -31,6 +35,7 @@ function FavouriteIcon(props) {
             headers: { "Content-Type": "application/json" }
         }).then(res => {
             if (res.status === 401) {
+                localStorage.clear();
                 history.push(LOGIN_URL);
             } else if (res.ok) {
                 res.json().then(data => {
@@ -43,9 +48,9 @@ function FavouriteIcon(props) {
     };
 
     if (favourited) {
-        return <FavIcon fontSize="large" className={classes.favourited} onClick={handleClick} />;
+        return <FavIcon fontSize="large" className={`${classes.favourited} ${classes.icon}`} onClick={handleClick} />;
     }
-    return <FavoriteBorderIcon fontSize="large" className={classes.favourite} onClick={handleClick} />;
+    return <FavoriteBorderIcon fontSize="large" className={`${classes.favourite} ${classes.icon}`} onClick={handleClick} />;
 }
 
 export default FavouriteIcon;

@@ -14,9 +14,10 @@ const useStyles = makeStyles(theme => ({
 function MentionContainer(props) {
     const classes = useStyles();
     const { container, img, children, site } = props;
+
     return (
         <Paper className={container}>
-            <img src={img ? img : SITE_TO_IMG[site]} alt="Thumbnail" className={classes.image} />
+            {site && <img src={img ? img : SITE_TO_IMG[site]} alt="Thumbnail" className={classes.image} />}
             {children}
         </Paper>
     );

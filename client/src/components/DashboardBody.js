@@ -214,6 +214,22 @@ class DashboardBody extends Component {
         );
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        const { searchString, platformFilters, nameFilters } = this.props;
+        const { tabValue, page, sort, mentions, hasMore } = this.state;
+
+        return (
+            nextProps.searchString !== searchString ||
+            nextProps.platformFilters !== platformFilters ||
+            nextProps.nameFilters !== nameFilters ||
+            nextState.tabValue !== tabValue ||
+            nextState.page !== page ||
+            nextState.sort !== sort ||
+            nextState.hasMore !== hasMore ||
+            nextState.mentions.length !== mentions.length
+        );
+    }
+
     notifyNewMentions() {
         const { enqueueSnackbar, closeSnackbar, classes } = this.props;
 

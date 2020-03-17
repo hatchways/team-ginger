@@ -9,16 +9,9 @@ import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 import { SITES_ROUTE, JOBS_ROUTE } from "../Routes";
-import {
-    RESPONSE_TAG,
-    GOOD_SNACKBAR,
-    BAD_SNACKBAR,
-    LOGIN_URL,
-    SITES_TAG,
-    SAVE_EVENT_TAG
-} from "../Constants";
+import { RESPONSE_TAG, GOOD_SNACKBAR, BAD_SNACKBAR, LOGIN_URL, SITES_TAG, SAVE_EVENT_TAG } from "../Constants";
 import { useSnackbar } from "notistack";
-import {socket} from "../sockets";
+import { socket } from "../sockets";
 
 const CRAWLING_MESSAGE = (site, isEnabled) => `${site} crawling has been ${isEnabled ? "enabled" : "disabled"}`;
 
@@ -56,7 +49,7 @@ function PlatformCard(props) {
             if (res.status === 200) {
                 let sites = JSON.parse(localStorage.getItem(SITES_TAG));
                 sites[site_name] = !sites[site_name];
-                socket.emit(SAVE_EVENT_TAG, JSON.stringify({sites: sites}));
+                socket.emit(SAVE_EVENT_TAG, JSON.stringify({ sites: sites }));
                 fetch(JOBS_ROUTE + site_name, {
                     method: "POST"
                 }).then(res => {
@@ -74,7 +67,7 @@ function PlatformCard(props) {
                             method: "POST"
                         }).then(res => {
                             sites[site_name] = !sites[site_name];
-                            socket.emit(SAVE_EVENT_TAG, JSON.stringify({sites: sites}));
+                            socket.emit(SAVE_EVENT_TAG, JSON.stringify({ sites: sites }));
                             if (res.status === 200) {
                                 console.log("Database reverted...");
                             } else {
@@ -86,6 +79,7 @@ function PlatformCard(props) {
                     }
                 });
             } else if (res.status === 401) {
+                localStorage.clear();
                 history.push(LOGIN_URL);
             }
         });
@@ -111,4 +105,4 @@ function PlatformCard(props) {
     );
 }
 
-export default PlatformCard;
+export default React.memo(PlatformCard, (prev, next) => prev.isToggled === next.isToggled);

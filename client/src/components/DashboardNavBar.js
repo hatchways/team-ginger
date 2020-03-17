@@ -34,4 +34,4 @@ function DashboardNavBar(props) {
     );
 }
 
-export default DashboardNavBar;
+export default React.memo(DashboardNavBar, () => true);
