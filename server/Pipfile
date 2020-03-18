@@ -24,6 +24,7 @@ requests_oauthlib = "*"
 flower = "*"
 textblob = "*"
 sendgrid = "*"
+eventlet = "*"
 
 [requires]
 python_version = "3.7"
