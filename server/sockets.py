@@ -1,4 +1,4 @@
 from flask_socketio import SocketIO
 
-socketio = SocketIO(cors_allowed_origins="*")
+socketio = SocketIO()
 connections_by_sid = {}

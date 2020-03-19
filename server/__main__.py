@@ -1,17 +1,15 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from server.mentions_crawler_flask.db import db
 from server.mentions_crawler_flask.models.site import create_sites
 from server.mentions_crawler_flask.responses import error_response
 from server.mentions_crawler_flask.blueprints import blueprints
-from server.mentions_crawler_flask.models.site import SiteAssociation
-from server.mentions_crawler_flask.models.user import MentionUser
 from server.constants import SAVE_EVENT_TAG, UPDATE_EVENT_TAG, LOGIN_EVENT_TAG, DISCONNECT_EVENT_TAG
 from server.sockets import socketio, connections_by_sid
 from flask_socketio import join_room, leave_room, emit
 import os
 
-app = Flask(__name__, instance_relative_config=True)
+app = Flask(__name__, instance_relative_config=True, static_folder="react_app")
 
 
 @socketio.on(LOGIN_EVENT_TAG)
@@ -42,12 +40,21 @@ def unknown_error(e):
     return error_response("Something went wrong!", e)
 
 
+# Serve React App
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
+
 if __name__ == "__main__":
     directory_name = os.path.dirname(__file__)
     configfile = "./config.py"
     config_path = os.path.join(directory_name, configfile)
     app.config.from_pyfile(config_path, silent=False)
-    CORS(app)
     db.init_app(app)
 
     # creates any tables that aren't in the database, won't update existing tables if the model changes
