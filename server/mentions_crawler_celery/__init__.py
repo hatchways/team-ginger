@@ -12,7 +12,7 @@ enqueue_dict = {REDDIT: reddit.enqueue, TWITTER: twitter.enqueue}
 def enqueue(site: str, user_id: int, token: str, first_run=True):
     cookies = {TOKEN_TAG: token}
     try:
-        request = requests.get(COMPANIES_URL, cookies=cookies)
+        request = requests.get("http://0.0.0.0/companies", cookies=cookies)
         if request.status_code == 200:
             try:
                 companies = request.json().get(COMPANIES_TAG)
