@@ -9,6 +9,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { socket } from "../sockets";
 import { withSnackbar } from "notistack";
 import Button from "@material-ui/core/Button";
+
+const COMPANY_PREFIX = "company_";
 const LOADING_MESSAGE = "Loading Mentions";
 const NO_MENTION_MESSAGE = "There's nothing here! Make sure you have at least one platform tracked";
 // Max character limit of mention title and snippet
@@ -86,7 +88,7 @@ class DashboardBody extends Component {
         filters +=
             "&" +
             Object.entries(nameFilters)
-                .map(([name, filter]) => `${name}=${filter}`)
+                .map(([name, filter]) => `${COMPANY_PREFIX}${name}=${filter}`)
                 .join("&");
         const url = `${MENTIONS_ROUTE + this.state.sort}/${actualPage}?${SEARCH_QUERY}=${searchString}&${filters}`;
 
@@ -98,13 +100,10 @@ class DashboardBody extends Component {
                 history.push(LOGIN_URL);
             } else if (res.ok) {
                 res.json().then(data => {
-                    // concatenate the new mentions
-                    let hasMore = !data.end;
-                    let mentions = data.mentions;
-
-                    if (hasMore || mentions.length > Object.entries(this.state.mentions).length) {
+                    const hasMore = !data.end;
+                    if (hasMore || data.mentions.length > Object.keys(this.state.mentions).length) {
                         this.setState({
-                            mentions: mentions,
+                            mentions: data.mentions.reduce((acc, mention) => ({ ...acc, [mention.id]: mention }), {}),
                             page: actualPage + 1,
                             hasMore: hasMore
                         });
@@ -151,7 +150,7 @@ class DashboardBody extends Component {
         const { tabValue, mentions, hasMore } = this.state;
 
         const renderMentions = [];
-        if (Object.entries(mentions).length !== 0) {
+        if (Object.keys(mentions).length !== 0) {
             Object.entries(mentions).forEach(([key, mention]) => {
                 // summarize long snippets and titles
                 let snippet = this.summarizeString(mention.snippet, MAX_SNIPPET_CHARACTERS);
@@ -169,6 +168,7 @@ class DashboardBody extends Component {
                         bold={bold}
                         favourite={mention.favourite}
                         history={history}
+                        unmount={this.deleteMention(mention.id)}
                     />
                 );
             });
@@ -214,6 +214,11 @@ class DashboardBody extends Component {
         );
     }
 
+    deleteMention = id => () => {
+        delete this.state.mentions[id];
+        this.setState({ mentions: { ...this.state.mentions } });
+    };
+
     shouldComponentUpdate(nextProps, nextState) {
         const { searchString, platformFilters, nameFilters } = this.props;
         const { tabValue, page, sort, mentions, hasMore } = this.state;
@@ -226,7 +231,7 @@ class DashboardBody extends Component {
             nextState.page !== page ||
             nextState.sort !== sort ||
             nextState.hasMore !== hasMore ||
-            nextState.mentions.length !== mentions.length
+            nextState.mentions !== mentions
         );
     }
 

@@ -50,9 +50,12 @@ class Dialog extends Component {
         this.props.history.push(DASHBOARD_URL);
     };
 
-    shouldComponentUpdate() {
-        return !this.state.mention;
+    shouldComponentUpdate(nextProps, nextState) {
+        return !this.state.mention || this.state.message !== nextState.message;
     }
+
+    // When the mentions gets deleted due to an unfavourite
+    handleDelete = () => this.setState({ mention: null, message: NOT_FOUND_MESSAGE });
 
     render() {
         const { classes, bold, history, id } = this.props;
@@ -74,6 +77,7 @@ class Dialog extends Component {
                                 id={id}
                                 sentiment={sentiment}
                                 favourite={mention.favourite}
+                                unmount={this.handleDelete}
                             />
                             <MentionInfo
                                 site={site}

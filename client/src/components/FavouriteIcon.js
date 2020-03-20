@@ -25,9 +25,8 @@ const useStyles = makeStyles(theme => ({
 
 function FavouriteIcon(props) {
     const classes = useStyles();
-    const { favourite, id, history } = props;
+    const { favourite, id, history, unmount } = props;
     const [favourited, setfavourited] = useState(favourite);
-
     const handleClick = e => {
         e.preventDefault();
         fetch(`${FAVOURITE_ROUTE}${id}`, {
@@ -38,9 +37,7 @@ function FavouriteIcon(props) {
                 localStorage.clear();
                 history.push(LOGIN_URL);
             } else if (res.ok) {
-                res.json().then(data => {
-                    setfavourited(data.favourite);
-                });
+                res.json().then(data => (data.deleted ? unmount() : setfavourited(data.favourite)));
             } else {
                 res.json().then(data => console.log(data));
             }

@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 function MentionHeader(props) {
     const classes = useStyles();
     const sentiment = Number(props.sentiment * 100).toFixed(2);
-    const { title, bold, titleVariant, site, siteVariant, dateVariant, favourite, id, history } = props;
+    const { title, bold, titleVariant, site, siteVariant, dateVariant, favourite, id, history, unmount } = props;
     const date = props.date && GET_DATE_STRING(new Date(props.date * 1000));
 
     return (
@@ -77,7 +77,13 @@ function MentionHeader(props) {
                     {date}
                 </Typography>
             </Box>
-            <FavouriteIcon className={classes.favourite_icon} favourite={favourite} id={id} history={history} />
+            <FavouriteIcon
+                className={classes.favourite_icon}
+                favourite={favourite}
+                id={id}
+                history={history}
+                unmount={unmount}
+            />
             <Tooltip
                 title={`Score: ${sentiment}`}
                 placement="top"
