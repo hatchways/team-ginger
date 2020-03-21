@@ -219,14 +219,25 @@ class DashboardBody extends Component {
         this.setState({ mentions: { ...this.state.mentions } });
     };
 
+    favouriteMention = () => {
+        const newMention = this.state.mentions[this.props.favouriteID];
+        if (newMention) {
+            newMention.favourite = this.props.favouriteValue;
+            this.setState({ mentions: { ...this.state.mentions } });
+        }
+    };
+
     shouldComponentUpdate(nextProps, nextState) {
-        const { searchString, platformFilters, nameFilters } = this.props;
+        const { searchString, platformFilters, nameFilters, deleteID, favouriteID, favouriteValue } = this.props;
         const { tabValue, page, sort, mentions, hasMore } = this.state;
 
         return (
             nextProps.searchString !== searchString ||
             nextProps.platformFilters !== platformFilters ||
             nextProps.nameFilters !== nameFilters ||
+            nextProps.deleteID !== deleteID ||
+            nextProps.favouriteID !== favouriteID ||
+            nextProps.favouriteValue !== favouriteValue ||
             nextState.tabValue !== tabValue ||
             nextState.page !== page ||
             nextState.sort !== sort ||
@@ -284,12 +295,17 @@ class DashboardBody extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        const { searchString, platformFilters, nameFilters, deleteID, favouriteID, favouriteValue } = this.props;
         if (
-            prevProps.searchString !== this.props.searchString ||
-            prevProps.platformFilters !== this.props.platformFilters ||
-            prevProps.nameFilters !== this.props.nameFilters
+            prevProps.searchString !== searchString ||
+            prevProps.platformFilters !== platformFilters ||
+            prevProps.nameFilters !== nameFilters
         ) {
             this.setState({ page: 1, mentions: [], hasMore: true }, () => this.fetchMentions(false));
+        } else if (prevProps.deleteID !== deleteID) {
+            this.deleteMention(deleteID)();
+        } else if (prevProps.favouriteID !== favouriteID || prevProps.favouriteValue !== favouriteValue) {
+            this.favouriteMention();
         }
     }
 

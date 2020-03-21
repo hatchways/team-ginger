@@ -43,7 +43,7 @@ const styles = theme => ({
 class Dialog extends Component {
     constructor(props) {
         super(props);
-        this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
+        this.state = { mention: null, message: LOADING_MESSAGE };
     }
 
     handleClose = () => {
@@ -55,7 +55,14 @@ class Dialog extends Component {
     }
 
     // When the mentions gets deleted due to an unfavourite
-    handleDelete = () => this.setState({ mention: null, message: NOT_FOUND_MESSAGE });
+    handleDelete = () => {
+        this.handleClose();
+        this.props.delete(this.props.id);
+    };
+
+    handleFavourite = value => {
+        this.props.favourite([this.props.id, value]);
+    };
 
     render() {
         const { classes, bold, history, id } = this.props;
@@ -78,6 +85,7 @@ class Dialog extends Component {
                                 sentiment={sentiment}
                                 favourite={mention.favourite}
                                 unmount={this.handleDelete}
+                                handleFavourite={this.handleFavourite}
                             />
                             <MentionInfo
                                 site={site}
@@ -110,7 +118,7 @@ class Dialog extends Component {
     }
 
     componentDidMount() {
-        fetch(DIALOG_ROUTE + this.state.id, {
+        fetch(DIALOG_ROUTE + this.props.id, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         }).then(res => {

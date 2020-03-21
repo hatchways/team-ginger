@@ -44,6 +44,8 @@ function Dashboard(props) {
     const [open, setOpen] = useState(false);
     const [platformFilters, setPlatforms] = useState(initialPlatforms);
     const [nameFilters, setNames] = useState(initialNames);
+    const [deleteID, setDeleteID] = useState(-1);
+    const [favourite, setFavourite] = useState([-1, false]);
     const setFilters = (platforms, names) => {
         setPlatforms(platforms);
         setNames(names);
@@ -112,10 +114,21 @@ function Dashboard(props) {
                         searchString={searchString}
                         platformFilters={platformFilters}
                         nameFilters={nameFilters}
+                        deleteID={deleteID}
+                        favouriteID={favourite[0]}
+                        favouriteValue={favourite[1]}
                     />
                     <Route
                         path={`/dashboard/mention/:id`}
-                        component={props => <Dialog id={props.match.params.id} history={props.history} bold={boldNames} />}
+                        component={props => (
+                            <Dialog
+                                id={props.match.params.id}
+                                history={props.history}
+                                bold={boldNames}
+                                delete={setDeleteID}
+                                favourite={setFavourite}
+                            />
+                        )}
                     />
                 </div>
             </React.Fragment>
