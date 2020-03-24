@@ -51,7 +51,11 @@ class Dialog extends Component {
     };
 
     shouldComponentUpdate(nextProps, nextState) {
-        return !this.state.mention || this.state.message !== nextState.message;
+        return (
+            !this.state.mention ||
+            this.state.mention.favourite !== nextState.mention.favourite ||
+            this.state.message !== nextState.message
+        );
     }
 
     // When the mentions gets deleted due to an unfavourite
@@ -61,7 +65,8 @@ class Dialog extends Component {
     };
 
     handleFavourite = value => {
-        this.props.favourite([this.props.id, value]);
+        this.setState({ mention: { ...this.state.mention, favourite: value } });
+        this.props.favourite([this.props.id, value, !this.props.favouriteTrigger]);
     };
 
     render() {

@@ -45,7 +45,7 @@ function Dashboard(props) {
     const [platformFilters, setPlatforms] = useState(initialPlatforms);
     const [nameFilters, setNames] = useState(initialNames);
     const [deleteID, setDeleteID] = useState(-1);
-    const [favourite, setFavourite] = useState([-1, false]);
+    const [favourite, setFavourite] = useState([-1, false, false]);
     const setFilters = (platforms, names) => {
         setPlatforms(platforms);
         setNames(names);
@@ -117,16 +117,18 @@ function Dashboard(props) {
                         deleteID={deleteID}
                         favouriteID={favourite[0]}
                         favouriteValue={favourite[1]}
+                        favouriteTrigger={favourite[2]}
                     />
                     <Route
                         path={`/dashboard/mention/:id`}
-                        component={props => (
+                        render={props => (
                             <Dialog
                                 id={props.match.params.id}
                                 history={props.history}
                                 bold={boldNames}
                                 delete={setDeleteID}
                                 favourite={setFavourite}
+                                favouriteTrigger={favourite[2]}
                             />
                         )}
                     />

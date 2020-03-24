@@ -1,5 +1,5 @@
 /* Component for rendering the favourite icon of a mention */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { default as FavIcon } from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
@@ -26,11 +26,6 @@ const useStyles = makeStyles(theme => ({
 function FavouriteIcon(props) {
     const classes = useStyles();
     const { favourite, id, history, unmount, handleFavourite } = props;
-    const [favourited, setfavourited] = useState(favourite);
-
-    useEffect(() => {
-        setfavourited(favourite);
-    }, [favourite]);
 
     const handleClick = e => {
         e.preventDefault();
@@ -46,8 +41,7 @@ function FavouriteIcon(props) {
                     if (data.deleted) {
                         unmount();
                     } else {
-                        setfavourited(data.favourite);
-                        handleFavourite && handleFavourite(data.favourite);
+                        handleFavourite(data.favourite);
                     }
                 });
             } else {
@@ -56,7 +50,7 @@ function FavouriteIcon(props) {
         });
     };
 
-    if (favourited) {
+    if (favourite) {
         return <FavIcon fontSize="large" className={`${classes.favourited} ${classes.icon}`} onClick={handleClick} />;
     }
     return <FavoriteBorderIcon fontSize="large" className={`${classes.favourite} ${classes.icon}`} onClick={handleClick} />;

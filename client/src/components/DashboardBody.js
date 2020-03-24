@@ -155,6 +155,7 @@ class DashboardBody extends Component {
                 // summarize long snippets and titles
                 let snippet = this.summarizeString(mention.snippet, MAX_SNIPPET_CHARACTERS);
                 let title = this.summarizeString(mention.title, MAX_TITLE_CHARACTERS);
+
                 renderMentions.push(
                     <Mention
                         key={key}
@@ -169,6 +170,7 @@ class DashboardBody extends Component {
                         favourite={mention.favourite}
                         history={history}
                         unmount={this.deleteMention(mention.id)}
+                        handleFavourite={value => this.favouriteMention(mention.id, value)}
                     />
                 );
             });
@@ -219,16 +221,16 @@ class DashboardBody extends Component {
         this.setState({ mentions: { ...this.state.mentions } });
     };
 
-    favouriteMention = () => {
-        const newMention = this.state.mentions[this.props.favouriteID];
+    favouriteMention = (id = this.props.favouriteID, value = this.props.favouriteValue) => {
+        const newMention = this.state.mentions[id];
         if (newMention) {
-            newMention.favourite = this.props.favouriteValue;
-            this.setState({ mentions: { ...this.state.mentions } });
+            newMention.favourite = value;
+            this.forceUpdate();
         }
     };
 
     shouldComponentUpdate(nextProps, nextState) {
-        const { searchString, platformFilters, nameFilters, deleteID, favouriteID, favouriteValue } = this.props;
+        const { searchString, platformFilters, nameFilters, deleteID, favouriteTrigger } = this.props;
         const { tabValue, page, sort, mentions, hasMore } = this.state;
 
         return (
@@ -236,8 +238,7 @@ class DashboardBody extends Component {
             nextProps.platformFilters !== platformFilters ||
             nextProps.nameFilters !== nameFilters ||
             nextProps.deleteID !== deleteID ||
-            nextProps.favouriteID !== favouriteID ||
-            nextProps.favouriteValue !== favouriteValue ||
+            nextProps.favouriteTrigger !== favouriteTrigger ||
             nextState.tabValue !== tabValue ||
             nextState.page !== page ||
             nextState.sort !== sort ||
@@ -295,7 +296,7 @@ class DashboardBody extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { searchString, platformFilters, nameFilters, deleteID, favouriteID, favouriteValue } = this.props;
+        const { searchString, platformFilters, nameFilters, deleteID, favouriteTrigger } = this.props;
         if (
             prevProps.searchString !== searchString ||
             prevProps.platformFilters !== platformFilters ||
@@ -304,7 +305,7 @@ class DashboardBody extends Component {
             this.setState({ page: 1, mentions: [], hasMore: true }, () => this.fetchMentions(false));
         } else if (prevProps.deleteID !== deleteID) {
             this.deleteMention(deleteID)();
-        } else if (prevProps.favouriteID !== favouriteID || prevProps.favouriteValue !== favouriteValue) {
+        } else if (prevProps.favouriteTrigger !== favouriteTrigger) {
             this.favouriteMention();
         }
     }
