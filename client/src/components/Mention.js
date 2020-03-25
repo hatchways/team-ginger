@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 function Mention(props) {
     const classes = useStyles();
-    const { id, img, title, site, snippet, bold, sentiment, date, favourite, history } = props;
+    const { id, img, title, site, snippet, bold, sentiment, date, favourite, history, unmount, handleFavourite } = props;
 
     return (
         <Link to={`${DASHBOARD_URL}/mention/${id}`} className={classes.link}>
@@ -54,6 +54,8 @@ function Mention(props) {
                         history={history}
                         date={date}
                         dateVariant="body2"
+                        unmount={unmount}
+                        handleFavourite={handleFavourite}
                     />
                     <MentionText variant="caption" bold={bold} text={snippet} />
                 </Box>
@@ -62,4 +64,4 @@ function Mention(props) {
     );
 }
 
-export default React.memo(Mention, (prev, next) => prev.id === next.id);
+export default React.memo(Mention, (prev, next) => prev.id === next.id && prev.favourite === next.favourite);

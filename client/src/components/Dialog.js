@@ -43,16 +43,31 @@ const styles = theme => ({
 class Dialog extends Component {
     constructor(props) {
         super(props);
-        this.state = { id: props.id, mention: null, message: LOADING_MESSAGE };
+        this.state = { mention: null, message: LOADING_MESSAGE };
     }
 
     handleClose = () => {
         this.props.history.push(DASHBOARD_URL);
     };
 
-    shouldComponentUpdate() {
-        return !this.state.mention;
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            !this.state.mention ||
+            this.state.mention.favourite !== nextState.mention.favourite ||
+            this.state.message !== nextState.message
+        );
     }
+
+    // When the mentions gets deleted due to an unfavourite
+    handleDelete = () => {
+        this.handleClose();
+        this.props.delete(this.props.id);
+    };
+
+    handleFavourite = value => {
+        this.setState({ mention: { ...this.state.mention, favourite: value } });
+        this.props.favourite([this.props.id, value, !this.props.favouriteTrigger]);
+    };
 
     render() {
         const { classes, bold, history, id } = this.props;
@@ -74,6 +89,8 @@ class Dialog extends Component {
                                 id={id}
                                 sentiment={sentiment}
                                 favourite={mention.favourite}
+                                unmount={this.handleDelete}
+                                handleFavourite={this.handleFavourite}
                             />
                             <MentionInfo
                                 site={site}
@@ -106,7 +123,7 @@ class Dialog extends Component {
     }
 
     componentDidMount() {
-        fetch(DIALOG_ROUTE + this.state.id, {
+        fetch(DIALOG_ROUTE + this.props.id, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         }).then(res => {

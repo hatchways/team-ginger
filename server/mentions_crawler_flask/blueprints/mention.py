@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, DATE_TAG, FAVOURITE_TAG, MESSAGE_TAG
+from ...constants import URL_TAG, SITE_TAG, TITLE_TAG, SNIPPET_TAG, HITS_TAG, USER_ID_TAG, SENTIMENT_TAG, DATE_TAG, FAVOURITE_TAG, MESSAGE_TAG, DELETED_TAG
 from ..authentication.authenticate import authenticate
 from ..responses import data_response, pagination_response, not_found_response, bad_request_response
 from ..models.mention import Mention
@@ -13,6 +13,7 @@ ID_TAG = "id"
 SORT_POPULAR_URL = "popular"
 SORT_RECENT_URL = "recent"
 SORT_FAVOURITE_URL = "favourite"
+COMPANY_PREFIX = "company_"
 
 SITES = ["Reddit", "Twitter"]
 
@@ -36,7 +37,7 @@ def get_mentions(user, sort, page):
     name_filter = []
     companies = Company.query.filter_by(mention_user_id=user.get(USER_ID_TAG)).all()
     for company in companies:
-        filter = request.args.get(company.name)
+        filter = request.args.get(f"{COMPANY_PREFIX}{company.name}")
         if filter is None:
             return bad_request_response("Invalid name parameters.")    
         elif filter == 'true':
@@ -115,6 +116,8 @@ def get_mention(user, mention_id: int):
 @authenticate()
 def favourite_mention(user, mention_id: int):
     mention = Mention.query.filter_by(id=mention_id).first()
+    if mention is None:
+        return not_found_response(f"No mention with id {mention_id}")
     company = Company.query.filter_by(id=mention.company).first()
     mention.favourite = not mention.favourite
     if company is not None:
@@ -126,10 +129,10 @@ def favourite_mention(user, mention_id: int):
         deleted = True
     if result is not True:
         return result
+    if deleted:
+        return data_response({MESSAGE_TAG: "Mention deleted", DELETED_TAG: True})
     if mention.favourite is True:
         return data_response({MESSAGE_TAG: "Mention favourited!", FAVOURITE_TAG: mention.favourite})
-    if deleted:
-        return data_response({MESSAGE_TAG: "Mention deleted", FAVOURITE_TAG: mention.favourite})
     return data_response({MESSAGE_TAG: "Mention removed from favourites!", FAVOURITE_TAG: mention.favourite})
 
 
